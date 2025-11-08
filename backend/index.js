@@ -19,6 +19,7 @@ app.get('/api', (req, res) => {
 
 // Esta es tu primera ruta de API
 app.post('/api/auth/register', authController.register);
+app.post('/api/auth/login', authController.login); // <-- Nueva ruta de login
 
 // --- Iniciar Servidor ---
 app.listen(PORT, () => {
