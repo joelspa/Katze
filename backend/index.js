@@ -3,10 +3,11 @@ const express = require('express');
 const cors = require('cors');
 const authController = require('./controllers/authController');
 const catController = require('./controllers/catController');
+const applicationController = require('./controllers/applicationController');
 const authMiddleware = require('./middleware/authMiddleware');
 
 const app = express();
-const PORT = 5000; // El puerto para tu backend
+const PORT = 5000;
 
 // --- Middlewares ---
 app.use(express.json());
@@ -21,15 +22,14 @@ app.get('/api', (req, res) => {
 app.post('/api/auth/register', authController.register);
 app.post('/api/auth/login', authController.login); // <-- Nueva ruta de login
 
-// --- Rutas de Gatos ---
-// (PROTEGIDA) Crear un gato
-app.post('/api/cats', authMiddleware, catController.createCat);
+// --- Rutas de Gatos (Públicas y Protegidas) ---
+app.post('/api/cats', authMiddleware, catController.createCat); // Protegida
+app.get('/api/cats', catController.getAllCats);                 // Pública
+app.get('/api/cats/:id', catController.getCatById);             // Pública
 
-// (PÚBLICA) Obtener todos los gatos en adopción
-app.get('/api/cats', catController.getAllCats);
-
-// (PÚBLICA) Obtener un gato específico por su ID
-app.get('/api/cats/:id', catController.getCatById); 
+// --- Rutas de Solicitudes de Adopción (Protegidas) ---
+app.post('/api/cats/:id/adopt', authMiddleware, applicationController.applyForCat);
+app.post('/api/cats/:id/apply', authMiddleware, applicationController.applyForCat);
 
 // --- Iniciar Servidor ---
 app.listen(PORT, () => {
