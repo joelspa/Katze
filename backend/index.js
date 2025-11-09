@@ -5,8 +5,10 @@ const authController = require('./controllers/authController');
 const catController = require('./controllers/catController');
 const applicationController = require('./controllers/applicationController');
 const trackingController = require('./controllers/trackingController');
+const educationController = require('./controllers/educationController'); // <-- 2. Importa
 const authMiddleware = require('./middleware/authMiddleware');
 const moderationMiddleware = require('./middleware/moderationMiddleware');
+const adminMiddleware = require('./middleware/adminMiddleware'); // <-- 1. Importa
 
 const app = express();
 const PORT = 5000;
@@ -43,6 +45,16 @@ app.put('/api/applications/:id/status', authMiddleware, applicationController.up
 app.get('/api/tracking', authMiddleware, trackingController.getPendingTasks);
 // (NUEVA) Completar una tarea de seguimiento
 app.put('/api/tracking/:id/complete', authMiddleware, trackingController.completeTask);
+
+// --- RUTAS DEL MÓDULO EDUCATIVO ---
+// Públicas (para la app y Make.com)
+app.get('/api/education', educationController.getAllPosts);
+app.get('/api/education/:id', educationController.getPostById);
+
+// Protegidas (Solo Admin)
+app.post('/api/education', authMiddleware, adminMiddleware, educationController.createPost);
+app.put('/api/education/:id', authMiddleware, adminMiddleware, educationController.updatePost);
+app.delete('/api/education/:id', authMiddleware, adminMiddleware, educationController.deletePost);
 
 // --- Iniciar Servidor ---
 app.listen(PORT, () => {

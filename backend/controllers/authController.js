@@ -7,7 +7,7 @@ exports.register = async (req, res) => {
     const { email, password, fullName, role } = req.body;
 
     // 1. Validar que el rol sea uno de los permitidos
-    if (!['adoptante', 'rescatista'].includes(role)) {
+    if (!['adoptante', 'rescatista','admin'].includes(role)) {
         return res.status(400).json({ message: "Rol inválido." });
     }
 
