@@ -120,23 +120,36 @@ exports.updateApplicationStatus = async (req, res) => {
         if (status === 'aprobada') {
 
             // 3.a. Marcar el gato como 'adoptado'
-            await db.query(
-                "UPDATE cats SET adoption_status = 'adoptado' WHERE id = $1",
+            const catResult = await db.query(
+                "UPDATE cats SET adoption_status = 'adoptado' WHERE id = $1 RETURNING sterilization_status",
                 [catId]
             );
 
-            // 3.b. Crear la TAREA DE SEGUIMIENTO
-            // (Asumimos seguimiento a 4 meses, puedes hacerlo más complejo luego)
-            const dueDate = new Date();
-            dueDate.setMonth(dueDate.getMonth() + 4);
+            const catSterilizationStatus = catResult.rows[0].sterilization_status;
 
+            // 3.b. --- LÓGICA DE TAREAS MEJORADA ---
+
+            // Tarea 1: Seguimiento de Bienestar (siempre se crea)
+            const dueDateBienestar = new Date();
+            dueDateBienestar.setMonth(dueDateBienestar.getMonth() + 1); // Vence en 1 mes
             await db.query(
                 `INSERT INTO tracking_tasks (application_id, task_type, due_date, status)
-            VALUES ($1, 'Seguimiento de Esterilización', $2, 'pendiente')`,
-                [applicationId, dueDate]
+            VALUES ($1, 'Seguimiento de Bienestar', $2, 'pendiente')`,
+                [applicationId, dueDateBienestar]
             );
 
-            // 3.c. (Opcional pero recomendado) Rechazar otras solicitudes para el mismo gato
+            // Tarea 2: Seguimiento de Esterilización (SOLO SI ES NECESARIO)
+            if (catSterilizationStatus === 'pendiente') {
+                const dueDateEsterilizacion = new Date();
+                dueDateEsterilizacion.setMonth(dueDateEsterilizacion.getMonth() + 4); // Vence en 4 meses
+                await db.query(
+                    `INSERT INTO tracking_tasks (application_id, task_type, due_date, status)
+            VALUES ($1, 'Seguimiento de Esterilización', $2, 'pendiente')`,
+                    [applicationId, dueDateEsterilizacion]
+                );
+            }
+
+            // 3.c. Rechazar otras solicitudes... (sigue igual)
             await db.query(
                 "UPDATE adoption_applications SET status = 'rechazada' WHERE cat_id = $1 AND status = 'pendiente'",
                 [catId]
@@ -144,14 +157,12 @@ exports.updateApplicationStatus = async (req, res) => {
         }
 
         res.json({
-            message: `Solicitud ${status} con éxito.`,
+            message: `Solicitud ${status} con éxito. Se crearon las tareas de seguimiento.`,
             application: application
         });
 
     } catch (err) {
         console.error(err.message);
-        // En un proyecto real, aquí usarías una TRANSACCIÓN de base de datos
-        // para asegurar que todas las acciones (3a, 3b, 3c) fallen o tengan éxito juntas.
         res.status(500).send("Error en el servidor");
     }
 };
