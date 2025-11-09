@@ -31,6 +31,12 @@ app.get('/api/cats/:id', catController.getCatById);             // Pública
 app.post('/api/cats/:id/adopt', authMiddleware, applicationController.applyForCat);
 app.post('/api/cats/:id/apply', authMiddleware, applicationController.applyForCat);
 
+// (NUEVA) Ver solicitudes recibidas (para rescatistas)
+app.get('/api/applications/received', authMiddleware, applicationController.getReceivedApplications);
+
+// (NUEVA) Actualizar estado de una solicitud (para rescatistas/admin)
+app.put('/api/applications/:id/status', authMiddleware, applicationController.updateApplicationStatus);
+
 // --- Iniciar Servidor ---
 app.listen(PORT, () => {
     console.log(`Servidor corriendo en http://localhost:${PORT}`);
