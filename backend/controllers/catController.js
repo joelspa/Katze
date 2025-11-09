@@ -57,15 +57,14 @@ exports.createCat = async (req, res) => {
 // --- NUEVA FUNCIÓN: OBTENER TODOS LOS GATOS ---
 exports.getAllCats = async (req, res) => {
     try {
-        // 1. Buscamos solo los gatos que están "en_adopcion"
-        const cats = await db.query(
-            `SELECT * FROM cats WHERE adoption_status = 'en_adopcion' ORDER BY created_at DESC`
-        );
-
-        // 2. Opcional: Si quieres mostrar el nombre del rescatista (más avanzado)
-        // Podrías hacer un JOIN con la tabla 'users'
-        // Por ahora, devolvemos los gatos tal cual.
-
+        // ¡NUEVO! Mostramos solo gatos que estén 'en_adopcion' Y 'aprobados'
+        const query = `
+    SELECT * FROM cats 
+    WHERE adoption_status = 'en_adopcion' 
+    AND approval_status = 'aprobado' 
+    ORDER BY created_at DESC
+    `;
+        const cats = await db.query(query);
         res.json(cats.rows);
 
     } catch (err) {
@@ -77,15 +76,60 @@ exports.getAllCats = async (req, res) => {
 // --- NUEVA FUNCIÓN: OBTENER UN GATO POR ID ---
 exports.getCatById = async (req, res) => {
     try {
-        const { id } = req.params; // Obtenemos el ID desde la URL (ej. /api/cats/5)
-
-        const cat = await db.query("SELECT * FROM cats WHERE id = $1", [id]);
+        const { id } = req.params;
+        // ¡NUEVO! Solo dejamos ver gatos aprobados
+        const cat = await db.query(
+            "SELECT * FROM cats WHERE id = $1 AND approval_status = 'aprobado'",
+            [id]
+        );
 
         if (cat.rows.length === 0) {
-            return res.status(404).json({ message: "Gato no encontrado" });
+            return res.status(404).json({ message: "Gato no encontrado o pendiente de aprobación" });
         }
 
         res.json(cat.rows[0]);
+
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send("Error en el servidor");
+    }
+};
+
+// --- FUNCIÓN ACTUALIZADA: createCat ---
+exports.createCat = async (req, res) => {
+    if (req.user.role !== 'rescatista') {
+        return res.status(403).json({ message: 'Acción no autorizada.' });
+    }
+
+    const { name, description, age, health_status, sterilization_status, photos_url } = req.body;
+    const ownerId = req.user.id;
+
+    // ¡NUEVO! Obtenemos el estado de aprobación del middleware
+    const approval_status = req.approval_status; // 'aprobado' o 'pendiente'
+
+    if (!name || !sterilization_status) {
+        return res.status(400).json({ message: 'Nombre y estado de esterilización son requeridos.' });
+    }
+
+    const photosJson = JSON.stringify(photos_url || []);
+
+    try {
+        const newCat = await db.query(
+            // Añadimos la nueva columna 'approval_status'
+            `INSERT INTO cats (name, description, age, health_status, sterilization_status, photos_url, owner_id, approval_status)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+       RETURNING *`,
+            [name, description, age, health_status, sterilization_status, photosJson, ownerId, approval_status]
+        );
+
+        const message = approval_status === 'aprobado'
+            ? "Gato publicado con éxito."
+            : "Publicación enviada a revisión por posible infracción.";
+
+        res.status(201).json({
+            message: message,
+            cat: newCat.rows[0]
+        });
 
     } catch (err) {
         console.error(err.message);
