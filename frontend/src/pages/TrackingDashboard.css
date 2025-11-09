@@ -1,0 +1,48 @@
+/* frontend/src/pages/TrackingDashboard.css */
+.dashboard-container {
+    padding: 20px;
+    max-width: 1000px;
+    margin: auto;
+}
+
+.tasks-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.task-card {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+}
+
+.task-card h3 {
+    margin-top: 0;
+    font-size: 1.3rem;
+    color: #0056b3;
+}
+
+.task-card p {
+    margin: 5px 0;
+}
+
+.btn-complete {
+    margin-top: auto;
+    /* Empuja el botón al fondo */
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    background-color: #17a2b8;
+    /* Color cian/info */
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.btn-complete:hover {
+    background-color: #117a8b;
+}

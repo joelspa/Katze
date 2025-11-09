@@ -1,35 +1,49 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+// frontend/src/App.tsx
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { AuthProvider } from './context/AuthContext'; // <-- 1. Importa
+
+// Importa tus páginas
+import Home from './pages/Home';
+import Register from './pages/Register';
+import Login from './pages/Login';
+import CatDetailPage from './pages/CatDetailPage';
+import RescuerDashboard from './pages/RescuerDashboard'; // <-- 2. Importa la página
+import ProtectedRoute from './components/ProtectedRoute';
+import TrackingDashboard from './pages/TrackingDashboard'; // <-- 1. Importa
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <AuthProvider>
+      <BrowserRouter>
+        <Routes>
+          {/* Rutas Públicas */}
+          <Route path="/" element={<Home />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/cats/:id" element={<CatDetailPage />} />
+
+          {/* Rutas Protegidas */}
+          <Route 
+            path="/dashboard"
+            element={
+              <ProtectedRoute allowedRoles={['rescatista', 'admin']}>
+                <RescuerDashboard />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/tracking" // <-- 2. Añade la nueva ruta
+            element={
+              <ProtectedRoute allowedRoles={['rescatista', 'admin']}>
+                <TrackingDashboard />
+              </ProtectedRoute>
+            } 
+          />
+          
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
+  );
 }
 
-export default App
+export default App;

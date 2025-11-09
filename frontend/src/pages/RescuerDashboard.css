@@ -1,0 +1,65 @@
+/* frontend/src/pages/RescuerDashboard.css */
+.dashboard-container {
+    padding: 20px;
+    max-width: 1000px;
+    margin: auto;
+}
+
+.applications-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.application-card {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.application-card h3 {
+    margin-top: 0;
+    font-size: 1.5rem;
+}
+
+/* Para mostrar el JSON del formulario */
+.application-card pre {
+    background-color: #f4f4f4;
+    padding: 10px;
+    border-radius: 4px;
+    white-space: pre-wrap;
+    /* Para que el texto no se salga */
+}
+
+.application-actions {
+    margin-top: 15px;
+    display: flex;
+    gap: 10px;
+}
+
+.btn-approve,
+.btn-reject {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.btn-approve {
+    background-color: #28a745;
+}
+
+.btn-approve:hover {
+    background-color: #218838;
+}
+
+.btn-reject {
+    background-color: #dc3545;
+}
+
+.btn-reject:hover {
+    background-color: #c82333;
+}
