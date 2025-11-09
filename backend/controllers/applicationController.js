@@ -125,7 +125,7 @@ exports.updateApplicationStatus = async (req, res) => {
                 [catId]
             );
 
-            const catSterilizationStatus = catResult.rows[0].sterilization_status;
+            const catSterilizationStatus = catResult.rows[0].sterilization_status.trim();
 
             // 3.b. --- LÓGICA DE TAREAS MEJORADA ---
 
