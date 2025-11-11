@@ -1,10 +1,11 @@
-// frontend/src/components/CatCard.tsx
-import React from 'react';
-import { Link } from 'react-router-dom'; // Para hacer clic e ir al detalle
-import './CatCard.css'; // Crearemos este archivo CSS
+// Componente de tarjeta de gato
+// Muestra una vista previa de un gato disponible para adopción
 
-// Definimos la "forma" de un gato con TypeScript
-// Esto debe coincidir con tu backend
+import React from 'react';
+import { Link } from 'react-router-dom';
+import './CatCard.css';
+
+// Interfaz que define la estructura de datos de un gato
 export interface Cat {
     id: number;
     name: string;
@@ -19,10 +20,10 @@ interface CatCardProps {
 }
 
 const CatCard: React.FC<CatCardProps> = ({ cat }) => {
-    // Tomamos la primera foto, o una por defecto si no hay
+    // Usa la primera foto o una imagen placeholder si no hay fotos
     const imageUrl = cat.photos_url && cat.photos_url.length > 0
         ? cat.photos_url[0]
-        : 'https://via.placeholder.com/300'; // Una imagen placeholder
+        : 'https://via.placeholder.com/300';
 
     return (
         <div className="cat-card">

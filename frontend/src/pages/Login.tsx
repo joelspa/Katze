@@ -1,9 +1,11 @@
-// frontend/src/pages/Login.tsx
+// Página de inicio de sesión
+// Permite a los usuarios autenticarse en el sistema
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios, { isAxiosError } from 'axios';
 import { useAuth } from '../context/AuthContext';
-import './Login.css'; // Importa el CSS
+import './Login.css';
 
 const Login = () => {
     const navigate = useNavigate();
@@ -26,14 +28,13 @@ const Login = () => {
             const API_URL = 'http://localhost:5000/api/auth/login';
             const response = await axios.post(API_URL, formData);
 
-            // ¡Aquí está la magia!
             const { token, user } = response.data;
 
             console.log('¡Login exitoso!');
             console.log('Token:', token);
             console.log('Usuario:', user);
 
-            // Guarda el token y usuario en el contexto (y localStorage)
+            // Guarda el token y usuario en el contexto y localStorage
             login(user, token);
 
             alert('¡Login exitoso!');

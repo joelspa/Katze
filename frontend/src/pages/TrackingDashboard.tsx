@@ -1,10 +1,12 @@
-// frontend/src/pages/TrackingDashboard.tsx
+// Panel de seguimiento post-adopción
+// Permite a rescatistas gestionar tareas de seguimiento de bienestar y esterilización
+
 import { useState, useEffect } from 'react';
 import axios, { isAxiosError } from 'axios';
 import { useAuth } from '../context/AuthContext';
-import './TrackingDashboard.css'; // Crearemos este CSS
+import './TrackingDashboard.css';
 
-// Definimos la "forma" de una Tarea
+// Interfaz que define la estructura de una tarea de seguimiento
 interface TrackingTask {
     id: number;
     due_date: string;
@@ -21,7 +23,7 @@ const TrackingDashboard = () => {
     const [error, setError] = useState<string | null>(null);
     const { token } = useAuth();
 
-    // 1. Función para cargar las tareas
+    // Carga las tareas de seguimiento pendientes
     const fetchTasks = async () => {
         try {
             setLoading(true);
@@ -42,17 +44,17 @@ const TrackingDashboard = () => {
         }
     };
 
-    // 2. Cargar tareas al montar la página
+    // Carga tareas al montar el componente
     useEffect(() => {
         if (token) {
             fetchTasks();
         }
     }, [token]);
 
-    // 3. Función para completar una tarea
+    // Marca una tarea como completada
     const handleCompleteTask = async (taskId: number, taskType: string) => {
         const notes = prompt("Ingresa las notas de seguimiento:");
-        if (notes === null) return; // El usuario canceló
+        if (notes === null) return;
 
         let certificateUrl = "";
         if (taskType === 'Seguimiento de Esterilización') {
@@ -72,7 +74,7 @@ const TrackingDashboard = () => {
             );
 
             alert('¡Tarea completada con éxito!');
-            fetchTasks(); // Recargar la lista de tareas
+            fetchTasks();
 
         } catch (error: unknown) {
             alert('Error al completar la tarea.');
@@ -80,7 +82,7 @@ const TrackingDashboard = () => {
         }
     };
 
-    // Formatear la fecha para que sea legible
+    // Formatea fechas en español para mejor legibilidad
     const formatDate = (dateString: string) => {
         return new Date(dateString).toLocaleDateString('es-ES', {
             year: 'numeric',

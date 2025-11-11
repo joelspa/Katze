@@ -1,24 +1,25 @@
-// frontend/src/pages/Home.tsx
+// Página principal - Home
+// Muestra la galería de gatos disponibles para adopción
+
 import { useState, useEffect } from 'react';
 import axios, { isAxiosError } from 'axios';
-import CatCard, { type Cat } from '../components/CatCard'; // Importa el componente y la interfaz
-import './Home.css'; // Crearemos este archivo CSS
+import CatCard, { type Cat } from '../components/CatCard';
+import './Home.css';
 
 const Home = () => {
-    // Estado para guardar la lista de gatos
     const [cats, setCats] = useState<Cat[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
-    // useEffect se ejecuta cuando el componente se carga por primera vez
+    // Carga la lista de gatos al montar el componente
     useEffect(() => {
         const fetchCats = async () => {
             try {
                 setLoading(true);
-                const API_URL = 'http://localhost:5000/api/cats'; // Tu endpoint público
+                const API_URL = 'http://localhost:5000/api/cats';
                 const response = await axios.get(API_URL);
 
-                setCats(response.data); // Guarda los gatos en el estado
+                setCats(response.data);
                 setError(null);
             } catch (error: unknown) {
                 let errorMessage = 'Error al cargar los gatos';
@@ -28,14 +29,14 @@ const Home = () => {
                 setError(errorMessage);
                 console.error(errorMessage);
             } finally {
-                setLoading(false); // Termina la carga
+                setLoading(false);
             }
         };
 
-        fetchCats(); // Llama a la función
-    }, []); // El array vacío [] significa "ejecutar solo una vez"
+        fetchCats();
+    }, []);
 
-    // Renderizado condicional
+    // Renderizado condicional según el estado de carga
     if (loading) return <p>Cargando gatitos...</p>;
     if (error) return <p style={{ color: 'red' }}>{error}</p>;
 

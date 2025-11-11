@@ -1,28 +1,29 @@
-// frontend/src/components/ProtectedRoute.tsx
+// Componente de ruta protegida
+// Restringe acceso a rutas según autenticación y roles de usuario
+
 import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 interface ProtectedRouteProps {
     children: React.ReactElement;
-    allowedRoles: string[]; // Un array de roles, ej. ['rescatista', 'admin']
+    allowedRoles: string[]; // Roles permitidos para acceder a esta ruta
 }
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, allowedRoles }) => {
     const { isAuthenticated, user } = useAuth();
 
+    // Redirige a login si el usuario no está autenticado
     if (!isAuthenticated()) {
-        // Si no está logueado, llévalo a login
         return <Navigate to="/login" replace />;
     }
 
+    // Redirige a inicio si el usuario no tiene el rol requerido
     if (user && !allowedRoles.includes(user.role)) {
-        // Si está logueado, pero no tiene el rol correcto, llévalo al inicio
-        // (O a una página de "No autorizado")
         return <Navigate to="/" replace />;
     }
 
-    // Si está logueado Y tiene el rol correcto, muestra la página
+    // Permite acceso si el usuario está autenticado y tiene el rol correcto
     return children;
 };
 

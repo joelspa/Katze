@@ -1,7 +1,9 @@
-// backend/middleware/moderationMiddleware.js
+// Middleware de moderación automática
+// Detecta palabras clave problemáticas en publicaciones de gatos para prevenir ventas y promover esterilización
 
-// Lista de palabras clave que activan la "Bandera Roja" 
-// Esto es para cumplir con la meta anti-venta y pro-esterilización [cite: 8]
+const config = require('../config/config');
+
+// Lista de palabras clave que activan revisión manual
 const RED_FLAG_KEYWORDS = [
     'vendo', 'venta', 'precio', 'compro', 'comprar', 'negociable',
     'raza', 'puro', 'pedigree',
@@ -12,28 +14,28 @@ const RED_FLAG_KEYWORDS = [
 module.exports = (req, res, next) => {
     const { name, description } = req.body;
 
-    // Combinamos el texto para revisarlo todo de una vez
+    // Combina nombre y descripción para análisis de contenido
     const content = (name + ' ' + description).toLowerCase();
 
     let foundRedFlag = false;
 
+    // Busca palabras clave problemáticas en el contenido
     for (const keyword of RED_FLAG_KEYWORDS) {
         if (content.includes(keyword)) {
             foundRedFlag = true;
-            break; // Encontramos una, no es necesario seguir
+            break;
         }
     }
 
     if (foundRedFlag) {
-        // ¡Bandera Roja!  La publicación va a revisión manual.
-        // Añadimos el estado al 'req' para que el controlador lo use.
-        req.approval_status = 'pendiente';
+        // Marca la publicación para revisión manual
+        req.approval_status = config.APPROVAL_STATUS.PENDIENTE;
         console.log('MODERADOR: ¡Bandera Roja! Publicación enviada a revisión manual.');
     } else {
-        // El texto es benigno, se aprueba automáticamente [cite: 22]
-        req.approval_status = 'aprobado';
+        // Aprueba la publicación automáticamente
+        req.approval_status = config.APPROVAL_STATUS.APROBADO;
         console.log('MODERADOR: Publicación benigna, aprobada automáticamente.');
     }
 
-    next(); // Pasa al siguiente middleware (el controlador)
+    next();
 };

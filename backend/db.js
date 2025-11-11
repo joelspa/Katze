@@ -1,14 +1,13 @@
-// backend/db.js
+// Configuración del pool de conexiones a PostgreSQL
+// Gestiona la conexión a la base de datos Katze
+
 const { Pool } = require('pg');
+const config = require('./config/config');
 
-const pool = new Pool({
-    user: 'postgres', // Reemplaza esto
-    host: 'localhost',
-    database: 'katze', // O el nombre de tu base de datos
-    password: 'root', // Reemplaza esto
-    port: 5432,
-});
+// Pool de conexiones a PostgreSQL con parámetros de configuración centralizados
+const pool = new Pool(config.DB_CONFIG);
 
+// Exporta función para ejecutar consultas SQL
 module.exports = {
     query: (text, params) => pool.query(text, params),
 };

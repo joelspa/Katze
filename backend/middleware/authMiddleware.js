@@ -1,28 +1,32 @@
-// backend/middleware/authMiddleware.js
+// Middleware de autenticación
+// Verifica el token JWT en las peticiones y extrae información del usuario
+
 const jwt = require('jsonwebtoken');
+const config = require('../config/config');
 
 module.exports = function (req, res, next) {
-    // 1. Obtener el token del header
+    // Obtiene el token del header Authorization
     const token = req.header('Authorization');
 
-    // 2. Chequear si no hay token
+    // Verifica que exista un token en la petición
     if (!token) {
         return res.status(401).json({ message: 'No hay token, permiso denegado' });
     }
 
-    // 3. Verificar el token (el formato es "Bearer TOKEN")
+    // Extrae y verifica el token (formato esperado: "Bearer TOKEN")
     try {
-        const tokenString = token.split(' ')[1]; // Nos quedamos solo con el token
+        const tokenString = token.split(' ')[1];
 
         if (!tokenString) {
             return res.status(401).json({ message: 'Token mal formado' });
         }
 
-        const decoded = jwt.verify(tokenString, 'MI_PALABRA_SECRETA_PARA_KATZE'); // Usa el mismo secreto que en el login
+        // Verifica la validez del token usando el secreto de configuración
+        const decoded = jwt.verify(tokenString, config.JWT_SECRET);
 
-        // 4. Añadir el usuario del payload del token al objeto 'req'
+        // Añade la información del usuario decodificada al objeto request
         req.user = decoded.user;
-        next(); // ¡Importante! Llama a next() para pasar a la siguiente función (el controlador)
+        next();
     } catch (err) {
         res.status(401).json({ message: 'Token no es válido' });
     }

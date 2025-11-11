@@ -1,10 +1,12 @@
-// frontend/src/pages/CatDetailPage.tsx
+// Página de detalles de gato
+// Muestra información completa de un gato y permite enviar solicitud de adopción
+
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom'; // Importa useNavigate
+import { useParams, useNavigate } from 'react-router-dom';
 import axios, { isAxiosError } from 'axios';
 import { type Cat } from '../components/CatCard';
-import { useAuth } from '../context/AuthContext'; // 1. Importa el hook de Auth
-import AdoptionFormModal from '../components/AdoptionFormModal'; // 2. Importa el Modal
+import { useAuth } from '../context/AuthContext';
+import AdoptionFormModal from '../components/AdoptionFormModal';
 import './CatDetailPage.css';
 
 const CatDetailPage = () => {
@@ -12,13 +14,13 @@ const CatDetailPage = () => {
     const [cat, setCat] = useState<Cat | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const [showModal, setShowModal] = useState(false); // 3. Estado para el modal
+    const [showModal, setShowModal] = useState(false);
 
-    const { isAuthenticated, user } = useAuth(); // 4. Obtén el estado de auth
-    const navigate = useNavigate(); // 5. Para redirigir
+    const { isAuthenticated, user } = useAuth();
+    const navigate = useNavigate();
 
+    // Carga información del gato al montar el componente
     useEffect(() => {
-        // ... (tu useEffect para fetchCat sigue igual) ...
         const fetchCat = async () => {
             try {
                 setLoading(true);
@@ -43,22 +45,18 @@ const CatDetailPage = () => {
         }
     }, [id]);
 
-    // 6. Lógica del botón de adoptar
+    // Maneja el clic en el botón de adoptar según el estado de autenticación y rol
     const handleAdoptClick = () => {
         if (!isAuthenticated()) {
-            // Si no está logueado, llévalo a login
             alert('Debes iniciar sesión para adoptar.');
             navigate('/login');
         } else if (user?.role === 'adoptante') {
-            // Si es un adoptante, abre el modal
             setShowModal(true);
         } else if (user?.role === 'rescatista') {
-            // Si es un rescatista, no puede adoptar
             alert('Los rescatistas no pueden adoptar gatos.');
         }
     };
 
-    // ... (tus return de loading, error, etc. siguen igual) ...
     if (loading) return <p>Cargando información del gatito...</p>;
     if (error) return <p style={{ color: 'red' }}>{error}</p>;
     if (!cat) return <p>Gato no encontrado.</p>;
@@ -68,7 +66,7 @@ const CatDetailPage = () => {
         : 'https://via.placeholder.com/600x400';
 
     return (
-        <> {/* 7. Envuelve todo en un Fragment para el modal */}
+        <>
             <div className="detail-container">
                 <img src={imageUrl} alt={cat.name} className="detail-img" />
                 <div className="detail-info">
@@ -87,14 +85,13 @@ const CatDetailPage = () => {
                         <p>{cat.sterilization_status}</p>
                     </div>
 
-                    {/* 8. Conecta el botón a la nueva lógica */}
                     <button className="apply-button" onClick={handleAdoptClick}>
                         ¡Quiero adoptar a {cat.name}!
                     </button>
                 </div>
             </div>
 
-            {/* 9. Muestra el modal si showModal es true */}
+            {/* Modal de formulario de adopción */}
             {showModal && (
                 <AdoptionFormModal
                     catId={cat.id.toString()}

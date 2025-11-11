@@ -1,138 +1,82 @@
-// backend/controllers/catController.js
-const db = require('../db');
+// Controlador de gestión de gatos
+// Gestiona las peticiones HTTP relacionadas con gatos
 
-exports.createCat = async (req, res) => {
-    // 1. Verificar que el usuario sea un rescatista (gracias al middleware)
-    if (req.user.role !== 'rescatista') {
-        return res.status(403).json({ message: 'Acción no autorizada. Solo rescatistas pueden publicar.' });
-    }
+const catService = require('../services/catService');
+const Validator = require('../utils/validator');
+const ErrorHandler = require('../utils/errorHandler');
+const config = require('../config/config');
 
-    // 2. Obtener los datos del gato del body
-    const {
-        name,
-        description,
-        age,
-        health_status,
-        sterilization_status,
-        photos_url // Esto debería ser un array ['url1', 'url2']
-    } = req.body;
+class CatController {
+    // Crea una nueva publicación de gato (solo rescatistas)
+    async createCat(req, res) {
+        try {
+            // Verifica que el usuario sea rescatista
+            if (req.user.role !== config.USER_ROLES.RESCATISTA) {
+                return ErrorHandler.forbidden(res, 'Solo rescatistas pueden publicar gatos');
+            }
 
-    // 3. Obtener el ID del dueño (el rescatista que está logueado)
-    const ownerId = req.user.id;
+            const { name, description, age, health_status, sterilization_status, photos_url } = req.body;
 
-    // 4. Validar datos
-    if (!name || !sterilization_status) {
-        return res.status(400).json({ message: 'Nombre y estado de esterilización son requeridos.' });
-    }
+            // Valida datos del gato
+            const validation = Validator.validateCatData({ name, sterilization_status });
+            if (!validation.isValid) {
+                return ErrorHandler.badRequest(res, validation.errors.join(', '));
+            }
 
-    // --- ⬇️ AQUÍ ESTÁ LA SOLUCIÓN ⬇️ ---
+            // Prepara datos del gato
+            const catData = {
+                name,
+                description,
+                age,
+                health_status,
+                sterilization_status,
+                photos_url,
+                owner_id: req.user.id,
+                approval_status: req.approval_status // Definido por el middleware de moderación
+            };
 
-    // Convertimos el array (o undefined) en un string JSON.
-    // Si 'photos_url' no se envía, lo guardamos como un array JSON vacío '[]'.
-    const photosJson = JSON.stringify(photos_url || []);
+            // Crea el gato
+            const newCat = await catService.createCat(catData);
 
-    // --- ⬆️ FIN DE LA SOLUCIÓN ⬆️ ---
+            const message = catData.approval_status === config.APPROVAL_STATUS.APROBADO
+                ? 'Gato publicado con éxito'
+                : 'Publicación enviada a revisión por posible infracción';
 
-    // 5. Insertar en la base de datos
-    try {
-        const newCat = await db.query(
-            `INSERT INTO cats (name, description, age, health_status, sterilization_status, photos_url, owner_id)
-        VALUES ($1, $2, $3, $4, $5, $6, $7)
-        RETURNING *`,
-            // Pasamos 'photosJson' en lugar de 'photos_url'
-            [name, description, age, health_status, sterilization_status, photosJson, ownerId]
-        );
+            return ErrorHandler.created(res, { cat: newCat }, message);
 
-        res.status(201).json({
-            message: "Gato publicado con éxito.",
-            cat: newCat.rows[0]
-        });
-
-    } catch (err) {
-        console.error(err.message);
-        res.status(500).send("Error en el servidor");
-    }
-};
-
-// --- NUEVA FUNCIÓN: OBTENER TODOS LOS GATOS ---
-exports.getAllCats = async (req, res) => {
-    try {
-        // ¡NUEVO! Mostramos solo gatos que estén 'en_adopcion' Y 'aprobados'
-        const query = `
-    SELECT * FROM cats 
-    WHERE adoption_status = 'en_adopcion' 
-    AND approval_status = 'aprobado' 
-    ORDER BY created_at DESC
-    `;
-        const cats = await db.query(query);
-        res.json(cats.rows);
-
-    } catch (err) {
-        console.error(err.message);
-        res.status(500).send("Error en el servidor");
-    }
-};
-
-// --- NUEVA FUNCIÓN: OBTENER UN GATO POR ID ---
-exports.getCatById = async (req, res) => {
-    try {
-        const { id } = req.params;
-        // ¡NUEVO! Solo dejamos ver gatos aprobados
-        const cat = await db.query(
-            "SELECT * FROM cats WHERE id = $1 AND approval_status = 'aprobado'",
-            [id]
-        );
-
-        if (cat.rows.length === 0) {
-            return res.status(404).json({ message: "Gato no encontrado o pendiente de aprobación" });
+        } catch (error) {
+            return ErrorHandler.serverError(res, 'Error al crear publicación', error);
         }
-
-        res.json(cat.rows[0]);
-
-    } catch (err) {
-        console.error(err.message);
-        res.status(500).send("Error en el servidor");
-    }
-};
-
-// --- FUNCIÓN ACTUALIZADA: createCat ---
-exports.createCat = async (req, res) => {
-    if (req.user.role !== 'rescatista') {
-        return res.status(403).json({ message: 'Acción no autorizada.' });
     }
 
-    const { name, description, age, health_status, sterilization_status, photos_url } = req.body;
-    const ownerId = req.user.id;
+    // Obtiene todos los gatos disponibles para adopción
+    async getAllCats(req, res) {
+        try {
+            const cats = await catService.getAllAvailableCats();
+            return ErrorHandler.success(res, { cats });
 
-    // ¡NUEVO! Obtenemos el estado de aprobación del middleware
-    const approval_status = req.approval_status; // 'aprobado' o 'pendiente'
-
-    if (!name || !sterilization_status) {
-        return res.status(400).json({ message: 'Nombre y estado de esterilización son requeridos.' });
+        } catch (error) {
+            return ErrorHandler.serverError(res, 'Error al obtener gatos', error);
+        }
     }
 
-    const photosJson = JSON.stringify(photos_url || []);
+    // Obtiene información detallada de un gato específico
+    async getCatById(req, res) {
+        try {
+            const { id } = req.params;
 
-    try {
-        const newCat = await db.query(
-            // Añadimos la nueva columna 'approval_status'
-            `INSERT INTO cats (name, description, age, health_status, sterilization_status, photos_url, owner_id, approval_status)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-       RETURNING *`,
-            [name, description, age, health_status, sterilization_status, photosJson, ownerId, approval_status]
-        );
+            const cat = await catService.getCatById(id);
+            
+            if (!cat) {
+                return ErrorHandler.notFound(res, 'Gato no encontrado o pendiente de aprobación');
+            }
 
-        const message = approval_status === 'aprobado'
-            ? "Gato publicado con éxito."
-            : "Publicación enviada a revisión por posible infracción.";
+            return ErrorHandler.success(res, { cat });
 
-        res.status(201).json({
-            message: message,
-            cat: newCat.rows[0]
-        });
-
-    } catch (err) {
-        console.error(err.message);
-        res.status(500).send("Error en el servidor");
+        } catch (error) {
+            return ErrorHandler.serverError(res, 'Error al obtener gato', error);
+        }
     }
-};
+}
+
+module.exports = new CatController();

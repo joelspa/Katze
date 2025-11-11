@@ -1,62 +1,39 @@
-// backend/index.js
+// Archivo principal del servidor Express
+// Configura rutas, middlewares y controladores para la aplicación Katze
+
 const express = require('express');
 const cors = require('cors');
-const authController = require('./controllers/authController');
-const catController = require('./controllers/catController');
-const applicationController = require('./controllers/applicationController');
-const trackingController = require('./controllers/trackingController');
-const educationController = require('./controllers/educationController'); // <-- 2. Importa
-const authMiddleware = require('./middleware/authMiddleware');
-const moderationMiddleware = require('./middleware/moderationMiddleware');
-const adminMiddleware = require('./middleware/adminMiddleware'); // <-- 1. Importa
+const config = require('./config/config');
+
+// Importación centralizada de rutas
+const {
+    authRoutes,
+    catRoutes,
+    applicationRoutes,
+    trackingRoutes,
+    educationRoutes
+} = require('./routes');
 
 const app = express();
-const PORT = 5000;
 
-// --- Middlewares ---
+// Configuración de middlewares globales
 app.use(cors());
 app.use(express.json());
 
-// --- Rutas ---
+// Ruta de verificación del estado del servidor
 app.get('/api', (req, res) => {
     res.send('¡El backend de Katze está funcionando!');
 });
 
-// --- Rutas de Autenticación (Públicas) ---
-app.post('/api/auth/register', authController.register);
-app.post('/api/auth/login', authController.login); // <-- Nueva ruta de login
+// Configuración de rutas modulares
+app.use('/api/auth', authRoutes);                    // Rutas de autenticación
+app.use('/api/cats', catRoutes);                     // Rutas de gatos
+app.use('/api', applicationRoutes);                  // Rutas de solicitudes de adopción
+app.use('/api/applications', applicationRoutes);     // Rutas alternativas para solicitudes
+app.use('/api/tracking', trackingRoutes);            // Rutas de seguimiento
+app.use('/api/education', educationRoutes);          // Rutas del módulo educativo
 
-// --- Rutas de Gatos (Públicas y Protegidas) ---
-app.post('/api/cats', authMiddleware, moderationMiddleware, catController.createCat);   // Protegida
-app.get('/api/cats', catController.getAllCats);                                         // Pública
-app.get('/api/cats/:id', catController.getCatById);                                     // Pública
-
-// --- Rutas de Solicitudes de Adopción (Protegidas) ---
-app.post('/api/cats/:id/adopt', authMiddleware, applicationController.applyForCat);
-app.post('/api/cats/:id/apply', authMiddleware, applicationController.applyForCat);
-
-// (NUEVA) Ver solicitudes recibidas (para rescatistas)
-app.get('/api/applications/received', authMiddleware, applicationController.getReceivedApplications);
-// (NUEVA) Actualizar estado de una solicitud (para rescatistas/admin)
-app.put('/api/applications/:id/status', authMiddleware, applicationController.updateApplicationStatus);
-
-// --- Rutas de Seguimiento (Protegidas) ---
-// (NUEVA) Ver todas las tareas de seguimiento pendientes
-app.get('/api/tracking', authMiddleware, trackingController.getPendingTasks);
-// (NUEVA) Completar una tarea de seguimiento
-app.put('/api/tracking/:id/complete', authMiddleware, trackingController.completeTask);
-
-// --- RUTAS DEL MÓDULO EDUCATIVO ---
-// Públicas (para la app y Make.com)
-app.get('/api/education', educationController.getAllPosts);
-app.get('/api/education/:id', educationController.getPostById);
-
-// Protegidas (Solo Admin)
-app.post('/api/education', authMiddleware, adminMiddleware, educationController.createPost);
-app.put('/api/education/:id', authMiddleware, adminMiddleware, educationController.updatePost);
-app.delete('/api/education/:id', authMiddleware, adminMiddleware, educationController.deletePost);
-
-// --- Iniciar Servidor ---
-app.listen(PORT, () => {
-    console.log(`Servidor corriendo en http://localhost:${PORT}`);
+// Inicialización del servidor Express
+app.listen(config.PORT, () => {
+    console.log(`Servidor corriendo en http://localhost:${config.PORT}`);
 });

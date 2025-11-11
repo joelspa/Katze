@@ -1,93 +1,103 @@
-// backend/controllers/educationController.js
-const db = require('../db');
+// Controlador del módulo educativo
+// Gestiona las peticiones HTTP relacionadas con artículos educativos
 
-// --- PÚBLICO: Obtener todos los artículos ---
-// (Para tu app y para que Make.com los lea)
-exports.getAllPosts = async (req, res) => {
-    try {
-        const posts = await db.query("SELECT * FROM educational_posts ORDER BY created_at DESC");
-        res.json(posts.rows);
-    } catch (err) {
-        console.error(err.message);
-        res.status(500).send("Error en el servidor");
-    }
-};
+const educationService = require('../services/educationService');
+const Validator = require('../utils/validator');
+const ErrorHandler = require('../utils/errorHandler');
 
-// --- PÚBLICO: Obtener un artículo ---
-exports.getPostById = async (req, res) => {
-    try {
-        const { id } = req.params;
-        const post = await db.query("SELECT * FROM educational_posts WHERE id = $1", [id]);
+class EducationController {
+    // Obtiene todos los artículos educativos (acceso público)
+    async getAllPosts(req, res) {
+        try {
+            const posts = await educationService.getAllPosts();
+            return ErrorHandler.success(res, { posts });
 
-        if (post.rows.length === 0) {
-            return res.status(404).json({ message: "Artículo no encontrado" });
+        } catch (error) {
+            return ErrorHandler.serverError(res, 'Error al obtener artículos', error);
         }
-        res.json(post.rows[0]);
-    } catch (err) {
-        console.error(err.message);
-        res.status(500).send("Error en el servidor");
-    }
-};
-
-// --- ADMIN: Crear un artículo ---
-exports.createPost = async (req, res) => {
-    const { title, content } = req.body;
-    const authorId = req.user.id; // El ID del admin logueado
-
-    if (!title || !content) {
-        return res.status(400).json({ message: 'Título y contenido son requeridos.' });
     }
 
-    try {
-        const newPost = await db.query(
-            `INSERT INTO educational_posts (title, content, author_id)
-       VALUES ($1, $2, $3)
-       RETURNING *`,
-            [title, content, authorId]
-        );
-        res.status(201).json(newPost.rows[0]);
-    } catch (err) {
-        console.error(err.message);
-        res.status(500).send("Error en el servidor");
-    }
-};
+    // Obtiene un artículo educativo específico por ID (acceso público)
+    async getPostById(req, res) {
+        try {
+            const { id } = req.params;
 
-// --- ADMIN: Actualizar un artículo ---
-exports.updatePost = async (req, res) => {
-    const { id } = req.params;
-    const { title, content } = req.body;
+            const post = await educationService.getPostById(id);
+            
+            if (!post) {
+                return ErrorHandler.notFound(res, 'Artículo no encontrado');
+            }
 
-    try {
-        const updatedPost = await db.query(
-            `UPDATE educational_posts SET title = $1, content = $2
-       WHERE id = $3
-       RETURNING *`,
-            [title, content, id]
-        );
+            return ErrorHandler.success(res, { post });
 
-        if (updatedPost.rows.length === 0) {
-            return res.status(404).json({ message: "Artículo no encontrado" });
+        } catch (error) {
+            return ErrorHandler.serverError(res, 'Error al obtener artículo', error);
         }
-        res.json(updatedPost.rows[0]);
-    } catch (err) {
-        console.error(err.message);
-        res.status(500).send("Error en el servidor");
     }
-};
 
-// --- ADMIN: Borrar un artículo ---
-exports.deletePost = async (req, res) => {
-    const { id } = req.params;
+    // Crea un nuevo artículo educativo (solo administradores)
+    async createPost(req, res) {
+        try {
+            const { title, content } = req.body;
+            const authorId = req.user.id;
 
-    try {
-        const deleteOp = await db.query("DELETE FROM educational_posts WHERE id = $1 RETURNING *", [id]);
+            // Valida los datos del artículo
+            const validation = Validator.validateEducationalPost(title, content);
+            if (!validation.isValid) {
+                return ErrorHandler.badRequest(res, validation.errors.join(', '));
+            }
 
-        if (deleteOp.rows.length === 0) {
-            return res.status(404).json({ message: "Artículo no encontrado" });
+            const newPost = await educationService.createPost(title, content, authorId);
+
+            return ErrorHandler.created(res, { post: newPost }, 'Artículo creado exitosamente');
+
+        } catch (error) {
+            return ErrorHandler.serverError(res, 'Error al crear artículo', error);
         }
-        res.json({ message: "Artículo eliminado con éxito." });
-    } catch (err) {
-        console.error(err.message);
-        res.status(500).send("Error en el servidor");
     }
-};
+
+    // Actualiza un artículo educativo existente (solo administradores)
+    async updatePost(req, res) {
+        try {
+            const { id } = req.params;
+            const { title, content } = req.body;
+
+            // Valida los datos del artículo
+            const validation = Validator.validateEducationalPost(title, content);
+            if (!validation.isValid) {
+                return ErrorHandler.badRequest(res, validation.errors.join(', '));
+            }
+
+            const updatedPost = await educationService.updatePost(id, title, content);
+            
+            if (!updatedPost) {
+                return ErrorHandler.notFound(res, 'Artículo no encontrado');
+            }
+
+            return ErrorHandler.success(res, { post: updatedPost }, 'Artículo actualizado exitosamente');
+
+        } catch (error) {
+            return ErrorHandler.serverError(res, 'Error al actualizar artículo', error);
+        }
+    }
+
+    // Elimina un artículo educativo (solo administradores)
+    async deletePost(req, res) {
+        try {
+            const { id } = req.params;
+
+            const deleted = await educationService.deletePost(id);
+            
+            if (!deleted) {
+                return ErrorHandler.notFound(res, 'Artículo no encontrado');
+            }
+
+            return ErrorHandler.success(res, null, 'Artículo eliminado con éxito');
+
+        } catch (error) {
+            return ErrorHandler.serverError(res, 'Error al eliminar artículo', error);
+        }
+    }
+}
+
+module.exports = new EducationController();

@@ -1,6 +1,7 @@
-// frontend/src/pages/Register.tsx
+// Página de registro de usuarios
+// Permite a nuevos usuarios crear una cuenta como adoptante o rescatista
+
 import React, { useState } from 'react';
-// 1. Importa 'isAxiosError' para comprobar el tipo de error
 import axios, { isAxiosError } from 'axios';
 import './Register.css';
 
@@ -27,17 +28,13 @@ const Register = () => {
             console.log('¡Usuario registrado!', response.data);
             alert('¡Registro exitoso!');
 
-        } catch (error: unknown) { // 2. El tipo correcto es 'unknown'
-
-            // 3. Manejo de error seguro (Type-Safe)
+        } catch (error: unknown) {
+            // Manejo seguro de errores con verificación de tipo
             let errorMessage = 'Ocurrió un error desconocido';
 
             if (isAxiosError(error)) {
-                // Ahora TS sabe que 'error' es un error de Axios
-                // y podemos acceder a 'response' de forma segura.
                 errorMessage = error.response?.data?.message || 'Error del servidor';
             } else if (error instanceof Error) {
-                // Si es un error genérico de JavaScript
                 errorMessage = error.message;
             }
 

@@ -1,25 +1,27 @@
-// frontend/src/pages/RescuerDashboard.tsx
+// Panel de control para rescatistas
+// Permite visualizar y gestionar solicitudes de adopción recibidas
+
 import { useState, useEffect } from 'react';
 import axios, { isAxiosError } from 'axios';
 import { useAuth } from '../context/AuthContext';
-import './RescuerDashboard.css'; // Crearemos este CSS
+import './RescuerDashboard.css';
 
-// Definimos la "forma" de una solicitud (puedes hacerla más detallada)
+// Interfaz que define la estructura de una solicitud de adopción
 interface Application {
     id: number;
     cat_name: string;
     applicant_name: string;
     status: string;
-    form_responses: any; // El JSON con las respuestas
+    form_responses: any;
 }
 
 const RescuerDashboard = () => {
     const [applications, setApplications] = useState<Application[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const { token } = useAuth(); // Necesitamos el token para la autorización
+    const { token } = useAuth();
 
-    // 1. Función para cargar las solicitudes
+    // Carga las solicitudes de adopción recibidas
     const fetchApplications = async () => {
         try {
             setLoading(true);
@@ -42,14 +44,14 @@ const RescuerDashboard = () => {
         }
     };
 
-    // 2. Cargar las solicitudes cuando la página se monta
+    // Carga solicitudes al montar el componente
     useEffect(() => {
         if (token) {
             fetchApplications();
         }
-    }, [token]); // Depende del token
+    }, [token]);
 
-    // 3. Función para aprobar/rechazar
+    // Actualiza el estado de una solicitud (aprobar o rechazar)
     const handleUpdateStatus = async (appId: number, newStatus: 'aprobada' | 'rechazada') => {
         if (!window.confirm(`¿Estás seguro de que quieres ${newStatus} esta solicitud?`)) {
             return;
@@ -58,14 +60,13 @@ const RescuerDashboard = () => {
         try {
             const API_URL = `http://localhost:5000/api/applications/${appId}/status`;
             await axios.put(API_URL,
-                { status: newStatus }, // El body
+                { status: newStatus },
                 {
                     headers: { 'Authorization': `Bearer ${token}` }
                 }
             );
 
             alert(`Solicitud ${newStatus} con éxito.`);
-            // Vuelve a cargar la lista para que desaparezca la que acabamos de manejar
             fetchApplications();
 
         } catch (error: unknown) {
