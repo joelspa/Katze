@@ -12,37 +12,41 @@ import CatDetailPage from './pages/CatDetailPage';
 import RescuerDashboard from './pages/RescuerDashboard';
 import ProtectedRoute from './components/ProtectedRoute';
 import TrackingDashboard from './pages/TrackingDashboard';
+import Navbar from './components/Navbar';
 
 function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
+        {/* 2. Coloca el Navbar aquí, fuera de <Routes> */}
+        <Navbar />
+
         <Routes>
-          {/* Rutas Públicas */}
+          {/* ... (Todas tus rutas <Route> van aquí) ... */}
           <Route path="/" element={<Home />} />
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
           <Route path="/cats/:id" element={<CatDetailPage />} />
-
-          {/* Rutas Protegidas - Solo rescatistas y administradores */}
-          <Route 
+          <Route
             path="/dashboard"
             element={
               <ProtectedRoute allowedRoles={['rescatista', 'admin']}>
                 <RescuerDashboard />
               </ProtectedRoute>
-            } 
+            }
           />
-          <Route 
+          <Route
             path="/tracking"
             element={
               <ProtectedRoute allowedRoles={['rescatista', 'admin']}>
                 <TrackingDashboard />
               </ProtectedRoute>
-            } 
+            }
           />
-          
         </Routes>
+
+        {/* Aquí podrías poner un Footer */}
+
       </BrowserRouter>
     </AuthProvider>
   );
