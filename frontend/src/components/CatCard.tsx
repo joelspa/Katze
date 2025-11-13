@@ -13,6 +13,7 @@ export interface Cat {
     description: string;
     photos_url: string[];
     sterilization_status: 'esterilizado' | 'pendiente' | 'no_aplica';
+    health_status?: string;
 }
 
 interface CatCardProps {
@@ -23,11 +24,19 @@ const CatCard: React.FC<CatCardProps> = ({ cat }) => {
     // Usa la primera foto o una imagen placeholder si no hay fotos
     const imageUrl = cat.photos_url && cat.photos_url.length > 0
         ? cat.photos_url[0]
-        : 'https://via.placeholder.com/300';
+        : 'https://placehold.co/300x200/e0e0e0/666?text=Sin+Foto';
 
     return (
         <div className="cat-card">
-            <img src={imageUrl} alt={cat.name} className="cat-card-img" />
+            <img 
+                src={imageUrl} 
+                alt={cat.name} 
+                className="cat-card-img"
+                onError={(e) => {
+                    // Fallback si la imagen falla al cargar
+                    e.currentTarget.src = 'https://placehold.co/300x200/e0e0e0/666?text=Sin+Foto';
+                }}
+            />
             <div className="cat-card-body">
                 <h3 className="cat-card-title">{cat.name}</h3>
                 <p className="cat-card-text">Edad: {cat.age}</p>

@@ -18,8 +18,18 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, allowedRoles 
         return <Navigate to="/login" replace />;
     }
 
+    // Obtiene el usuario del contexto o del localStorage (fallback para race conditions)
+    const currentUser = user || (() => {
+        try {
+            const storedUser = localStorage.getItem('user');
+            return storedUser ? JSON.parse(storedUser) : null;
+        } catch {
+            return null;
+        }
+    })();
+
     // Redirige a inicio si el usuario no tiene el rol requerido
-    if (user && !allowedRoles.includes(user.role)) {
+    if (!currentUser || !allowedRoles.includes(currentUser.role)) {
         return <Navigate to="/" replace />;
     }
 

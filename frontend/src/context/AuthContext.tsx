@@ -23,25 +23,68 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 // Funciones helper para gestionar localStorage
 const getStoredUser = (): User | null => {
-    const storedUser = localStorage.getItem('user');
-    return storedUser ? JSON.parse(storedUser) : null;
+    try {
+        const storedUser = localStorage.getItem('user');
+        if (!storedUser || storedUser === 'undefined' || storedUser === 'null') {
+            return null;
+        }
+        return JSON.parse(storedUser);
+    } catch (error) {
+        console.error('Error al parsear usuario desde localStorage:', error);
+        // Limpia el localStorage corrupto
+        localStorage.removeItem('user');
+        return null;
+    }
 };
 
 const getStoredToken = (): string | null => {
-    return localStorage.getItem('token');
+    const token = localStorage.getItem('token');
+    if (!token || token === 'undefined' || token === 'null') {
+        localStorage.removeItem('token');
+        return null;
+    }
+    return token;
+};
+
+// Limpia cualquier dato corrupto en localStorage al cargar
+const cleanupLocalStorage = () => {
+    const user = localStorage.getItem('user');
+    const token = localStorage.getItem('token');
+    
+    if (user === 'undefined' || user === 'null') {
+        localStorage.removeItem('user');
+    }
+    
+    if (token === 'undefined' || token === 'null') {
+        localStorage.removeItem('token');
+    }
 };
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
+    // Limpia localStorage corrupto antes de inicializar
+    cleanupLocalStorage();
+    
     // Inicializa el estado desde localStorage para persistencia entre recargas
     const [user, setUser] = useState<User | null>(getStoredUser());
     const [token, setToken] = useState<string | null>(getStoredToken());
 
     const login = (user: User, token: string) => {
+        if (!user || !token) {
+            console.error('Intento de login con datos inválidos:', { user, token });
+            return;
+        }
+        
+        // Persiste en localStorage PRIMERO para evitar race conditions
+        try {
+            localStorage.setItem('token', token);
+            localStorage.setItem('user', JSON.stringify(user));
+        } catch (error) {
+            console.error('Error al guardar en localStorage:', error);
+        }
+        
+        // Luego actualiza el estado
         setUser(user);
         setToken(token);
-        // Persiste en localStorage
-        localStorage.setItem('token', token);
-        localStorage.setItem('user', JSON.stringify(user));
     };
 
     const logout = () => {

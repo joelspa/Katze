@@ -1,7 +1,6 @@
-// frontend/src/components/Navbar.tsx
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import './Navbar.css'; // Crearemos este CSS
+import './Navbar.css';
 
 const Navbar = () => {
     const { user, logout, isAuthenticated } = useAuth();
@@ -27,14 +26,26 @@ const Navbar = () => {
                             Inicio (Gatos)
                         </Link>
                     </li>
-
-                    {/* --- Lógica Condicional --- */}
+                    <li className="nav-item">
+                        <Link to="/stories" className="nav-link">
+                            💕 Historias
+                        </Link>
+                    </li>
+                    <li className="nav-item">
+                        <Link to="/education" className="nav-link">
+                            📚 Educación
+                        </Link>
+                    </li>
 
                     {isLoggedIn ? (
                         <>
-                            {/* --- Si ESTÁ logueado --- */}
                             {user?.role === 'rescatista' && (
                                 <>
+                                    <li className="nav-item">
+                                        <Link to="/publish" className="nav-link nav-button-cta">
+                                            Publicar Gato
+                                        </Link>
+                                    </li>
                                     <li className="nav-item">
                                         <Link to="/dashboard" className="nav-link">
                                             Panel Adopciones
@@ -64,7 +75,6 @@ const Navbar = () => {
                         </>
                     ) : (
                         <>
-                            {/* --- Si NO está logueado --- */}
                             <li className="nav-item">
                                 <Link to="/login" className="nav-link">
                                     Iniciar Sesión

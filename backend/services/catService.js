@@ -66,6 +66,72 @@ class CatService {
             [status, catId]
         );
     }
+
+    // ========== FUNCIONES DE ADMINISTRACIÓN ==========
+
+    // Obtiene TODAS las publicaciones (incluidas las pendientes) para el admin
+    async getAllCatsForAdmin() {
+        const query = `
+            SELECT c.*, u.full_name as owner_name, u.email as owner_email
+            FROM cats c
+            LEFT JOIN users u ON c.owner_id = u.id
+            ORDER BY 
+                CASE c.approval_status
+                    WHEN 'pendiente' THEN 1
+                    WHEN 'aprobado' THEN 2
+                    WHEN 'rechazado' THEN 3
+                END,
+                c.created_at DESC
+        `;
+        const result = await db.query(query);
+        return result.rows;
+    }
+
+    // Actualiza el estado de aprobación de un gato
+    async updateApprovalStatus(catId, status) {
+        const result = await db.query(
+            "UPDATE cats SET approval_status = $1 WHERE id = $2 RETURNING *",
+            [status, catId]
+        );
+        return result.rows.length > 0 ? result.rows[0] : null;
+    }
+
+    // Obtiene un gato por ID sin restricción de aprobación (para admin)
+    async getCatByIdForAdmin(catId) {
+        const result = await db.query(
+            "SELECT * FROM cats WHERE id = $1",
+            [catId]
+        );
+        return result.rows.length > 0 ? result.rows[0] : null;
+    }
+
+    // Actualiza los detalles de un gato (para admin)
+    async updateCatDetails(catId, catData) {
+        const { name, description, age, health_status, sterilization_status } = catData;
+        
+        const result = await db.query(
+            `UPDATE cats SET 
+                name = $1, 
+                description = $2, 
+                age = $3, 
+                health_status = $4,
+                sterilization_status = $5
+            WHERE id = $6 
+            RETURNING *`,
+            [name, description, age, health_status, sterilization_status, catId]
+        );
+        
+        return result.rows.length > 0 ? result.rows[0] : null;
+    }
+
+    // Elimina un gato (para admin)
+    async deleteCat(catId) {
+        const result = await db.query(
+            "DELETE FROM cats WHERE id = $1 RETURNING *",
+            [catId]
+        );
+        return result.rows.length > 0 ? result.rows[0] : null;
+    }
 }
 
 module.exports = new CatService();

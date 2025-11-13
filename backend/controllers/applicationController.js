@@ -53,12 +53,20 @@ class ApplicationController {
     // Obtiene todas las solicitudes pendientes recibidas por un rescatista
     async getReceivedApplications(req, res) {
         try {
-            // Verifica que el usuario sea rescatista
-            if (req.user.role !== config.USER_ROLES.RESCATISTA) {
-                return ErrorHandler.forbidden(res);
+            // Verifica que el usuario sea rescatista o admin
+            if (![config.USER_ROLES.RESCATISTA, config.USER_ROLES.ADMIN].includes(req.user.role)) {
+                return ErrorHandler.forbidden(res, 'Solo rescatistas y administradores pueden ver solicitudes');
             }
 
-            const applications = await applicationService.getApplicationsByRescuer(req.user.id);
+            let applications;
+            
+            // Si es admin, obtiene todas las solicitudes
+            if (req.user.role === config.USER_ROLES.ADMIN) {
+                applications = await applicationService.getAllApplications();
+            } else {
+                // Si es rescatista, solo sus solicitudes
+                applications = await applicationService.getApplicationsByRescuer(req.user.id);
+            }
 
             return ErrorHandler.success(res, { applications });
 
@@ -78,23 +86,34 @@ class ApplicationController {
             const { id: applicationId } = req.params;
             const { status } = req.body;
 
+            console.log('🔍 UPDATE STATUS - Inicio:', { applicationId, status });
+
             // Valida el nuevo estado
             if (!Validator.isValidApplicationStatus(status)) {
+                console.log('❌ Estado no válido:', status);
                 return ErrorHandler.badRequest(res, 'Estado no válido');
             }
+
+            console.log('✅ Validación de estado pasada');
 
             // Actualiza el estado de la solicitud
             const application = await applicationService.updateApplicationStatus(applicationId, status);
             
             if (!application) {
+                console.log('❌ Solicitud no encontrada:', applicationId);
                 return ErrorHandler.notFound(res, 'Solicitud no encontrada');
             }
 
+            console.log('✅ Solicitud actualizada:', application.id);
+
             const catId = application.cat_id;
+            console.log('📋 Cat ID:', catId);
 
             // Si la solicitud fue aprobada, procesa la adopción
             if (status === config.APPLICATION_STATUS.APROBADA) {
+                console.log('🐱 Procesando aprobación...');
                 await this._processApprovedApplication(applicationId, catId);
+                console.log('✅ Aprobación procesada correctamente');
             }
 
             return ErrorHandler.success(
@@ -104,42 +123,66 @@ class ApplicationController {
             );
 
         } catch (error) {
+            console.error('💥 ERROR en updateApplicationStatus:', error);
+            console.error('Stack trace:', error.stack);
             return ErrorHandler.serverError(res, 'Error al actualizar solicitud', error);
         }
     }
 
     // Procesa una solicitud aprobada (método privado)
     async _processApprovedApplication(applicationId, catId) {
-        // Marca el gato como adoptado
-        await catService.updateAdoptionStatus(catId, config.ADOPTION_STATUS.ADOPTADO);
+        try {
+            console.log('🔧 _processApprovedApplication - Inicio:', { applicationId, catId });
 
-        // Obtiene el estado de esterilización del gato
-        const sterilizationStatus = await catService.getCatSterilizationStatus(catId);
+            // Marca el gato como adoptado
+            console.log('1️⃣ Actualizando estado de adopción del gato...');
+            await catService.updateAdoptionStatus(catId, config.ADOPTION_STATUS.ADOPTADO);
+            console.log('✅ Gato marcado como adoptado');
 
-        // Crea tarea de seguimiento de bienestar (siempre)
-        const dueDateBienestar = trackingService.calculateDueDate(
-            config.TRACKING_PERIODS.BIENESTAR_MONTHS
-        );
-        await trackingService.createTask(
-            applicationId,
-            'Seguimiento de Bienestar',
-            dueDateBienestar
-        );
+            // Obtiene el estado de esterilización del gato
+            console.log('2️⃣ Obteniendo estado de esterilización...');
+            const sterilizationStatus = await catService.getCatSterilizationStatus(catId);
+            console.log('Estado esterilización:', sterilizationStatus);
 
-        // Crea tarea de esterilización solo si es necesario
-        if (sterilizationStatus?.trim() === 'pendiente') {
-            const dueDateEsterilizacion = trackingService.calculateDueDate(
-                config.TRACKING_PERIODS.ESTERILIZACION_MONTHS
+            // Crea tarea de seguimiento de bienestar (siempre)
+            console.log('3️⃣ Creando tarea de seguimiento de bienestar...');
+            const dueDateBienestar = trackingService.calculateDueDate(
+                config.TRACKING_PERIODS.BIENESTAR_MONTHS
             );
             await trackingService.createTask(
                 applicationId,
-                'Seguimiento de Esterilización',
-                dueDateEsterilizacion
+                'Seguimiento de Bienestar',
+                dueDateBienestar
             );
-        }
+            console.log('✅ Tarea de bienestar creada');
 
-        // Rechaza otras solicitudes pendientes para el mismo gato
-        await applicationService.rejectOtherApplications(catId);
+            // Crea tarea de esterilización solo si es necesario
+            if (sterilizationStatus?.trim() === 'pendiente') {
+                console.log('4️⃣ Creando tarea de seguimiento de esterilización...');
+                const dueDateEsterilizacion = trackingService.calculateDueDate(
+                    config.TRACKING_PERIODS.ESTERILIZACION_MONTHS
+                );
+                await trackingService.createTask(
+                    applicationId,
+                    'Seguimiento de Esterilización',
+                    dueDateEsterilizacion
+                );
+                console.log('✅ Tarea de esterilización creada');
+            } else {
+                console.log('⏭️ No se crea tarea de esterilización (status:', sterilizationStatus, ')');
+            }
+
+            // Rechaza otras solicitudes pendientes para el mismo gato
+            console.log('5️⃣ Rechazando otras solicitudes pendientes...');
+            await applicationService.rejectOtherApplications(catId);
+            console.log('✅ Otras solicitudes rechazadas');
+
+            console.log('✅ _processApprovedApplication - Completado');
+        } catch (error) {
+            console.error('💥 ERROR en _processApprovedApplication:', error);
+            console.error('Stack trace:', error.stack);
+            throw error; // Re-lanza el error para que lo capture el try-catch del método padre
+        }
     }
 }
 

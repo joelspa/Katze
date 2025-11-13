@@ -1,77 +1,140 @@
-/* frontend/src/components/Navbar.css */
+/* Navbar - Responsive y Modern */
 .navbar {
-    background-color: #ffffff;
-    border-bottom: 2px solid #f0f0f0;
-    padding: 0 20px;
-    height: 70px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: sticky;
-    top: 0;
-    z-index: 999;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: var(--z-fixed);
+  background-color: var(--color-white);
+  box-shadow: var(--shadow-sm);
+  border-bottom: 1px solid var(--color-gray-200);
 }
 
 .nav-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    max-width: 1200px;
+  max-width: var(--container-2xl);
+  margin: 0 auto;
+  padding: var(--spacing-md) var(--spacing-lg);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-lg);
 }
 
 .nav-logo {
-    color: #333;
-    font-size: 1.8rem;
-    font-weight: bold;
-    text-decoration: none;
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary);
+  text-decoration: none;
+  transition: transform var(--transition-base);
+  white-space: nowrap;
+}
+
+.nav-logo:hover {
+  transform: scale(1.05);
+  text-decoration: none;
 }
 
 .nav-menu {
-    display: flex;
-    align-items: center;
-    list-style: none;
-    margin: 0;
-    padding: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  flex-wrap: wrap;
 }
 
 .nav-item {
-    margin-left: 20px;
+  margin: 0;
 }
 
 .nav-link {
-    color: #555;
-    text-decoration: none;
-    font-size: 1rem;
-    font-weight: 500;
-    padding: 5px;
+  padding: var(--spacing-sm) var(--spacing-md);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-gray-700);
+  text-decoration: none;
+  border-radius: var(--border-radius-md);
+  transition: all var(--transition-base);
+  display: inline-block;
+  white-space: nowrap;
 }
 
 .nav-link:hover {
-    color: #007bff;
+  color: var(--color-primary);
+  background-color: var(--color-gray-50);
+  text-decoration: none;
 }
 
-/* Botón base */
 .nav-button {
-    padding: 8px 16px;
-    border-radius: 5px;
-    border: none;
-    font-size: 1rem;
-    font-weight: 500;
-    cursor: pointer;
-    background-color: #f0f0f0;
-    color: #333;
+  padding: var(--spacing-sm) var(--spacing-md);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-gray-700);
+  background-color: transparent;
+  border: 1px solid var(--color-gray-300);
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  white-space: nowrap;
 }
 
-/* Botón de "Call to Action" (CTA) */
+.nav-button:hover {
+  background-color: var(--color-error-light);
+  color: var(--color-white);
+  border-color: var(--color-error);
+}
+
 .nav-button-cta {
-    background-color: #007bff;
-    color: white;
-    text-decoration: none;
-    padding: 8px 16px;
-    border-radius: 5px;
+  background-color: var(--color-primary);
+  color: var(--color-white);
+  border: 1px solid var(--color-primary);
+  padding: var(--spacing-sm) var(--spacing-lg);
+  border-radius: var(--border-radius-md);
 }
 
 .nav-button-cta:hover {
-    background-color: #0056b3;
+  background-color: var(--color-primary-hover);
+  border-color: var(--color-primary-hover);
+  text-decoration: none;
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .nav-container {
+    flex-direction: column;
+    padding: var(--spacing-sm) var(--spacing-md);
+    gap: var(--spacing-sm);
+  }
+
+  .nav-menu {
+    width: 100%;
+    justify-content: center;
+    gap: var(--spacing-xs);
+    flex-wrap: wrap;
+  }
+
+  .nav-link,
+  .nav-button {
+    font-size: var(--font-size-xs);
+    padding: var(--spacing-xs) var(--spacing-sm);
+  }
+
+  .nav-logo {
+    font-size: var(--font-size-xl);
+  }
+}
+
+@media (max-width: 480px) {
+  .nav-link,
+  .nav-button {
+    font-size: 0.7rem;
+    padding: 0.25rem 0.5rem;
+  }
+
+  .nav-logo {
+    font-size: var(--font-size-lg);
+  }
 }

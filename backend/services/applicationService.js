@@ -33,6 +33,23 @@ class ApplicationService {
         return result.rows;
     }
 
+    // Obtiene todas las solicitudes (para admin)
+    async getAllApplications() {
+        const query = `
+            SELECT app.*, cat.name as cat_name, u.full_name as applicant_name, 
+                   owner.full_name as rescuer_name
+            FROM adoption_applications app
+            JOIN cats cat ON app.cat_id = cat.id
+            JOIN users u ON app.applicant_id = u.id
+            LEFT JOIN users owner ON cat.owner_id = owner.id
+            WHERE app.status = 'pendiente'
+            ORDER BY app.created_at ASC
+        `;
+        
+        const result = await db.query(query);
+        return result.rows;
+    }
+
     // Actualiza el estado de una solicitud
     async updateApplicationStatus(applicationId, status) {
         const result = await db.query(

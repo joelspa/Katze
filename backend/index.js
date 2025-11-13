@@ -11,7 +11,9 @@ const {
     catRoutes,
     applicationRoutes,
     trackingRoutes,
-    educationRoutes
+    educationRoutes,
+    adminRoutes,
+    storyRoutes
 } = require('./routes');
 
 const app = express();
@@ -32,6 +34,8 @@ app.use('/api', applicationRoutes);                  // Rutas de solicitudes de 
 app.use('/api/applications', applicationRoutes);     // Rutas alternativas para solicitudes
 app.use('/api/tracking', trackingRoutes);            // Rutas de seguimiento
 app.use('/api/education', educationRoutes);          // Rutas del módulo educativo
+app.use('/api/stories', storyRoutes);                // Rutas de historias de rescate
+app.use('/api/admin', adminRoutes);                  // Rutas de administración (protegidas)
 
 // Inicialización del servidor Express
 app.listen(config.PORT, () => {

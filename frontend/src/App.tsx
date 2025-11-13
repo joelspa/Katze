@@ -13,20 +13,23 @@ import RescuerDashboard from './pages/RescuerDashboard';
 import ProtectedRoute from './components/ProtectedRoute';
 import TrackingDashboard from './pages/TrackingDashboard';
 import Navbar from './components/Navbar';
+import PublishCat from './pages/PublishCat';
+import AdminDashboard from './pages/AdminDashboard';
+import Education from './pages/Education';
+import Stories from './pages/Stories';
 
 function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
-        {/* 2. Coloca el Navbar aquí, fuera de <Routes> */}
         <Navbar />
-
         <Routes>
-          {/* ... (Todas tus rutas <Route> van aquí) ... */}
           <Route path="/" element={<Home />} />
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
           <Route path="/cats/:id" element={<CatDetailPage />} />
+          <Route path="/education" element={<Education />} />
+          <Route path="/stories" element={<Stories />} />
           <Route
             path="/dashboard"
             element={
@@ -43,10 +46,23 @@ function App() {
               </ProtectedRoute>
             }
           />
+          <Route
+            path="/publish"
+            element={
+              <ProtectedRoute allowedRoles={['rescatista']}>
+                <PublishCat />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute allowedRoles={['admin']}>
+                <AdminDashboard />
+              </ProtectedRoute>
+            }
+          />
         </Routes>
-
-        {/* Aquí podrías poner un Footer */}
-
       </BrowserRouter>
     </AuthProvider>
   );

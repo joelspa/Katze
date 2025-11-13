@@ -6,11 +6,15 @@ const catRoutes = require('./catRoutes');
 const applicationRoutes = require('./applicationRoutes');
 const trackingRoutes = require('./trackingRoutes');
 const educationRoutes = require('./educationRoutes');
+const adminRoutes = require('./adminRoutes');
+const storyRoutes = require('./storyRoutes');
 
 module.exports = {
     authRoutes,
     catRoutes,
     applicationRoutes,
     trackingRoutes,
-    educationRoutes
+    educationRoutes,
+    adminRoutes,
+    storyRoutes
 };

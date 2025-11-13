@@ -23,21 +23,36 @@ const RescuerDashboard = () => {
 
     // Carga las solicitudes de adopción recibidas
     const fetchApplications = async () => {
+        if (!token) {
+            setError('No se encontró el token de autenticación');
+            setLoading(false);
+            return;
+        }
+
         try {
             setLoading(true);
+            console.log('Cargando solicitudes con token:', token?.substring(0, 20) + '...');
             const API_URL = 'http://localhost:5000/api/applications/received';
             const response = await axios.get(API_URL, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
             });
-            setApplications(response.data);
+            
+            console.log('Respuesta recibida:', response.data);
+            
+            // El backend devuelve { success: true, data: { applications: [...] } }
+            const applicationsData = response.data.data?.applications || response.data.applications || response.data;
+            console.log('Solicitudes procesadas:', applicationsData);
+            setApplications(applicationsData);
             setError(null);
         } catch (error: unknown) {
             let errorMessage = 'Error al cargar las solicitudes';
             if (isAxiosError(error)) {
                 errorMessage = error.response?.data?.message || 'Error del servidor';
+                console.error('Error axios:', error.response?.data);
             }
+            console.error('Error completo:', error);
             setError(errorMessage);
         } finally {
             setLoading(false);
@@ -46,9 +61,8 @@ const RescuerDashboard = () => {
 
     // Carga solicitudes al montar el componente
     useEffect(() => {
-        if (token) {
-            fetchApplications();
-        }
+        console.log('RescuerDashboard montado, token:', token ? 'presente' : 'ausente');
+        fetchApplications();
     }, [token]);
 
     // Actualiza el estado de una solicitud (aprobar o rechazar)
@@ -75,8 +89,21 @@ const RescuerDashboard = () => {
         }
     };
 
-    if (loading) return <p>Cargando panel...</p>;
-    if (error) return <p style={{ color: 'red' }}>{error}</p>;
+    if (loading) {
+        return (
+            <div className="dashboard-container">
+                <p className="loading-message">Cargando panel...</p>
+            </div>
+        );
+    }
+    
+    if (error) {
+        return (
+            <div className="dashboard-container">
+                <p className="error-message">{error}</p>
+            </div>
+        );
+    }
 
     return (
         <div className="dashboard-container">

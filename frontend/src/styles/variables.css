@@ -1,0 +1,173 @@
+/**
+ * VARIABLES CSS - SISTEMA DE DISEÑO KATZE
+ * Define todas las variables globales de diseño para consistencia en toda la aplicación
+ */
+
+:root {
+  /* ===== PALETA DE COLORES ===== */
+  
+  /* Colores primarios */
+  --color-primary: #FF6B6B;
+  --color-primary-light: #FF8787;
+  --color-primary-dark: #E85555;
+  --color-primary-hover: #FF5252;
+  
+  /* Colores secundarios */
+  --color-secondary: #4ECDC4;
+  --color-secondary-light: #6FD9D1;
+  --color-secondary-dark: #3BB8AF;
+  
+  /* Colores neutros */
+  --color-white: #FFFFFF;
+  --color-black: #1A1A1A;
+  --color-gray-50: #FAFAFA;
+  --color-gray-100: #F5F5F5;
+  --color-gray-200: #EEEEEE;
+  --color-gray-300: #E0E0E0;
+  --color-gray-400: #BDBDBD;
+  --color-gray-500: #9E9E9E;
+  --color-gray-600: #757575;
+  --color-gray-700: #616161;
+  --color-gray-800: #424242;
+  --color-gray-900: #212121;
+  
+  /* Colores de estado */
+  --color-success: #4CAF50;
+  --color-success-light: #66BB6A;
+  --color-success-dark: #388E3C;
+  
+  --color-warning: #FFA726;
+  --color-warning-light: #FFB74D;
+  --color-warning-dark: #F57C00;
+  
+  --color-error: #EF5350;
+  --color-error-light: #E57373;
+  --color-error-dark: #C62828;
+  
+  --color-info: #29B6F6;
+  --color-info-light: #4FC3F7;
+  --color-info-dark: #0288D1;
+  
+  /* Estados de aprobación */
+  --color-pending: var(--color-warning);
+  --color-approved: var(--color-success);
+  --color-rejected: var(--color-error);
+  
+  /* ===== TIPOGRAFÍA ===== */
+  
+  /* Familias de fuentes */
+  --font-family-primary: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  --font-family-heading: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-family-mono: 'Fira Code', 'Consolas', 'Monaco', monospace;
+  
+  /* Tamaños de fuente */
+  --font-size-xs: 0.75rem;      /* 12px */
+  --font-size-sm: 0.875rem;     /* 14px */
+  --font-size-base: 1rem;       /* 16px */
+  --font-size-lg: 1.125rem;     /* 18px */
+  --font-size-xl: 1.25rem;      /* 20px */
+  --font-size-2xl: 1.5rem;      /* 24px */
+  --font-size-3xl: 1.875rem;    /* 30px */
+  --font-size-4xl: 2.25rem;     /* 36px */
+  --font-size-5xl: 3rem;        /* 48px */
+  
+  /* Pesos de fuente */
+  --font-weight-light: 300;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --font-weight-extrabold: 800;
+  
+  /* Altura de línea */
+  --line-height-tight: 1.25;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.75;
+  --line-height-loose: 2;
+  
+  /* ===== ESPACIADO ===== */
+  --spacing-xs: 0.25rem;    /* 4px */
+  --spacing-sm: 0.5rem;     /* 8px */
+  --spacing-md: 1rem;       /* 16px */
+  --spacing-lg: 1.5rem;     /* 24px */
+  --spacing-xl: 2rem;       /* 32px */
+  --spacing-2xl: 3rem;      /* 48px */
+  --spacing-3xl: 4rem;      /* 64px */
+  --spacing-4xl: 6rem;      /* 96px */
+  
+  /* ===== BORDES Y RADIOS ===== */
+  --border-width-thin: 1px;
+  --border-width-medium: 2px;
+  --border-width-thick: 4px;
+  
+  --border-radius-sm: 0.25rem;   /* 4px */
+  --border-radius-md: 0.5rem;    /* 8px */
+  --border-radius-lg: 0.75rem;   /* 12px */
+  --border-radius-xl: 1rem;      /* 16px */
+  --border-radius-2xl: 1.5rem;   /* 24px */
+  --border-radius-full: 9999px;  /* Completamente redondeado */
+  
+  /* ===== SOMBRAS ===== */
+  --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  
+  /* ===== TRANSICIONES ===== */
+  --transition-fast: 150ms ease-in-out;
+  --transition-base: 200ms ease-in-out;
+  --transition-slow: 300ms ease-in-out;
+  --transition-slower: 500ms ease-in-out;
+  
+  /* ===== BREAKPOINTS (para usar en JavaScript/media queries) ===== */
+  --breakpoint-xs: 0px;
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+  --breakpoint-2xl: 1536px;
+  
+  /* ===== Z-INDEX ===== */
+  --z-dropdown: 1000;
+  --z-sticky: 1020;
+  --z-fixed: 1030;
+  --z-modal-backdrop: 1040;
+  --z-modal: 1050;
+  --z-popover: 1060;
+  --z-tooltip: 1070;
+  
+  /* ===== ANCHOS MÁXIMOS DE CONTENEDOR ===== */
+  --container-xs: 320px;
+  --container-sm: 640px;
+  --container-md: 768px;
+  --container-lg: 1024px;
+  --container-xl: 1280px;
+  --container-2xl: 1536px;
+  
+  /* ===== EFECTOS ===== */
+  --blur-sm: 4px;
+  --blur-md: 8px;
+  --blur-lg: 16px;
+  --blur-xl: 24px;
+  
+  --opacity-disabled: 0.5;
+  --opacity-hover: 0.8;
+}
+
+/* ===== MODO OSCURO (Opcional para futuras implementaciones) ===== */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-primary: #FF8787;
+    --color-secondary: #6FD9D1;
+    --color-white: #1A1A1A;
+    --color-black: #FFFFFF;
+    --color-gray-50: #212121;
+    --color-gray-100: #2A2A2A;
+    --color-gray-200: #3A3A3A;
+    --color-gray-300: #4A4A4A;
+    --color-gray-800: #E0E0E0;
+    --color-gray-900: #F5F5F5;
+  }
+}

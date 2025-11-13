@@ -25,13 +25,22 @@ const TrackingDashboard = () => {
 
     // Carga las tareas de seguimiento pendientes
     const fetchTasks = async () => {
+        if (!token) {
+            setError('No se encontró el token de autenticación');
+            setLoading(false);
+            return;
+        }
+
         try {
             setLoading(true);
             const API_URL = 'http://localhost:5000/api/tracking';
             const response = await axios.get(API_URL, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
-            setTasks(response.data);
+            
+            // El backend devuelve { success: true, data: { tasks: [...] } }
+            const tasksData = response.data.data?.tasks || response.data.tasks || response.data;
+            setTasks(tasksData);
             setError(null);
         } catch (error: unknown) {
             let errorMessage = 'Error al cargar las tareas';
@@ -46,9 +55,7 @@ const TrackingDashboard = () => {
 
     // Carga tareas al montar el componente
     useEffect(() => {
-        if (token) {
-            fetchTasks();
-        }
+        fetchTasks();
     }, [token]);
 
     // Marca una tarea como completada
@@ -91,8 +98,21 @@ const TrackingDashboard = () => {
         });
     };
 
-    if (loading) return <p>Cargando tareas pendientes...</p>;
-    if (error) return <p style={{ color: 'red' }}>{error}</p>;
+    if (loading) {
+        return (
+            <div className="dashboard-container">
+                <p className="loading-message">Cargando tareas pendientes...</p>
+            </div>
+        );
+    }
+    
+    if (error) {
+        return (
+            <div className="dashboard-container">
+                <p className="error-message">{error}</p>
+            </div>
+        );
+    }
 
     return (
         <div className="dashboard-container">

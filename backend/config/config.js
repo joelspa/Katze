@@ -40,7 +40,8 @@ module.exports = {
     // Estados de aprobación
     APPROVAL_STATUS: {
         APROBADO: 'aprobado',
-        PENDIENTE: 'pendiente'
+        PENDIENTE: 'pendiente',
+        RECHAZADO: 'rechazado'
     },
     
     // Estados de solicitud

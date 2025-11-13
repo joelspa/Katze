@@ -38,7 +38,7 @@ class EducationController {
     // Crea un nuevo artículo educativo (solo administradores)
     async createPost(req, res) {
         try {
-            const { title, content } = req.body;
+            const { title, content, event_date } = req.body;
             const authorId = req.user.id;
 
             // Valida los datos del artículo
@@ -47,7 +47,7 @@ class EducationController {
                 return ErrorHandler.badRequest(res, validation.errors.join(', '));
             }
 
-            const newPost = await educationService.createPost(title, content, authorId);
+            const newPost = await educationService.createPost(title, content, authorId, event_date);
 
             return ErrorHandler.created(res, { post: newPost }, 'Artículo creado exitosamente');
 
@@ -60,7 +60,7 @@ class EducationController {
     async updatePost(req, res) {
         try {
             const { id } = req.params;
-            const { title, content } = req.body;
+            const { title, content, event_date } = req.body;
 
             // Valida los datos del artículo
             const validation = Validator.validateEducationalPost(title, content);
@@ -68,7 +68,7 @@ class EducationController {
                 return ErrorHandler.badRequest(res, validation.errors.join(', '));
             }
 
-            const updatedPost = await educationService.updatePost(id, title, content);
+            const updatedPost = await educationService.updatePost(id, title, content, event_date);
             
             if (!updatedPost) {
                 return ErrorHandler.notFound(res, 'Artículo no encontrado');

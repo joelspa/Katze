@@ -1,11 +1,160 @@
 /* frontend/src/pages/Home.css */
 .home-container {
     padding: 20px;
+    min-height: 60vh;
+}
+
+/* Banner Educativo */
+.education-banner {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: var(--border-radius-lg);
+    padding: var(--spacing-2xl);
+    margin-bottom: var(--spacing-2xl);
+    box-shadow: var(--shadow-lg);
+    animation: fadeInUp 0.6s ease-out;
+}
+
+.banner-content {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xl);
+    max-width: var(--container-xl);
+    margin: 0 auto;
+}
+
+.banner-icon {
+    font-size: 4rem;
+    flex-shrink: 0;
+    animation: bounce 2s infinite;
+}
+
+.banner-text {
+    flex: 1;
+    color: var(--color-white);
+}
+
+.banner-text h2 {
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-bold);
+    margin: 0 0 var(--spacing-sm) 0;
+    color: var(--color-white);
+}
+
+.banner-text p {
+    font-size: var(--font-size-md);
+    line-height: 1.6;
+    margin: 0;
+    opacity: 0.95;
+}
+
+.banner-button {
+    background-color: var(--color-white);
+    color: #667eea;
+    padding: var(--spacing-md) var(--spacing-xl);
+    border-radius: var(--border-radius-full);
+    font-weight: var(--font-weight-semibold);
+    font-size: var(--font-size-md);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    transition: all var(--transition-base);
+    box-shadow: var(--shadow-md);
+    flex-shrink: 0;
+}
+
+.banner-button:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-xl);
+    text-decoration: none;
+}
+
+.banner-button .arrow {
+    transition: transform var(--transition-base);
+}
+
+.banner-button:hover .arrow {
+    transform: translateX(4px);
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes bounce {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+/* Responsive Banner */
+@media (max-width: 768px) {
+    .education-banner {
+        padding: var(--spacing-lg);
+    }
+
+    .banner-content {
+        flex-direction: column;
+        text-align: center;
+        gap: var(--spacing-md);
+    }
+
+    .banner-icon {
+        font-size: 3rem;
+    }
+
+    .banner-text h2 {
+        font-size: var(--font-size-xl);
+    }
+
+    .banner-text p {
+        font-size: var(--font-size-sm);
+    }
+
+    .banner-button {
+        padding: var(--spacing-sm) var(--spacing-lg);
+        font-size: var(--font-size-sm);
+    }
+}
+
+.home-container h1 {
+    text-align: center;
+    margin-bottom: 30px;
+    color: #333;
 }
 
 .cat-gallery {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 10px;
+    gap: 20px;
+}
+
+.loading-message {
+    text-align: center;
+    font-size: 1.2rem;
+    color: #666;
+    padding: 40px;
+}
+
+.error-message {
+    text-align: center;
+    font-size: 1.2rem;
+    color: #d9534f;
+    padding: 40px;
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    border-radius: 5px;
+    margin: 20px auto;
+    max-width: 600px;
 }

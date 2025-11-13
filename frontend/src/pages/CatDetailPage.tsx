@@ -26,7 +26,10 @@ const CatDetailPage = () => {
                 setLoading(true);
                 const API_URL = `http://localhost:5000/api/cats/${id}`;
                 const response = await axios.get(API_URL);
-                setCat(response.data);
+                
+                // El backend devuelve { success: true, data: { cat: {...} } }
+                const catData = response.data.data?.cat || response.data.cat || response.data;
+                setCat(catData);
                 setError(null);
             } catch (error: unknown) {
                 let errorMessage = 'Error al cargar el gato';
@@ -57,18 +60,46 @@ const CatDetailPage = () => {
         }
     };
 
-    if (loading) return <p>Cargando información del gatito...</p>;
-    if (error) return <p style={{ color: 'red' }}>{error}</p>;
-    if (!cat) return <p>Gato no encontrado.</p>;
+    if (loading) {
+        return (
+            <div className="detail-container">
+                <p className="loading-message">Cargando información del gatito...</p>
+            </div>
+        );
+    }
+    
+    if (error) {
+        return (
+            <div className="detail-container">
+                <p className="error-message">{error}</p>
+            </div>
+        );
+    }
+    
+    if (!cat) {
+        return (
+            <div className="detail-container">
+                <p className="error-message">Gato no encontrado.</p>
+            </div>
+        );
+    }
 
     const imageUrl = cat.photos_url && cat.photos_url.length > 0
         ? cat.photos_url[0]
-        : 'https://via.placeholder.com/600x400';
+        : 'https://placehold.co/600x400/e0e0e0/666?text=Sin+Foto';
 
     return (
         <>
             <div className="detail-container">
-                <img src={imageUrl} alt={cat.name} className="detail-img" />
+                <img 
+                    src={imageUrl} 
+                    alt={cat.name} 
+                    className="detail-img"
+                    onError={(e) => {
+                        // Fallback si la imagen falla al cargar
+                        e.currentTarget.src = 'https://placehold.co/600x400/e0e0e0/666?text=Sin+Foto';
+                    }}
+                />
                 <div className="detail-info">
                     <h1>{cat.name}</h1>
                     <p className="detail-age">Edad: {cat.age}</p>
@@ -78,7 +109,7 @@ const CatDetailPage = () => {
                     </div>
                     <div className="detail-section">
                         <h3>Salud</h3>
-                        <p>{(cat as any).health_status}</p>
+                        <p>{cat.health_status || 'No especificado'}</p>
                     </div>
                     <div className="detail-section">
                         <h3>Esterilización</h3>

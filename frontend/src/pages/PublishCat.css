@@ -1,0 +1,57 @@
+/* frontend/src/pages/PublishCat.css */
+.publish-container {
+    max-width: 600px;
+    margin: 40px auto;
+    padding: 30px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.publish-container h2 {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+/* Reutilizamos clases del login/register */
+.formGroup {
+    margin-bottom: 15px;
+    display: flex;
+    flex-direction: column;
+}
+
+.label {
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.input {
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+    box-sizing: border-box;
+    /* Importante */
+}
+
+.publish-error {
+    color: red;
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.publish-button {
+    width: 100%;
+    padding: 12px;
+    font-size: 1.1rem;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 15px;
+}
+
+.publish-button:disabled {
+    background-color: #aaa;
+}

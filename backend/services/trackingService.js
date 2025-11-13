@@ -18,29 +18,23 @@ class TrackingService {
 
     // Obtiene tareas pendientes (filtradas por rescatista si no es admin)
     async getPendingTasks(userId, isAdmin) {
+        // Primero, marcar tareas atrasadas
+        await db.query("SELECT mark_overdue_tasks()");
+
         let query = `
-            SELECT 
-                t.id, t.due_date, t.status, t.task_type,
-                a.id as application_id,
-                c.name as cat_name,
-                u_applicant.full_name as applicant_name,
-                u_owner.full_name as owner_name
-            FROM tracking_tasks t
-            JOIN adoption_applications a ON t.application_id = a.id
-            JOIN cats c ON a.cat_id = c.id
-            JOIN users u_applicant ON a.applicant_id = u_applicant.id
-            JOIN users u_owner ON c.owner_id = u_owner.id
-            WHERE (t.status = 'pendiente' OR t.status = 'atrasada')
+            SELECT *
+            FROM v_tracking_tasks_details
+            WHERE (status = 'pendiente' OR status = 'atrasada')
         `;
 
         const params = [];
         
         if (!isAdmin) {
-            query += " AND c.owner_id = $1";
+            query += " AND owner_id = $1";
             params.push(userId);
         }
 
-        query += " ORDER BY t.due_date ASC";
+        query += " ORDER BY due_date ASC";
 
         const result = await db.query(query, params);
         return result.rows;

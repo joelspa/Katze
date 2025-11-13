@@ -46,3 +46,22 @@
 .btn-complete:hover {
     background-color: #117a8b;
 }
+
+.loading-message {
+    text-align: center;
+    font-size: 1.2rem;
+    color: #666;
+    padding: 40px;
+}
+
+.error-message {
+    text-align: center;
+    font-size: 1.2rem;
+    color: #d9534f;
+    padding: 40px;
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    border-radius: 5px;
+    margin: 20px auto;
+    max-width: 600px;
+}
