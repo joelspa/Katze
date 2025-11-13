@@ -7,7 +7,8 @@ const applicationRoutes = require('./applicationRoutes');
 const trackingRoutes = require('./trackingRoutes');
 const educationRoutes = require('./educationRoutes');
 const adminRoutes = require('./adminRoutes');
-const storyRoutes = require('./storyRoutes');
+const statisticsRoutes = require('./statisticsRoutes');
+const userRoutes = require('./userRoutes');
 
 module.exports = {
     authRoutes,
@@ -16,5 +17,6 @@ module.exports = {
     trackingRoutes,
     educationRoutes,
     adminRoutes,
-    storyRoutes
+    statisticsRoutes,
+    userRoutes
 };

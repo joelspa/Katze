@@ -4,13 +4,13 @@
 const db = require('../db');
 
 class TrackingService {
-    // Crea una nueva tarea de seguimiento
-    async createTask(applicationId, taskType, dueDate) {
+    // Crea una nueva tarea de seguimiento con descripción opcional
+    async createTask(applicationId, taskType, dueDate, description = null) {
         const result = await db.query(
-            `INSERT INTO tracking_tasks (application_id, task_type, due_date, status)
-             VALUES ($1, $2, $3, 'pendiente')
+            `INSERT INTO tracking_tasks (application_id, task_type, due_date, status, description)
+             VALUES ($1, $2, $3, 'pendiente', $4)
              RETURNING *`,
-            [applicationId, taskType, dueDate]
+            [applicationId, taskType, dueDate, description]
         );
         
         return result.rows[0];
@@ -70,6 +70,33 @@ class TrackingService {
         const dueDate = new Date();
         dueDate.setMonth(dueDate.getMonth() + monthsToAdd);
         return dueDate;
+    }
+
+    // Actualiza el certificado de una tarea
+    async uploadCertificate(taskId, certificateUrl) {
+        const result = await db.query(
+            `UPDATE tracking_tasks 
+             SET certificate_url = $1, updated_at = CURRENT_TIMESTAMP
+             WHERE id = $2
+             RETURNING *`,
+            [certificateUrl, taskId]
+        );
+        
+        return result.rows.length > 0 ? result.rows[0] : null;
+    }
+
+    // Verifica que una tarea pertenezca a un rescatista
+    async taskBelongsToRescuer(taskId, rescuerId) {
+        const result = await db.query(`
+            SELECT EXISTS(
+                SELECT 1 FROM tracking_tasks tt
+                JOIN adoption_applications aa ON tt.application_id = aa.id
+                JOIN cats c ON aa.cat_id = c.id
+                WHERE tt.id = $1 AND c.owner_id = $2
+            ) as belongs
+        `, [taskId, rescuerId]);
+        
+        return result.rows[0]?.belongs || false;
     }
 }
 

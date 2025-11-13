@@ -77,7 +77,28 @@ const AdoptionFormModal: React.FC<AdoptionFormModalProps> = ({ catId, catName, o
                 }
             );
 
-            alert('¡Solicitud enviada con éxito! El rescatista te contactará.');
+            // Obtiene información de contacto del rescatista
+            try {
+                const contactResponse = await axios.get(
+                    `http://localhost:5000/api/cats/${catId}/owner-contact`,
+                    {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    }
+                );
+
+                const contact = contactResponse.data.data.contact;
+                let contactMessage = `\n\n📞 Información de contacto del rescatista:\n\nNombre: ${contact.full_name}\nEmail: ${contact.email}`;
+                
+                if (contact.phone) {
+                    contactMessage += `\nTeléfono: ${contact.phone}`;
+                }
+
+                alert('¡Solicitud enviada con éxito!' + contactMessage);
+            } catch {
+                // Si no se puede obtener el contacto, mostrar mensaje básico
+                alert('¡Solicitud enviada con éxito! El rescatista te contactará.');
+            }
+
             onClose();
 
         } catch (error: unknown) {

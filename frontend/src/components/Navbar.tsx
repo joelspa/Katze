@@ -27,11 +27,6 @@ const Navbar = () => {
                         </Link>
                     </li>
                     <li className="nav-item">
-                        <Link to="/stories" className="nav-link">
-                            💕 Historias
-                        </Link>
-                    </li>
-                    <li className="nav-item">
                         <Link to="/education" className="nav-link">
                             📚 Educación
                         </Link>
@@ -56,15 +51,27 @@ const Navbar = () => {
                                             Panel Seguimiento
                                         </Link>
                                     </li>
+                                    <li className="nav-item">
+                                        <Link to="/statistics" className="nav-link">
+                                            📊 Estadísticas
+                                        </Link>
+                                    </li>
                                 </>
                             )}
 
                             {user?.role === 'admin' && (
-                                <li className="nav-item">
-                                    <Link to="/admin" className="nav-link">
-                                        Admin
-                                    </Link>
-                                </li>
+                                <>
+                                    <li className="nav-item">
+                                        <Link to="/admin" className="nav-link">
+                                            Admin
+                                        </Link>
+                                    </li>
+                                    <li className="nav-item">
+                                        <Link to="/statistics" className="nav-link">
+                                            📊 Estadísticas
+                                        </Link>
+                                    </li>
+                                </>
                             )}
 
                             <li className="nav-item">

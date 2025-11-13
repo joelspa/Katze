@@ -134,30 +134,37 @@ class ApplicationController {
         try {
             console.log('🔧 _processApprovedApplication - Inicio:', { applicationId, catId });
 
-            // Marca el gato como adoptado
+            // 1. Marca el gato como adoptado
             console.log('1️⃣ Actualizando estado de adopción del gato...');
             await catService.updateAdoptionStatus(catId, config.ADOPTION_STATUS.ADOPTADO);
             console.log('✅ Gato marcado como adoptado');
 
-            // Obtiene el estado de esterilización del gato
-            console.log('2️⃣ Obteniendo estado de esterilización...');
-            const sterilizationStatus = await catService.getCatSterilizationStatus(catId);
+            // 2. Obtiene información del gato
+            console.log('2️⃣ Obteniendo información del gato...');
+            const cat = await catService.getCatById(catId);
+            const sterilizationStatus = cat?.sterilization_status;
             console.log('Estado esterilización:', sterilizationStatus);
 
-            // Crea tarea de seguimiento de bienestar (siempre)
-            console.log('3️⃣ Creando tarea de seguimiento de bienestar...');
-            const dueDateBienestar = trackingService.calculateDueDate(
-                config.TRACKING_PERIODS.BIENESTAR_MONTHS
-            );
-            await trackingService.createTask(
-                applicationId,
-                'Seguimiento de Bienestar',
-                dueDateBienestar
-            );
-            console.log('✅ Tarea de bienestar creada');
+            // 3. Crea tarea de seguimiento de bienestar SOLO para gatos ya esterilizados o no aplicables
+            // Los gatos pendientes de esterilización recibirán seguimiento después de esterilizarse
+            if (sterilizationStatus === 'esterilizado' || sterilizationStatus === 'no_aplica') {
+                console.log('3️⃣ Creando tarea de seguimiento de bienestar...');
+                const dueDateBienestar = trackingService.calculateDueDate(
+                    config.TRACKING_PERIODS.BIENESTAR_MONTHS
+                );
+                await trackingService.createTask(
+                    applicationId,
+                    'Seguimiento de Bienestar',
+                    dueDateBienestar,
+                    'Verificar que el gato se haya adaptado bien a su nuevo hogar y esté recibiendo los cuidados necesarios.'
+                );
+                console.log('✅ Tarea de bienestar creada');
+            } else {
+                console.log('⏭️ No se crea tarea de bienestar aún (esperando esterilización)');
+            }
 
-            // Crea tarea de esterilización solo si es necesario
-            if (sterilizationStatus?.trim() === 'pendiente') {
+            // 4. Crea tarea de esterilización SOLO si está pendiente
+            if (sterilizationStatus === 'pendiente') {
                 console.log('4️⃣ Creando tarea de seguimiento de esterilización...');
                 const dueDateEsterilizacion = trackingService.calculateDueDate(
                     config.TRACKING_PERIODS.ESTERILIZACION_MONTHS
@@ -165,19 +172,22 @@ class ApplicationController {
                 await trackingService.createTask(
                     applicationId,
                     'Seguimiento de Esterilización',
-                    dueDateEsterilizacion
+                    dueDateEsterilizacion,
+                    'Verificar que el adoptante haya completado la esterilización del gato y solicitar certificado veterinario.'
                 );
-                console.log('✅ Tarea de esterilización creada');
-            } else {
-                console.log('⏭️ No se crea tarea de esterilización (status:', sterilizationStatus, ')');
+                console.log('✅ Tarea de esterilización creada (plazo: 4 meses)');
+            } else if (sterilizationStatus === 'esterilizado') {
+                console.log('⏭️ No se crea tarea de esterilización (gato ya esterilizado)');
+            } else if (sterilizationStatus === 'no_aplica') {
+                console.log('⏭️ No se crea tarea de esterilización (no aplica para este gato)');
             }
 
-            // Rechaza otras solicitudes pendientes para el mismo gato
+            // 5. Rechaza otras solicitudes pendientes para el mismo gato
             console.log('5️⃣ Rechazando otras solicitudes pendientes...');
             await applicationService.rejectOtherApplications(catId);
             console.log('✅ Otras solicitudes rechazadas');
 
-            console.log('✅ _processApprovedApplication - Completado');
+            console.log('✅ _processApprovedApplication - Completado exitosamente');
         } catch (error) {
             console.error('💥 ERROR en _processApprovedApplication:', error);
             console.error('Stack trace:', error.stack);

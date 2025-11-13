@@ -16,7 +16,7 @@ import Navbar from './components/Navbar';
 import PublishCat from './pages/PublishCat';
 import AdminDashboard from './pages/AdminDashboard';
 import Education from './pages/Education';
-import Stories from './pages/Stories';
+import Statistics from './pages/Statistics';
 
 function App() {
   return (
@@ -29,7 +29,6 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/cats/:id" element={<CatDetailPage />} />
           <Route path="/education" element={<Education />} />
-          <Route path="/stories" element={<Stories />} />
           <Route
             path="/dashboard"
             element={
@@ -43,6 +42,14 @@ function App() {
             element={
               <ProtectedRoute allowedRoles={['rescatista', 'admin']}>
                 <TrackingDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/statistics"
+            element={
+              <ProtectedRoute allowedRoles={['rescatista', 'admin']}>
+                <Statistics />
               </ProtectedRoute>
             }
           />

@@ -16,4 +16,7 @@ router.get('/', catController.getAllCats);
 // Obtener detalles de un gato específico (público)
 router.get('/:id', catController.getCatById);
 
+// Obtener información de contacto del rescatista (requiere autenticación y solicitud enviada)
+router.get('/:id/owner-contact', authMiddleware, catController.getOwnerContact);
+
 module.exports = router;

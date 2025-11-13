@@ -9,7 +9,7 @@ class AuthController {
     // Registra un nuevo usuario en el sistema
     async register(req, res) {
         try {
-            const { email, password, fullName, role } = req.body;
+            const { email, password, fullName, role, phone } = req.body;
 
             // Validación de rol
             if (!Validator.isValidRole(role)) {
@@ -35,8 +35,8 @@ class AuthController {
             // Encripta la contraseña
             const passwordHash = await authService.hashPassword(password);
 
-            // Crea el nuevo usuario
-            const newUser = await authService.createUser(email, passwordHash, fullName, role);
+            // Crea el nuevo usuario (con teléfono opcional)
+            const newUser = await authService.createUser(email, passwordHash, fullName, role, phone);
 
             return ErrorHandler.created(res, { user: newUser }, 'Usuario registrado con éxito');
 

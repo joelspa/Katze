@@ -21,6 +21,7 @@ interface AdminCat {
     owner_email: string;
     photos_url: string[];
     created_at: string;
+    story?: string;
 }
 
 interface Summary {
@@ -39,16 +40,16 @@ interface EducationalPost {
     created_at: string;
 }
 
-interface Story {
+interface User {
     id: number;
-    title: string;
-    content: string;
-    author_id: number;
-    author_name: string;
+    email: string;
+    full_name: string;
+    phone: string;
+    role: 'adoptante' | 'rescatista' | 'admin';
     created_at: string;
 }
 
-type TabType = 'cats' | 'education' | 'stories';
+type TabType = 'cats' | 'education' | 'users';
 
 const AdminDashboard = () => {
     const [activeTab, setActiveTab] = useState<TabType>('cats');
@@ -65,11 +66,9 @@ const AdminDashboard = () => {
     const [editingPost, setEditingPost] = useState<EducationalPost | null>(null);
     const [postForm, setPostForm] = useState({ title: '', content: '', eventDate: '' });
     
-    // Estados para historias
-    const [stories, setStories] = useState<Story[]>([]);
-    const [showStoryForm, setShowStoryForm] = useState(false);
-    const [editingStory, setEditingStory] = useState<Story | null>(null);
-    const [storyForm, setStoryForm] = useState({ title: '', content: '', eventDate: '' });
+    // Estados para gestión de usuarios
+    const [users, setUsers] = useState<User[]>([]);
+    const [loadingUsers, setLoadingUsers] = useState(false);
     
     const { token } = useAuth();
 
@@ -156,88 +155,59 @@ const AdminDashboard = () => {
         }
     };
 
-    // ================ FUNCIONES PARA HISTORIAS ================
-    
-    // Carga todas las historias
-    const fetchStories = async () => {
+    // ================ FUNCIONES PARA USUARIOS ================
+
+    // Carga todos los usuarios
+    const fetchUsers = async () => {
         if (!token) return;
 
         try {
-            const API_URL = 'http://localhost:5000/api/stories';
-            const response = await axios.get(API_URL);
-            const storiesData = response.data.data?.stories || response.data.stories || response.data;
-            setStories(storiesData);
-        } catch (error) {
-            console.error('Error al cargar historias:', error);
-        }
-    };
-
-    // Crea una nueva historia
-    const handleCreateStory = async () => {
-        if (!storyForm.title.trim() || !storyForm.content.trim()) {
-            alert('Por favor completa todos los campos');
-            return;
-        }
-
-        try {
-            const API_URL = 'http://localhost:5000/api/stories';
-            await axios.post(
-                API_URL,
-                { 
-                    title: storyForm.title, 
-                    content: storyForm.content,
-                    event_date: storyForm.eventDate || null
-                },
-                { headers: { 'Authorization': `Bearer ${token}` } }
-            );
-
-            alert('Historia creada con éxito');
-            setStoryForm({ title: '', content: '', eventDate: '' });
-            setShowStoryForm(false);
-            fetchStories();
-        } catch (error: unknown) {
-            if (isAxiosError(error)) {
-                alert(error.response?.data?.message || 'Error al crear la historia');
-            }
-        }
-    };
-
-    // Actualiza una historia
-    const handleUpdateStory = async () => {
-        if (!editingStory) return;
-
-        try {
-            const API_URL = `http://localhost:5000/api/stories/${editingStory.id}`;
-            await axios.put(
-                API_URL,
-                { title: editingStory.title, content: editingStory.content },
-                { headers: { 'Authorization': `Bearer ${token}` } }
-            );
-
-            alert('Historia actualizada con éxito');
-            setEditingStory(null);
-            fetchStories();
-        } catch (error: unknown) {
-            alert('Error al actualizar la historia');
-        }
-    };
-
-    // Elimina una historia
-    const handleDeleteStory = async (storyId: number) => {
-        if (!window.confirm('¿Estás seguro de que quieres eliminar esta historia?')) {
-            return;
-        }
-
-        try {
-            const API_URL = `http://localhost:5000/api/stories/${storyId}`;
-            await axios.delete(API_URL, {
+            setLoadingUsers(true);
+            const API_URL = 'http://localhost:5000/api/admin/users';
+            const response = await axios.get(API_URL, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
+            const usersData = response.data.data || response.data;
+            setUsers(usersData);
+        } catch (error) {
+            console.error('Error al cargar usuarios:', error);
+            alert('Error al cargar usuarios');
+        } finally {
+            setLoadingUsers(false);
+        }
+    };
 
-            alert('Historia eliminada con éxito');
-            fetchStories();
+    // Cambia el rol de un usuario
+    const handleChangeUserRole = async (userId: number, currentRole: string) => {
+        const roles = ['adoptante', 'rescatista', 'admin'];
+        const newRole = window.prompt(
+            `Cambiar rol del usuario (actual: ${currentRole})\nRoles disponibles: adoptante, rescatista, admin`,
+            currentRole
+        );
+
+        if (!newRole || !roles.includes(newRole)) {
+            alert('Rol no válido');
+            return;
+        }
+
+        if (newRole === currentRole) {
+            return; // Sin cambios
+        }
+
+        try {
+            const API_URL = `http://localhost:5000/api/admin/users/${userId}/role`;
+            await axios.put(
+                API_URL,
+                { role: newRole },
+                { headers: { 'Authorization': `Bearer ${token}` } }
+            );
+
+            alert(`Rol actualizado a: ${newRole}`);
+            fetchUsers();
         } catch (error: unknown) {
-            alert('Error al eliminar la historia');
+            if (isAxiosError(error)) {
+                alert(error.response?.data?.message || 'Error al actualizar rol');
+            }
         }
     };
 
@@ -276,8 +246,10 @@ const AdminDashboard = () => {
     useEffect(() => {
         fetchCats();
         fetchPosts();
-        fetchStories();
-    }, [token]);
+        if (activeTab === 'users') {
+            fetchUsers();
+        }
+    }, [token, activeTab]);
 
     // Actualiza el estado de aprobación de un gato
     const handleApproval = async (catId: number, status: 'aprobado' | 'rechazado') => {
@@ -335,7 +307,8 @@ const AdminDashboard = () => {
                     description: editingCat.description,
                     age: editingCat.age,
                     health_status: editingCat.health_status,
-                    sterilization_status: editingCat.sterilization_status
+                    sterilization_status: editingCat.sterilization_status,
+                    story: editingCat.story
                 },
                 { headers: { 'Authorization': `Bearer ${token}` } }
             );
@@ -399,10 +372,10 @@ const AdminDashboard = () => {
                     📚 Charlas Educativas
                 </button>
                 <button 
-                    className={`tab-button ${activeTab === 'stories' ? 'active' : ''}`}
-                    onClick={() => setActiveTab('stories')}
+                    className={`tab-button ${activeTab === 'users' ? 'active' : ''}`}
+                    onClick={() => setActiveTab('users')}
                 >
-                    💕 Historias de Rescate
+                    👥 Gestión de Usuarios
                 </button>
             </div>
 
@@ -585,6 +558,18 @@ const AdminDashboard = () => {
                             </select>
                         </div>
 
+                        <div className="form-group">
+                            <label>💕 Historia del gato (opcional):</label>
+                            <textarea 
+                                value={editingCat.story || ''}
+                                onChange={(e) => setEditingCat({...editingCat, story: e.target.value})}
+                                rows={6}
+                                placeholder="Comparte la historia de rescate o adopción de este gatito para generar empatía..."
+                                maxLength={2000}
+                            />
+                            <small style={{color: '#666'}}>{(editingCat.story || '').length}/2000 caracteres</small>
+                        </div>
+
                         <div className="modal-actions">
                             <button className="btn-save" onClick={handleSaveEdit}>
                                 Guardar Cambios
@@ -736,144 +721,63 @@ const AdminDashboard = () => {
                 </div>
             )}
 
-            {/* Tab de Historias de Rescate */}
-            {activeTab === 'stories' && (
-                <div className="education-section">
+            {/* Tab de Gestión de Usuarios */}
+            {activeTab === 'users' && (
+                <div className="users-section">
                     <div className="section-header">
-                        <h2>Gestión de Historias de Rescate</h2>
-                        <button 
-                            className="btn-create-post"
-                            onClick={() => setShowStoryForm(!showStoryForm)}
-                        >
-                            {showStoryForm ? '✕ Cancelar' : '➕ Nueva Historia'}
-                        </button>
+                        <h2>👥 Gestión de Usuarios</h2>
+                        <p className="section-subtitle">Administra los roles de los usuarios de la plataforma</p>
                     </div>
 
-                    {/* Formulario para crear historia */}
-                    {showStoryForm && (
-                        <div className="post-form-card">
-                            <h3>💕 Nueva Historia de Rescate</h3>
-                            <div className="form-group">
-                                <label htmlFor="storyTitle">Título de la historia</label>
-                                <input
-                                    id="storyTitle"
-                                    type="text"
-                                    value={storyForm.title}
-                                    onChange={(e) => setStoryForm({ ...storyForm, title: e.target.value })}
-                                    placeholder="Ej: Luna encontró su hogar después de 6 meses"
-                                    maxLength={200}
-                                />
-                                <small>{storyForm.title.length}/200 caracteres</small>
-                            </div>
-                            <div className="form-group">
-                                <label htmlFor="storyEventDate">📅 Fecha del rescate/adopción (opcional)</label>
-                                <input
-                                    id="storyEventDate"
-                                    type="datetime-local"
-                                    value={storyForm.eventDate}
-                                    onChange={(e) => setStoryForm({ ...storyForm, eventDate: e.target.value })}
-                                />
-                                <small>Fecha real del rescate o adopción. Si no especificas, se usará hoy</small>
-                            </div>
-                            <div className="form-group">
-                                <label htmlFor="storyContent">Historia completa</label>
-                                <textarea
-                                    id="storyContent"
-                                    value={storyForm.content}
-                                    onChange={(e) => setStoryForm({ ...storyForm, content: e.target.value })}
-                                    placeholder="Cuenta la historia de rescate y adopción..."
-                                    rows={10}
-                                    maxLength={3000}
-                                />
-                                <small>{storyForm.content.length}/3000 caracteres</small>
-                            </div>
-                            <button 
-                                className="btn-submit-post"
-                                onClick={handleCreateStory}
-                                disabled={!storyForm.title.trim() || !storyForm.content.trim()}
-                            >
-                                Publicar Historia
-                            </button>
+                    {loadingUsers ? (
+                        <p className="loading-message">Cargando usuarios...</p>
+                    ) : users.length > 0 ? (
+                        <div className="users-table-container">
+                            <table className="users-table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Nombre</th>
+                                        <th>Email</th>
+                                        <th>Teléfono</th>
+                                        <th>Rol Actual</th>
+                                        <th>Fecha de Registro</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {users.map((user) => (
+                                        <tr key={user.id}>
+                                            <td>{user.id}</td>
+                                            <td>{user.full_name}</td>
+                                            <td>{user.email}</td>
+                                            <td>{user.phone || 'N/A'}</td>
+                                            <td>
+                                                <span className={`role-badge ${user.role}`}>
+                                                    {user.role === 'adoptante' && '👤 Adoptante'}
+                                                    {user.role === 'rescatista' && '🦸 Rescatista'}
+                                                    {user.role === 'admin' && '⭐ Admin'}
+                                                </span>
+                                            </td>
+                                            <td>{new Date(user.created_at).toLocaleDateString('es-ES')}</td>
+                                            <td>
+                                                <button 
+                                                    className="btn-change-role"
+                                                    onClick={() => handleChangeUserRole(user.id, user.role)}
+                                                >
+                                                    🔄 Cambiar Rol
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    ) : (
+                        <div className="empty-users">
+                            <p>👥 No se encontraron usuarios.</p>
                         </div>
                     )}
-
-                    {/* Lista de historias */}
-                    <div className="posts-list">
-                        {stories.length > 0 ? (
-                            stories.map((story) => (
-                                <div key={story.id} className="post-card">
-                                    {editingStory?.id === story.id ? (
-                                        // Modo edición
-                                        <div className="post-edit-form">
-                                            <input
-                                                type="text"
-                                                value={editingStory.title}
-                                                onChange={(e) => setEditingStory({ ...editingStory, title: e.target.value })}
-                                                className="edit-input-title"
-                                                maxLength={200}
-                                            />
-                                            <textarea
-                                                value={editingStory.content}
-                                                onChange={(e) => setEditingStory({ ...editingStory, content: e.target.value })}
-                                                className="edit-textarea"
-                                                rows={10}
-                                                maxLength={3000}
-                                            />
-                                            <div className="edit-actions">
-                                                <button 
-                                                    className="btn-save"
-                                                    onClick={handleUpdateStory}
-                                                >
-                                                    💾 Guardar Cambios
-                                                </button>
-                                                <button 
-                                                    className="btn-cancel"
-                                                    onClick={() => setEditingStory(null)}
-                                                >
-                                                    ✕ Cancelar
-                                                </button>
-                                            </div>
-                                        </div>
-                                    ) : (
-                                        // Modo visualización
-                                        <>
-                                            <div className="post-header">
-                                                <h3>{story.title}</h3>
-                                                <div className="post-meta">
-                                                    <span className="author">👤 {story.author_name}</span>
-                                                    <span className="date">
-                                                        📅 {new Date(story.created_at).toLocaleDateString('es-ES')}
-                                                    </span>
-                                                </div>
-                                            </div>
-                                            <div className="post-content">
-                                                <p>{story.content}</p>
-                                            </div>
-                                            <div className="post-actions">
-                                                <button 
-                                                    className="btn-edit-post"
-                                                    onClick={() => setEditingStory(story)}
-                                                >
-                                                    ✏️ Editar
-                                                </button>
-                                                <button 
-                                                    className="btn-delete-post"
-                                                    onClick={() => handleDeleteStory(story.id)}
-                                                >
-                                                    🗑️ Eliminar
-                                                </button>
-                                            </div>
-                                        </>
-                                    )}
-                                </div>
-                            ))
-                        ) : (
-                            <div className="empty-posts">
-                                <p>💕 No hay historias publicadas aún.</p>
-                                <p className="empty-subtitle">Haz clic en "Nueva Historia" para compartir una historia de rescate.</p>
-                            </div>
-                        )}
-                    </div>
                 </div>
             )}
         </div>

@@ -21,7 +21,12 @@ class ApplicationService {
     // Obtiene las solicitudes recibidas por un rescatista
     async getApplicationsByRescuer(rescuerId) {
         const query = `
-            SELECT app.*, cat.name as cat_name, u.full_name as applicant_name
+            SELECT 
+                app.*, 
+                cat.name as cat_name, 
+                u.full_name as applicant_name,
+                u.email as applicant_email,
+                u.phone as applicant_phone
             FROM adoption_applications app
             JOIN cats cat ON app.cat_id = cat.id
             JOIN users u ON app.applicant_id = u.id
@@ -36,8 +41,15 @@ class ApplicationService {
     // Obtiene todas las solicitudes (para admin)
     async getAllApplications() {
         const query = `
-            SELECT app.*, cat.name as cat_name, u.full_name as applicant_name, 
-                   owner.full_name as rescuer_name
+            SELECT 
+                app.*, 
+                cat.name as cat_name, 
+                u.full_name as applicant_name,
+                u.email as applicant_email,
+                u.phone as applicant_phone,
+                owner.full_name as rescuer_name,
+                owner.email as rescuer_email,
+                owner.phone as rescuer_phone
             FROM adoption_applications app
             JOIN cats cat ON app.cat_id = cat.id
             JOIN users u ON app.applicant_id = u.id

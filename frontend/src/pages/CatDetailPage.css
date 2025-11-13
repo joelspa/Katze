@@ -45,6 +45,27 @@
     margin-bottom: 10px;
 }
 
+/* Sección especial para la historia de rescate */
+.story-section {
+    background: linear-gradient(135deg, #fff5f7 0%, #ffe6eb 100%);
+    padding: 15px;
+    border-radius: 8px;
+    border: 2px solid #ffb3c1;
+    margin: 20px 0;
+}
+
+.story-section h3 {
+    color: #d63384;
+    border-bottom-color: #d63384;
+}
+
+.story-content {
+    font-size: 1rem;
+    line-height: 1.7;
+    color: #444;
+    white-space: pre-wrap;
+}
+
 .apply-button {
     margin-top: auto;
     /* Empuja el botón al fondo */

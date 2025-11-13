@@ -14,6 +14,7 @@ export interface Cat {
     photos_url: string[];
     sterilization_status: 'esterilizado' | 'pendiente' | 'no_aplica';
     health_status?: string;
+    story?: string;
 }
 
 interface CatCardProps {

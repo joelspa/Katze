@@ -11,6 +11,7 @@ const Register = () => {
         email: '',
         password: '',
         role: 'adoptante',
+        phone: '',
     });
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -79,6 +80,20 @@ const Register = () => {
                         onChange={handleChange}
                         required
                     />
+                </div>
+                <div className="formGroup">
+                    <label htmlFor="phone" className="label">Teléfono (opcional)</label>
+                    <input
+                        type="tel"
+                        id="phone"
+                        name="phone"
+                        className="input"
+                        onChange={handleChange}
+                        placeholder="Ej: +569 1234 5678"
+                    />
+                    <small style={{ color: '#666', fontSize: '0.85rem', marginTop: '5px', display: 'block' }}>
+                        Tu teléfono será visible solo cuando tengas solicitudes de adopción
+                    </small>
                 </div>
                 <div className="formGroup">
                     <label htmlFor="role" className="label">Quiero registrarme como:</label>

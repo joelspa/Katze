@@ -103,6 +103,15 @@ const CatDetailPage = () => {
                 <div className="detail-info">
                     <h1>{cat.name}</h1>
                     <p className="detail-age">Edad: {cat.age}</p>
+                    
+                    {/* Historia de rescate si existe */}
+                    {cat.story && (
+                        <div className="detail-section story-section">
+                            <h3>💕 Su Historia</h3>
+                            <p className="story-content">{cat.story}</p>
+                        </div>
+                    )}
+                    
                     <div className="detail-section">
                         <h3>Descripción</h3>
                         <p>{cat.description}</p>

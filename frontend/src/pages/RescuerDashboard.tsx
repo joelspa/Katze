@@ -11,6 +11,8 @@ interface Application {
     id: number;
     cat_name: string;
     applicant_name: string;
+    applicant_email: string;
+    applicant_phone?: string;
     status: string;
     form_responses: any;
 }
@@ -116,7 +118,26 @@ const RescuerDashboard = () => {
                     {applications.map((app) => (
                         <div key={app.id} className="application-card">
                             <h3>{app.cat_name}</h3>
-                            <p>Solicitante: {app.applicant_name}</p>
+                            <p><strong>Solicitante:</strong> {app.applicant_name}</p>
+                            
+                            {/* Información de contacto del adoptante */}
+                            <div className="contact-info" style={{ 
+                                background: '#f0f8ff', 
+                                padding: '10px', 
+                                borderRadius: '5px', 
+                                margin: '10px 0',
+                                border: '1px solid #b3d9ff'
+                            }}>
+                                <p style={{ margin: '5px 0', fontSize: '0.95rem' }}>
+                                    📧 <strong>Email:</strong> <a href={`mailto:${app.applicant_email}`}>{app.applicant_email}</a>
+                                </p>
+                                {app.applicant_phone && (
+                                    <p style={{ margin: '5px 0', fontSize: '0.95rem' }}>
+                                        📞 <strong>Teléfono:</strong> <a href={`tel:${app.applicant_phone}`}>{app.applicant_phone}</a>
+                                    </p>
+                                )}
+                            </div>
+
                             <p><strong>Respuestas del formulario:</strong></p>
                             <pre>{JSON.stringify(app.form_responses, null, 2)}</pre>
                             <div className="application-actions">

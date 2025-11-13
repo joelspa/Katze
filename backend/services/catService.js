@@ -6,29 +6,59 @@ const db = require('../db');
 class CatService {
     // Crea una nueva publicación de gato
     async createCat(catData) {
-        const { name, description, age, health_status, sterilization_status, photos_url, owner_id, approval_status } = catData;
+        const { name, description, age, health_status, sterilization_status, photos_url, owner_id, approval_status, story } = catData;
         
         const photosJson = JSON.stringify(photos_url || []);
         
         const result = await db.query(
-            `INSERT INTO cats (name, description, age, health_status, sterilization_status, photos_url, owner_id, approval_status)
-             VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+            `INSERT INTO cats (name, description, age, health_status, sterilization_status, photos_url, owner_id, approval_status, story)
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
              RETURNING *`,
-            [name, description, age, health_status, sterilization_status, photosJson, owner_id, approval_status]
+            [name, description, age, health_status, sterilization_status, photosJson, owner_id, approval_status, story]
         );
         
         return result.rows[0];
     }
 
-    // Obtiene todos los gatos aprobados y disponibles para adopción
-    async getAllAvailableCats() {
-        const query = `
+    // Obtiene todos los gatos aprobados y disponibles para adopción con filtros opcionales
+    async getAllAvailableCats(filters = {}) {
+        let query = `
             SELECT * FROM cats 
             WHERE adoption_status = 'en_adopcion' 
-            AND approval_status = 'aprobado' 
-            ORDER BY created_at DESC
+            AND approval_status = 'aprobado'
         `;
-        const result = await db.query(query);
+        
+        const params = [];
+        let paramIndex = 1;
+
+        // Filtro por estado de esterilización
+        if (filters.sterilization_status && filters.sterilization_status !== 'todos') {
+            query += ` AND sterilization_status = $${paramIndex}`;
+            params.push(filters.sterilization_status);
+            paramIndex++;
+        }
+
+        // Filtro por edad (rango aproximado basado en categorías)
+        if (filters.age && filters.age !== 'todos') {
+            switch (filters.age) {
+                case 'cachorro': // 0-6 meses
+                    query += ` AND (age ILIKE '%mes%' OR age ILIKE '%semana%' OR age ILIKE '%cachorro%')`;
+                    break;
+                case 'joven': // 6 meses - 2 años
+                    query += ` AND (age ILIKE '%año%' OR age ILIKE '%joven%') AND age NOT ILIKE '%años%'`;
+                    break;
+                case 'adulto': // 2-7 años
+                    query += ` AND (age ILIKE '%años%' OR age ILIKE '%adulto%')`;
+                    break;
+                case 'senior': // 7+ años
+                    query += ` AND (age ILIKE '%senior%' OR age ILIKE '7%' OR age ILIKE '8%' OR age ILIKE '9%' OR age ILIKE '1_%')`;
+                    break;
+            }
+        }
+
+        query += ` ORDER BY created_at DESC`;
+        
+        const result = await db.query(query, params);
         return result.rows;
     }
 
@@ -107,7 +137,7 @@ class CatService {
 
     // Actualiza los detalles de un gato (para admin)
     async updateCatDetails(catId, catData) {
-        const { name, description, age, health_status, sterilization_status } = catData;
+        const { name, description, age, health_status, sterilization_status, story } = catData;
         
         const result = await db.query(
             `UPDATE cats SET 
@@ -115,10 +145,11 @@ class CatService {
                 description = $2, 
                 age = $3, 
                 health_status = $4,
-                sterilization_status = $5
-            WHERE id = $6 
+                sterilization_status = $5,
+                story = $6
+            WHERE id = $7 
             RETURNING *`,
-            [name, description, age, health_status, sterilization_status, catId]
+            [name, description, age, health_status, sterilization_status, story, catId]
         );
         
         return result.rows.length > 0 ? result.rows[0] : null;
@@ -130,6 +161,31 @@ class CatService {
             "DELETE FROM cats WHERE id = $1 RETURNING *",
             [catId]
         );
+        return result.rows.length > 0 ? result.rows[0] : null;
+    }
+
+    // Obtiene información de contacto del rescatista si el usuario tiene solicitud
+    async getOwnerContactInfo(catId, userId) {
+        // Verifica que el usuario tenga una solicitud para este gato
+        const applicationCheck = await db.query(
+            `SELECT id FROM adoption_applications 
+             WHERE cat_id = $1 AND applicant_id = $2`,
+            [catId, userId]
+        );
+
+        if (applicationCheck.rows.length === 0) {
+            return null; // Usuario no tiene solicitud para este gato
+        }
+
+        // Obtiene la información de contacto del rescatista
+        const result = await db.query(
+            `SELECT u.full_name, u.email, u.phone
+             FROM cats c
+             JOIN users u ON c.owner_id = u.id
+             WHERE c.id = $1`,
+            [catId]
+        );
+
         return result.rows.length > 0 ? result.rows[0] : null;
     }
 }

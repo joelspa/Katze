@@ -33,27 +33,53 @@ class EducationService {
         return result.rows.length > 0 ? result.rows[0] : null;
     }
 
-    // Crea un nuevo artículo educativo
-    async createPost(title, content, authorId, eventDate = null) {
+    // Crea un nuevo artículo educativo con tipo, categoría e imagen
+    async createPost(title, content, authorId, eventDate = null, contentType = 'articulo', category = 'general', imageUrl = null) {
         const result = await db.query(
-            `INSERT INTO educational_posts (title, content, author_id, event_date)
-             VALUES ($1, $2, $3, $4)
+            `INSERT INTO educational_posts (title, content, author_id, event_date, content_type, category, image_url)
+             VALUES ($1, $2, $3, $4, $5, $6, $7)
              RETURNING *`,
-            [title, content, authorId, eventDate]
+            [title, content, authorId, eventDate, contentType, category, imageUrl]
         );
         
         return result.rows[0];
     }
 
     // Actualiza un artículo existente
-    async updatePost(postId, title, content, eventDate = null) {
-        const result = await db.query(
-            `UPDATE educational_posts 
-             SET title = $1, content = $2, event_date = $3
-             WHERE id = $4
-             RETURNING *`,
-            [title, content, eventDate, postId]
-        );
+    async updatePost(postId, title, content, eventDate = null, contentType = null, category = null, imageUrl = null) {
+        // Construir query dinámico solo con campos que se envían
+        let query = 'UPDATE educational_posts SET title = $1, content = $2';
+        const params = [title, content];
+        let paramIndex = 3;
+
+        if (eventDate !== undefined) {
+            query += `, event_date = $${paramIndex}`;
+            params.push(eventDate);
+            paramIndex++;
+        }
+
+        if (contentType) {
+            query += `, content_type = $${paramIndex}`;
+            params.push(contentType);
+            paramIndex++;
+        }
+
+        if (category) {
+            query += `, category = $${paramIndex}`;
+            params.push(category);
+            paramIndex++;
+        }
+
+        if (imageUrl !== undefined) {
+            query += `, image_url = $${paramIndex}`;
+            params.push(imageUrl);
+            paramIndex++;
+        }
+
+        query += ` WHERE id = $${paramIndex} RETURNING *`;
+        params.push(postId);
+
+        const result = await db.query(query, params);
         
         return result.rows.length > 0 ? result.rows[0] : null;
     }

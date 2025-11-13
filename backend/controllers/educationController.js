@@ -38,7 +38,7 @@ class EducationController {
     // Crea un nuevo artículo educativo (solo administradores)
     async createPost(req, res) {
         try {
-            const { title, content, event_date } = req.body;
+            const { title, content, event_date, content_type, category, image_url } = req.body;
             const authorId = req.user.id;
 
             // Valida los datos del artículo
@@ -47,12 +47,20 @@ class EducationController {
                 return ErrorHandler.badRequest(res, validation.errors.join(', '));
             }
 
-            const newPost = await educationService.createPost(title, content, authorId, event_date);
+            const newPost = await educationService.createPost(
+                title, 
+                content, 
+                authorId, 
+                event_date,
+                content_type || 'articulo',
+                category || 'general',
+                image_url
+            );
 
-            return ErrorHandler.created(res, { post: newPost }, 'Artículo creado exitosamente');
+            return ErrorHandler.created(res, { post: newPost }, 'Contenido creado exitosamente');
 
         } catch (error) {
-            return ErrorHandler.serverError(res, 'Error al crear artículo', error);
+            return ErrorHandler.serverError(res, 'Error al crear contenido', error);
         }
     }
 
@@ -60,7 +68,7 @@ class EducationController {
     async updatePost(req, res) {
         try {
             const { id } = req.params;
-            const { title, content, event_date } = req.body;
+            const { title, content, event_date, content_type, category, image_url } = req.body;
 
             // Valida los datos del artículo
             const validation = Validator.validateEducationalPost(title, content);
@@ -68,16 +76,24 @@ class EducationController {
                 return ErrorHandler.badRequest(res, validation.errors.join(', '));
             }
 
-            const updatedPost = await educationService.updatePost(id, title, content, event_date);
+            const updatedPost = await educationService.updatePost(
+                id, 
+                title, 
+                content, 
+                event_date,
+                content_type,
+                category,
+                image_url
+            );
             
             if (!updatedPost) {
-                return ErrorHandler.notFound(res, 'Artículo no encontrado');
+                return ErrorHandler.notFound(res, 'Contenido no encontrado');
             }
 
-            return ErrorHandler.success(res, { post: updatedPost }, 'Artículo actualizado exitosamente');
+            return ErrorHandler.success(res, { post: updatedPost }, 'Contenido actualizado exitosamente');
 
         } catch (error) {
-            return ErrorHandler.serverError(res, 'Error al actualizar artículo', error);
+            return ErrorHandler.serverError(res, 'Error al actualizar contenido', error);
         }
     }
 

@@ -15,7 +15,7 @@ class CatController {
                 return ErrorHandler.forbidden(res, 'Solo rescatistas pueden publicar gatos');
             }
 
-            const { name, description, age, health_status, sterilization_status, photos_url } = req.body;
+            const { name, description, age, health_status, sterilization_status, photos_url, story } = req.body;
 
             // Valida datos del gato
             const validation = Validator.validateCatData({ name, sterilization_status });
@@ -31,6 +31,7 @@ class CatController {
                 health_status,
                 sterilization_status,
                 photos_url,
+                story,
                 owner_id: req.user.id,
                 approval_status: req.approval_status // Definido por el middleware de moderación
             };
@@ -52,7 +53,13 @@ class CatController {
     // Obtiene todos los gatos disponibles para adopción
     async getAllCats(req, res) {
         try {
-            const cats = await catService.getAllAvailableCats();
+            // Extraer filtros desde query params
+            const filters = {
+                sterilization_status: req.query.sterilization_status,
+                age: req.query.age
+            };
+
+            const cats = await catService.getAllAvailableCats(filters);
             return ErrorHandler.success(res, { cats });
 
         } catch (error) {
@@ -180,7 +187,7 @@ class CatController {
             }
 
             const { id } = req.params;
-            const { name, description, age, health_status, sterilization_status } = req.body;
+            const { name, description, age, health_status, sterilization_status, story } = req.body;
 
             // Valida datos básicos
             if (name) {
@@ -196,7 +203,8 @@ class CatController {
                 description,
                 age,
                 health_status,
-                sterilization_status
+                sterilization_status,
+                story
             });
 
             if (!updatedCat) {
@@ -229,6 +237,26 @@ class CatController {
 
         } catch (error) {
             return ErrorHandler.serverError(res, 'Error al eliminar gato', error);
+        }
+    }
+
+    // Obtiene información de contacto del rescatista de un gato
+    async getOwnerContact(req, res) {
+        try {
+            const { id } = req.params;
+            const userId = req.user.id;
+
+            // Obtiene la información del rescatista
+            const ownerContact = await catService.getOwnerContactInfo(id, userId);
+
+            if (!ownerContact) {
+                return ErrorHandler.notFound(res, 'No se encontró información de contacto o no tienes permiso');
+            }
+
+            return ErrorHandler.success(res, { contact: ownerContact });
+
+        } catch (error) {
+            return ErrorHandler.serverError(res, 'Error al obtener información de contacto', error);
         }
     }
 }
