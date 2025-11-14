@@ -18,7 +18,7 @@ class StatisticsController {
             const generalStats = await statisticsService.getGeneralStatistics();
 
             // Obtener gatos con más tiempo sin adoptar (prioridad)
-            const oldestCats = await statisticsService.getOldestCatsInAdoption(10);
+            const oldestCats = await statisticsService.getOldestCatsInAdoption(0);
 
             // Obtener tendencias de adopción
             const adoptionTrends = await statisticsService.getAdoptionTrends();
@@ -36,3 +36,4 @@ class StatisticsController {
 }
 
 module.exports = new StatisticsController();
+

@@ -13,6 +13,8 @@ const Register = () => {
         role: 'adoptante',
         phone: '',
     });
+    
+    const [showPassword, setShowPassword] = useState(false);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         setFormData({
@@ -45,73 +47,88 @@ const Register = () => {
     };
 
     return (
-        <div className="container">
-            <h2>Registro de Usuario</h2>
-            <form onSubmit={handleSubmit}>
-                <div className="formGroup">
-                    <label htmlFor="fullName" className="label">Nombre Completo</label>
-                    <input
-                        type="text"
-                        id="fullName"
-                        name="fullName"
-                        className="input"
-                        onChange={handleChange}
-                        required
-                    />
+        <div className="register-page">
+            <div className="container">
+                <div className="logo-section">
+                    <div className="logo-icon">K</div>
+                    <h1 className="logo-text">AdoptaUnGato</h1>
                 </div>
-                <div className="formGroup">
-                    <label htmlFor="email" className="label">Email</label>
-                    <input
-                        type="email"
-                        id="email"
-                        name="email"
-                        className="input"
-                        onChange={handleChange}
-                        required
-                    />
+                
+                <h2>Registro de Usuario</h2>
+                <p className="subtitle">Crea una cuenta para empezar a encontrar tu nuevo amigo felino.</p>
+                
+                <form onSubmit={handleSubmit}>
+                    <div className="formGroup">
+                        <label htmlFor="fullName" className="label">Nombre Completo</label>
+                        <input
+                            type="text"
+                            id="fullName"
+                            name="fullName"
+                            className="input"
+                            placeholder="Ingresa tu nombre completo"
+                            onChange={handleChange}
+                            required
+                        />
+                    </div>
+                    
+                    <div className="formGroup">
+                        <label htmlFor="email" className="label">Email</label>
+                        <input
+                            type="email"
+                            id="email"
+                            name="email"
+                            className="input"
+                            placeholder="Ingresa tu correo electrónico"
+                            onChange={handleChange}
+                            required
+                        />
+                    </div>
+                    
+                    <div className="formGroup">
+                        <label htmlFor="password" className="label">Contraseña</label>
+                        <div className="input-wrapper">
+                            <input
+                                type={showPassword ? "text" : "password"}
+                                id="password"
+                                name="password"
+                                className="input"
+                                placeholder="Crea una contraseña segura"
+                                onChange={handleChange}
+                                required
+                            />
+                            <button 
+                                type="button"
+                                className="show-password-btn"
+                                onClick={() => setShowPassword(!showPassword)}
+                            >
+                                {showPassword ? '○' : '●'}
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div className="formGroup">
+                        <label htmlFor="role" className="label">Quiero registrarme como:</label>
+                        <select
+                            id="role"
+                            name="role"
+                            className="select"
+                            onChange={handleChange}
+                            value={formData.role}
+                        >
+                            <option value="adoptante">Adoptante</option>
+                            <option value="rescatista">Rescatista</option>
+                        </select>
+                    </div>
+                    
+                    <button type="submit" className="button">
+                        Registrarse
+                    </button>
+                </form>
+                
+                <div className="login-link">
+                    ¿Ya tienes una cuenta? <a href="/login">Inicia sesión</a>
                 </div>
-                <div className="formGroup">
-                    <label htmlFor="password" className="label">Contraseña</label>
-                    <input
-                        type="password"
-                        id="password"
-                        name="password"
-                        className="input"
-                        onChange={handleChange}
-                        required
-                    />
-                </div>
-                <div className="formGroup">
-                    <label htmlFor="phone" className="label">Teléfono (opcional)</label>
-                    <input
-                        type="tel"
-                        id="phone"
-                        name="phone"
-                        className="input"
-                        onChange={handleChange}
-                        placeholder="Ej: +569 1234 5678"
-                    />
-                    <small style={{ color: '#666', fontSize: '0.85rem', marginTop: '5px', display: 'block' }}>
-                        Tu teléfono será visible solo cuando tengas solicitudes de adopción
-                    </small>
-                </div>
-                <div className="formGroup">
-                    <label htmlFor="role" className="label">Quiero registrarme como:</label>
-                    <select
-                        id="role"
-                        name="role"
-                        className="input"
-                        onChange={handleChange}
-                        value={formData.role}
-                    >
-                        <option value="adoptante">Adoptante</option>
-                        <option value="rescatista">Rescatista</option>
-                    </select>
-                </div>
-                <button type="submit" className="button">
-                    Registrarse
-                </button>
-            </form>
+            </div>
         </div>
     );
 };

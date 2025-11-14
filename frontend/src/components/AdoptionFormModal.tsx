@@ -87,7 +87,7 @@ const AdoptionFormModal: React.FC<AdoptionFormModalProps> = ({ catId, catName, o
                 );
 
                 const contact = contactResponse.data.data.contact;
-                let contactMessage = `\n\n📞 Información de contacto del rescatista:\n\nNombre: ${contact.full_name}\nEmail: ${contact.email}`;
+                let contactMessage = `\n\nInformación de contacto del rescatista:\n\nNombre: ${contact.full_name}\nEmail: ${contact.email}`;
                 
                 if (contact.phone) {
                     contactMessage += `\nTeléfono: ${contact.phone}`;
@@ -121,17 +121,35 @@ const AdoptionFormModal: React.FC<AdoptionFormModalProps> = ({ catId, catName, o
                 </button>
                 
                 <div className="modal-header">
-                    <h2>Solicitud de Adopción</h2>
+                    <h2>Solicitud para Adoptar a {catName}</h2>
                     <p className="modal-subtitle">
-                        🐱 Quiero adoptar a <strong>{catName}</strong>
+                        ¡Estamos muy felices por tu interés en {catName}!
                     </p>
                 </div>
 
                 <form onSubmit={handleSubmit} className="adoption-form">
                     
-                    {/* Sección 1: Información del Hogar */}
+                    {/* Pregunta principal */}
                     <div className="form-section">
-                        <h3 className="section-title">📍 Tu Hogar</h3>
+                        <h3 className="section-title">Cuéntanos por qué eres el hogar perfecto para {catName}</h3>
+                        
+                        <div className="form-group">
+                            <textarea
+                                className="form-textarea"
+                                rows={6}
+                                placeholder={`Describe tu hogar, tu experiencia con mascotas y qué te atrajo de ${catName}...`}
+                                value={formData.reason}
+                                onChange={(e) => setFormData({...formData, reason: e.target.value})}
+                                required
+                                minLength={20}
+                            />
+                            <small className="form-hint">
+                                {formData.reason.length}/20 caracteres mínimo
+                            </small>
+                        </div>
+                    </div>
+                    <div className="form-section">
+                        <h3 className="section-title">Tu Hogar</h3>
                         
                         <div className="form-group">
                             <label className="form-label">Tipo de vivienda:</label>
@@ -144,7 +162,7 @@ const AdoptionFormModal: React.FC<AdoptionFormModalProps> = ({ catId, catName, o
                                         checked={formData.livingSpace === 'casa'}
                                         onChange={(e) => setFormData({...formData, livingSpace: e.target.value})}
                                     />
-                                    <span>🏠 Casa</span>
+                                    <span>Casa</span>
                                 </label>
                                 <label className="radio-label">
                                     <input
@@ -154,7 +172,7 @@ const AdoptionFormModal: React.FC<AdoptionFormModalProps> = ({ catId, catName, o
                                         checked={formData.livingSpace === 'apartamento'}
                                         onChange={(e) => setFormData({...formData, livingSpace: e.target.value})}
                                     />
-                                    <span>🏢 Apartamento</span>
+                                    <span>Apartamento</span>
                                 </label>
                                 <label className="radio-label">
                                     <input
@@ -164,7 +182,7 @@ const AdoptionFormModal: React.FC<AdoptionFormModalProps> = ({ catId, catName, o
                                         checked={formData.livingSpace === 'otro'}
                                         onChange={(e) => setFormData({...formData, livingSpace: e.target.value})}
                                     />
-                                    <span>🏘️ Otro</span>
+                                    <span>Otro</span>
                                 </label>
                             </div>
                         </div>
@@ -176,14 +194,14 @@ const AdoptionFormModal: React.FC<AdoptionFormModalProps> = ({ catId, catName, o
                                     checked={formData.hasSpace}
                                     onChange={(e) => setFormData({...formData, hasSpace: e.target.checked})}
                                 />
-                                <span>✅ Tengo espacio suficiente para el gato</span>
+                                <span>Tengo espacio suficiente para el gato</span>
                             </label>
                         </div>
                     </div>
 
                     {/* Sección 2: Experiencia */}
                     <div className="form-section">
-                        <h3 className="section-title">🎓 Experiencia con Mascotas</h3>
+                        <h3 className="section-title">Experiencia con Mascotas</h3>
                         
                         <div className="checkbox-group">
                             <label className="checkbox-label">
@@ -230,14 +248,14 @@ const AdoptionFormModal: React.FC<AdoptionFormModalProps> = ({ catId, catName, o
                                     checked={formData.hasTime}
                                     onChange={(e) => setFormData({...formData, hasTime: e.target.checked})}
                                 />
-                                <span>✅ Tengo tiempo disponible para cuidar del gato</span>
+                                <span>Tengo tiempo disponible para cuidar del gato</span>
                             </label>
                         </div>
                     </div>
 
                     {/* Sección 4: Motivación */}
                     <div className="form-section">
-                        <h3 className="section-title">💭 ¿Por qué quieres adoptar?</h3>
+                        <h3 className="section-title">¿Por qué quieres adoptar?</h3>
                         
                         <div className="form-group">
                             <label className="form-label">
@@ -261,7 +279,7 @@ const AdoptionFormModal: React.FC<AdoptionFormModalProps> = ({ catId, catName, o
 
                     {/* Sección 5: Compromisos (REQUERIDO) */}
                     <div className="form-section commitments-section">
-                        <h3 className="section-title">📋 Compromisos Importantes</h3>
+                        <h3 className="section-title">Compromisos Importantes</h3>
                         
                         <div className="checkbox-group required-group">
                             <label className="checkbox-label required-checkbox">
@@ -272,7 +290,7 @@ const AdoptionFormModal: React.FC<AdoptionFormModalProps> = ({ catId, catName, o
                                     required
                                 />
                                 <span>
-                                    <strong>✓ Acepto esterilizar al gato</strong> si aún no lo está, 
+                                    <strong>Acepto esterilizar al gato</strong> si aún no lo está, 
                                     en el tiempo recomendado por el veterinario <span className="required">*</span>
                                 </span>
                             </label>
@@ -285,7 +303,7 @@ const AdoptionFormModal: React.FC<AdoptionFormModalProps> = ({ catId, catName, o
                                     required
                                 />
                                 <span>
-                                    <strong>✓ Acepto seguimiento</strong> por parte del rescatista para 
+                                    <strong>Acepto seguimiento</strong> por parte del rescatista para 
                                     verificar el bienestar del gato <span className="required">*</span>
                                 </span>
                             </label>
@@ -302,7 +320,7 @@ const AdoptionFormModal: React.FC<AdoptionFormModalProps> = ({ catId, catName, o
                     {/* Mensajes de error */}
                     {error && (
                         <div className="alert alert-error">
-                            ⚠️ {error}
+                            {error}
                         </div>
                     )}
 
@@ -321,7 +339,7 @@ const AdoptionFormModal: React.FC<AdoptionFormModalProps> = ({ catId, catName, o
                             className="btn btn-primary" 
                             disabled={isSubmitting || !isFormValid()}
                         >
-                            {isSubmitting ? '📤 Enviando...' : '💌 Enviar Solicitud'}
+                            {isSubmitting ? 'Enviando...' : 'Enviar Solicitud'}
                         </button>
                     </div>
                 </form>

@@ -1,117 +1,166 @@
-# Katze Backend - Arquitectura SOLID
+# Arquitectura del Backend - Katze
 
-Backend refactorizado aplicando principios SOLID para una plataforma de adopción de gatos.
+Backend diseñado con arquitectura en capas y principios SOLID para facilitar mantenimiento y escalabilidad.
 
-## 📁 Estructura del Proyecto
+## Estructura de Carpetas
 
 ```
 backend/
-├── config/                 # Configuración centralizada
-│   └── config.js          # Variables de entorno y constantes
+├── config/              # Configuración centralizada
+│   └── config.js       # Variables de entorno y constantes
 │
-├── controllers/           # Controladores (capa de presentación)
-│   ├── authController.js
-│   ├── catController.js
-│   ├── applicationController.js
-│   ├── trackingController.js
-│   └── educationController.js
+├── controllers/         # Capa de presentación (HTTP)
+│   ├── applicationController.js  # Solicitudes de adopción
+│   ├── authController.js        # Autenticación
+│   ├── catController.js         # Gestión de gatos
+│   ├── educationController.js   # Charlas educativas
+│   ├── trackingController.js    # Seguimiento post-adopción
+│   └── userController.js        # Gestión de usuarios
 │
-├── services/              # Lógica de negocio (capa de servicio)
+├── services/            # Capa de lógica de negocio
+│   ├── applicationService.js
 │   ├── authService.js
 │   ├── catService.js
-│   ├── applicationService.js
+│   ├── educationService.js
 │   ├── trackingService.js
-│   └── educationService.js
+│   └── userService.js
 │
-├── routes/                # Definición de rutas
-│   ├── index.js
+├── routes/              # Definición de endpoints
+│   ├── index.js                 # Router principal
+│   ├── applicationRoutes.js
 │   ├── authRoutes.js
 │   ├── catRoutes.js
-│   ├── applicationRoutes.js
+│   ├── educationRoutes.js
 │   ├── trackingRoutes.js
-│   └── educationRoutes.js
+│   └── userRoutes.js
 │
-├── middleware/            # Middlewares personalizados
-│   ├── authMiddleware.js
-│   ├── adminMiddleware.js
-│   └── moderationMiddleware.js
+├── middleware/          # Middlewares personalizados
+│   ├── authMiddleware.js        # Verificación de JWT
+│   ├── adminMiddleware.js       # Permisos de admin
+│   └── moderationMiddleware.js  # Moderación de contenido
 │
-├── utils/                 # Utilidades y helpers
-│   ├── validator.js       # Validación de datos
-│   └── errorHandler.js    # Manejo centralizado de errores
+├── utils/               # Utilidades compartidas
+│   ├── errorHandler.js  # Manejo centralizado de errores
+│   └── validator.js     # Validaciones de datos
 │
-├── db.js                  # Configuración de base de datos
-├── index.js               # Punto de entrada de la aplicación
-└── package.json
+└── db.js               # Configuración de PostgreSQL
 ```
 
-## 🎯 Principios SOLID Aplicados
-
-### 1. **Single Responsibility Principle (SRP)**
-Cada clase/módulo tiene una única responsabilidad:
-- **Controllers**: Solo manejan peticiones HTTP
-- **Services**: Solo contienen lógica de negocio
-- **Validators**: Solo validan datos
-- **ErrorHandler**: Solo maneja respuestas de error
-
-### 2. **Open/Closed Principle (OCP)**
-El código está abierto a extensión pero cerrado a modificación:
-- Los servicios pueden extenderse sin modificar controladores
-- Nuevas validaciones se agregan sin cambiar el validador base
-
-### 3. **Liskov Substitution Principle (LSP)**
-Los servicios pueden ser reemplazados por implementaciones alternativas sin afectar el sistema.
-
-### 4. **Interface Segregation Principle (ISP)**
-Los controladores solo dependen de los métodos de servicio que necesitan.
-
-### 5. **Dependency Inversion Principle (DIP)**
-Los controladores dependen de servicios (abstracciones) no de implementaciones directas de base de datos.
-
-## 🔄 Flujo de Datos
+## Flujo de Datos
 
 ```
 Request → Router → Middleware → Controller → Service → Database
-                                     ↓
-                                 Validator
-                                     ↓
-                              ErrorHandler → Response
+                                    ↓
+                                Validator
+                                    ↓
+                             ErrorHandler → Response
 ```
 
-## 📦 Capas de la Aplicación
+### Explicación:
+1. **Request**: Cliente hace petición HTTP
+2. **Router**: Identifica la ruta y método
+3. **Middleware**: Verifica autenticación y permisos
+4. **Controller**: Recibe datos, valida y llama al servicio
+5. **Service**: Ejecuta lógica de negocio y consultas DB
+6. **Database**: PostgreSQL almacena/recupera datos
+7. **Response**: Se envía respuesta formateada al cliente
 
-### **Capa de Presentación (Controllers)**
-- Recibe peticiones HTTP
-- Valida datos de entrada
-- Llama a servicios
-- Formatea respuestas
+## Responsabilidades por Capa
 
-### **Capa de Negocio (Services)**
-- Contiene la lógica de negocio
-- Interactúa con la base de datos
-- Procesa y transforma datos
-- Mantiene reglas de negocio
+### Controllers (Controladores)
+- Reciben peticiones HTTP
+- Extraen datos del request (body, params, query)
+- Validan formato de datos
+- Llaman a los servicios correspondientes
+- Formatean respuestas HTTP
+- **NO contienen lógica de negocio**
 
-### **Capa de Utilidades**
-- **Validator**: Validación de datos
-- **ErrorHandler**: Respuestas HTTP estandarizadas
-- **Config**: Configuración centralizada
+### Services (Servicios)
+- Contienen toda la lógica de negocio
+- Interactúan directamente con la base de datos
+- Procesan y transforman datos
+- Ejecutan cálculos y validaciones complejas
+- **NO conocen HTTP ni requests/responses**
 
-## 🚀 Ventajas de esta Arquitectura
+### Middleware
+- Interceptan requests antes de llegar al controller
+- Verifican autenticación (JWT)
+- Validan permisos de usuario
+- Registran logs de actividad
 
-### ✅ **Mantenibilidad**
-- Código organizado y fácil de navegar
-- Cambios aislados en módulos específicos
+### Utils (Utilidades)
+- **ErrorHandler**: Genera respuestas HTTP estandarizadas
+- **Validator**: Valida tipos de datos y formatos
+- Funciones reutilizables en todo el proyecto
 
-### ✅ **Testabilidad**
-- Servicios y controladores fáciles de testear
-- Lógica de negocio aislada
+## Sistema de Autenticación
 
-### ✅ **Escalabilidad**
-- Fácil agregar nuevas funcionalidades
-- Estructura clara para equipos grandes
+- JWT (JSON Web Tokens) para sesiones
+- Bcrypt para hash de contraseñas
+- Middleware `authMiddleware.js` verifica tokens
+- Roles: `adoptante`, `rescatista`, `admin`
 
-### ✅ **Reusabilidad**
+## Base de Datos
+
+### Tablas Principales
+- **users**: Usuarios del sistema
+- **cats**: Gatos disponibles para adopción
+- **applications**: Solicitudes de adopción
+- **tracking_tasks**: Tareas de seguimiento post-adopción
+- **education_talks**: Charlas educativas
+
+### Vistas
+- **v_tracking_tasks_details**: Combina datos de tareas con info de gatos y adoptantes
+
+### Triggers
+- **update_tracking_tasks_on_sterilization**: Crea tarea de bienestar al marcar gato esterilizado
+
+## Flujo de Adopción
+
+1. **Rescatista publica gato** → Estado: "en_adopcion"
+2. **Adoptante envía solicitud** → Estado: "pendiente"
+3. **Rescatista aprueba solicitud**:
+   - Gato pasa a "adoptado"
+   - Se crean tareas de seguimiento automáticas:
+     - **Bienestar**: 2 meses después (solo si ya está esterilizado)
+     - **Esterilización**: 4 meses después (solo si está pendiente)
+4. **Rescatista completa tareas** con notas y certificados
+
+## Configuración (config.js)
+
+Centraliza todas las constantes del sistema:
+- Estados de gatos y solicitudes
+- Roles de usuario
+- Períodos de seguimiento
+- Configuración de base de datos
+
+## Manejo de Errores
+
+Todas las respuestas pasan por `ErrorHandler`:
+- `success()`: 200 - Operación exitosa
+- `created()`: 201 - Recurso creado
+- `badRequest()`: 400 - Datos inválidos
+- `unauthorized()`: 401 - No autenticado
+- `forbidden()`: 403 - Sin permisos
+- `notFound()`: 404 - No encontrado
+- `serverError()`: 500 - Error interno
+
+## Convenciones de Código
+
+- Comentarios en español
+- Nombres descriptivos en español para variables de negocio
+- Nombres técnicos en inglés (req, res, middleware)
+- Logs con formato: `[nombreFuncion] Mensaje descriptivo`
+- Sin emojis en console.log
+
+## Ventajas de Esta Arquitectura
+
+1. **Mantenible**: Código organizado y fácil de encontrar
+2. **Testeable**: Cada capa se puede probar independientemente
+3. **Escalable**: Fácil agregar nuevas funcionalidades
+4. **Reutilizable**: Services pueden usarse desde múltiples controllers
+5. **Legible**: Separación clara de responsabilidades
+
 - Servicios reutilizables en diferentes controladores
 - Validadores y utilidades compartidas
 

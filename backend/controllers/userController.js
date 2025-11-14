@@ -4,9 +4,67 @@
 const userService = require('../services/userService');
 const ErrorHandler = require('../utils/errorHandler');
 const config = require('../config/config');
+const Validator = require('../utils/validator');
 
 class UserController {
-    // GET /api/admin/users - Obtener todos los usuarios
+    /**
+     * Obtener perfil del usuario autenticado
+     * Cualquier usuario puede ver su propio perfil
+     */
+    async getProfile(req, res) {
+        try {
+            const userId = req.user.id;
+            const user = await userService.getUserById(userId);
+
+            if (!user) {
+                return ErrorHandler.notFound(res, 'Usuario no encontrado');
+            }
+
+            return ErrorHandler.success(res, { user });
+
+        } catch (error) {
+            console.error('[getProfile] Error:', error.message, error.stack);
+            return ErrorHandler.serverError(res, 'Error al obtener perfil', error);
+        }
+    }
+
+    /**
+     * Actualizar perfil del usuario autenticado
+     * Permite actualizar: full_name, phone, email
+     */
+    async updateProfile(req, res) {
+        try {
+            const userId = req.user.id;
+            const { full_name, phone, email } = req.body;
+
+            // Validar que al menos un campo esté presente
+            if (!full_name && !phone && !email) {
+                return ErrorHandler.badRequest(res, 'Debe proporcionar al menos un campo para actualizar');
+            }
+
+            // Validar email si se proporciona
+            if (email && !Validator.isValidEmail(email)) {
+                return ErrorHandler.badRequest(res, 'Email inválido');
+            }
+
+            // Si se está cambiando el email, verificar que no exista
+            if (email) {
+                const emailExists = await userService.isEmailTaken(email, userId);
+                if (emailExists) {
+                    return ErrorHandler.badRequest(res, 'El email ya está en uso');
+                }
+            }
+
+            const updatedUser = await userService.updateProfile(userId, { full_name, phone, email });
+            return ErrorHandler.success(res, { user: updatedUser }, 'Perfil actualizado exitosamente');
+
+        } catch (error) {
+            console.error('[updateProfile] Error:', error.message, error.stack);
+            return ErrorHandler.serverError(res, 'Error al actualizar perfil', error);
+        }
+    }
+
+    // GET /api/users - Obtener todos los usuarios
     async getAllUsers(req, res) {
         try {
             // Verificar que el usuario sea administrador

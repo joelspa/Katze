@@ -68,35 +68,55 @@ const Login = () => {
     };
 
     return (
-        <div className="container">
-            <h2>Iniciar Sesión</h2>
-            <form onSubmit={handleSubmit}>
-                <div className="formGroup">
-                    <label htmlFor="email" className="label">Email</label>
-                    <input
-                        type="email"
-                        id="email"
-                        name="email"
-                        className="input"
-                        onChange={handleChange}
-                        required
-                    />
+        <div className="login-page">
+            <div className="container">
+                <div className="logo-section">
+                    <div className="logo-icon">K</div>
+                    <h1 className="logo-text">GatoAdopta</h1>
                 </div>
-                <div className="formGroup">
-                    <label htmlFor="password" className="label">Contraseña</label>
-                    <input
-                        type="password"
-                        id="password"
-                        name="password"
-                        className="input"
-                        onChange={handleChange}
-                        required
-                    />
+                
+                <h2>Iniciar Sesión</h2>
+                
+                <form onSubmit={handleSubmit}>
+                    <div className="formGroup">
+                        <label htmlFor="email" className="label">Email</label>
+                        <input
+                            type="email"
+                            id="email"
+                            name="email"
+                            className="input"
+                            placeholder="ejemplo@correo.com"
+                            onChange={handleChange}
+                            required
+                        />
+                    </div>
+                    
+                    <div className="formGroup">
+                        <label htmlFor="password" className="label">Contraseña</label>
+                        <input
+                            type="password"
+                            id="password"
+                            name="password"
+                            className="input"
+                            placeholder="Ingresa tu contraseña"
+                            onChange={handleChange}
+                            required
+                        />
+                    </div>
+                    
+                    <div className="forgot-password">
+                        <a href="#">¿Olvidaste tu contraseña?</a>
+                    </div>
+                    
+                    <button type="submit" className="button">
+                        Ingresar
+                    </button>
+                </form>
+                
+                <div className="register-link">
+                    ¿No tienes una cuenta? <a href="/register">Regístrate aquí</a>
                 </div>
-                <button type="submit" className="button">
-                    Ingresar
-                </button>
-            </form>
+            </div>
         </div>
     );
 };

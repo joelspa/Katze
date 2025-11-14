@@ -1,6 +1,7 @@
 /**
  * COMPONENTES UI REUTILIZABLES
  * Estilos para botones, inputs, cards, badges, etc.
+ * Basado en el diseño moderno de AdoptaUnGato
  */
 
 /* ===== BOTONES ===== */
@@ -9,14 +10,15 @@
   align-items: center;
   justify-content: center;
   gap: var(--spacing-sm);
-  padding: var(--spacing-sm) var(--spacing-lg);
-  font-size: var(--font-size-base);
-  font-weight: var(--font-weight-medium);
+  padding: 0.625rem var(--spacing-lg);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
   line-height: 1.5;
-  border-radius: var(--border-radius-md);
+  letter-spacing: 0.015em;
+  border-radius: var(--border-radius-lg);
   transition: all var(--transition-base);
   cursor: pointer;
-  border: var(--border-width-thin) solid transparent;
+  border: none;
   text-decoration: none;
   white-space: nowrap;
 }
@@ -31,33 +33,35 @@
 .btn-primary {
   background-color: var(--color-primary);
   color: var(--color-white);
-  border-color: var(--color-primary);
 }
 
 .btn-primary:hover:not(:disabled) {
   background-color: var(--color-primary-hover);
-  border-color: var(--color-primary-hover);
   transform: translateY(-1px);
-  box-shadow: var(--shadow-md);
+  box-shadow: var(
+    --shadow-md,
+    0 4px 6px rgba(16, 25, 34, 0.07)
+  );
 }
 
 .btn-secondary {
   background-color: var(--color-secondary);
   color: var(--color-white);
-  border-color: var(--color-secondary);
 }
 
 .btn-secondary:hover:not(:disabled) {
   background-color: var(--color-secondary-dark);
-  border-color: var(--color-secondary-dark);
   transform: translateY(-1px);
-  box-shadow: var(--shadow-md);
+  box-shadow: var(
+    --shadow-md,
+    0 4px 6px rgba(16, 25, 34, 0.07)
+  );
 }
 
 .btn-outline {
   background-color: transparent;
   color: var(--color-primary);
-  border-color: var(--color-primary);
+  border: var(--border-width-thin) solid var(--color-primary);
 }
 
 .btn-outline:hover:not(:disabled) {
@@ -68,7 +72,6 @@
 .btn-ghost {
   background-color: transparent;
   color: var(--color-gray-700);
-  border-color: transparent;
 }
 
 .btn-ghost:hover:not(:disabled) {
@@ -78,43 +81,49 @@
 .btn-success {
   background-color: var(--color-success);
   color: var(--color-white);
-  border-color: var(--color-success);
 }
 
 .btn-success:hover:not(:disabled) {
   background-color: var(--color-success-dark);
   transform: translateY(-1px);
-  box-shadow: var(--shadow-md);
+  box-shadow: var(
+    --shadow-md,
+    0 4px 6px rgba(16, 25, 34, 0.07)
+  );
 }
 
 .btn-error {
   background-color: var(--color-error);
   color: var(--color-white);
-  border-color: var(--color-error);
 }
 
 .btn-error:hover:not(:disabled) {
   background-color: var(--color-error-dark);
   transform: translateY(-1px);
-  box-shadow: var(--shadow-md);
+  box-shadow: var(
+    --shadow-md,
+    0 4px 6px rgba(16, 25, 34, 0.07)
+  );
 }
 
 .btn-warning {
   background-color: var(--color-warning);
   color: var(--color-white);
-  border-color: var(--color-warning);
 }
 
 .btn-warning:hover:not(:disabled) {
   background-color: var(--color-warning-dark);
   transform: translateY(-1px);
-  box-shadow: var(--shadow-md);
+  box-shadow: var(
+    --shadow-md,
+    0 4px 6px rgba(16, 25, 34, 0.07)
+  );
 }
 
 /* Tamaños de botones */
 .btn-sm {
   padding: var(--spacing-xs) var(--spacing-md);
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-xs);
 }
 
 .btn-lg {
@@ -159,7 +168,7 @@
 .form-select:focus {
   border-color: var(--color-primary);
   outline: none;
-  box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.1);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
 }
 
 .form-input:disabled,
@@ -184,21 +193,27 @@
 
 /* ===== CARDS ===== */
 .card {
-  background-color: var(--color-white);
-  border-radius: var(--border-radius-lg);
-  box-shadow: var(--shadow-sm);
+  background-color: var(--surface-card);
+  border-radius: var(--border-radius-xl);
+  box-shadow: var(
+    --shadow-sm,
+    0 1px 3px rgba(16, 25, 34, 0.1)
+  );
   overflow: hidden;
-  transition: all var(--transition-base);
+  transition: all var(--transition-slow);
 }
 
 .card:hover {
-  box-shadow: var(--shadow-md);
+  box-shadow: var(
+    --shadow-lg,
+    0 10px 15px rgba(16, 25, 34, 0.1)
+  );
   transform: translateY(-2px);
 }
 
 .card-header {
   padding: var(--spacing-lg);
-  border-bottom: var(--border-width-thin) solid var(--color-gray-200);
+  border-bottom: var(--border-width-thin) solid var(--border-default);
 }
 
 .card-body {
@@ -207,8 +222,8 @@
 
 .card-footer {
   padding: var(--spacing-lg);
-  border-top: var(--border-width-thin) solid var(--color-gray-200);
-  background-color: var(--color-gray-50);
+  border-top: var(--border-width-thin) solid var(--border-default);
+  background-color: var(--surface-panel);
 }
 
 .card-img {
@@ -280,25 +295,25 @@
 }
 
 .alert-success {
-  background-color: rgba(76, 175, 80, 0.1);
+  background-color: rgba(16, 185, 129, 0.12);
   border-color: var(--color-success);
   color: var(--color-success-dark);
 }
 
 .alert-warning {
-  background-color: rgba(255, 167, 38, 0.1);
+  background-color: rgba(245, 158, 11, 0.12);
   border-color: var(--color-warning);
   color: var(--color-warning-dark);
 }
 
 .alert-error {
-  background-color: rgba(239, 83, 80, 0.1);
+  background-color: rgba(239, 68, 68, 0.12);
   border-color: var(--color-error);
   color: var(--color-error-dark);
 }
 
 .alert-info {
-  background-color: rgba(41, 182, 246, 0.1);
+  background-color: rgba(59, 130, 246, 0.12);
   border-color: var(--color-info);
   color: var(--color-info-dark);
 }
@@ -307,7 +322,7 @@
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(16, 25, 34, 0.5);
   backdrop-filter: blur(var(--blur-sm));
   display: flex;
   align-items: center;
@@ -317,9 +332,12 @@
 }
 
 .modal-content {
-  background-color: var(--color-white);
+  background-color: var(--surface-card);
   border-radius: var(--border-radius-xl);
-  box-shadow: var(--shadow-2xl);
+  box-shadow: var(
+    --shadow-2xl,
+    0 25px 50px rgba(16, 25, 34, 0.15)
+  );
   max-width: var(--container-md);
   width: 100%;
   max-height: 90vh;
@@ -341,7 +359,7 @@
 
 .modal-header {
   padding: var(--spacing-lg);
-  border-bottom: var(--border-width-thin) solid var(--color-gray-200);
+  border-bottom: var(--border-width-thin) solid var(--border-default);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -353,7 +371,7 @@
 
 .modal-footer {
   padding: var(--spacing-lg);
-  border-top: var(--border-width-thin) solid var(--color-gray-200);
+  border-top: var(--border-width-thin) solid var(--border-default);
   display: flex;
   gap: var(--spacing-md);
   justify-content: flex-end;

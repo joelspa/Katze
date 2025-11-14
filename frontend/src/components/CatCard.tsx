@@ -27,6 +27,18 @@ const CatCard: React.FC<CatCardProps> = ({ cat }) => {
         ? cat.photos_url[0]
         : 'https://placehold.co/300x200/e0e0e0/666?text=Sin+Foto';
 
+    // Función para obtener la clase CSS según el estado de esterilización
+    const getStatusClass = () => {
+        switch(cat.sterilization_status) {
+            case 'esterilizado':
+                return 'status-esterilizado';
+            case 'pendiente':
+                return 'status-pendiente';
+            default:
+                return '';
+        }
+    };
+
     return (
         <div className="cat-card">
             <img 
@@ -40,10 +52,12 @@ const CatCard: React.FC<CatCardProps> = ({ cat }) => {
             />
             <div className="cat-card-body">
                 <h3 className="cat-card-title">{cat.name}</h3>
-                <p className="cat-card-text">Edad: {cat.age}</p>
                 <p className="cat-card-text">
-                    Esterilización: {cat.sterilization_status}
+                    <strong>Edad:</strong> {cat.age}
                 </p>
+                <span className={`cat-card-status ${getStatusClass()}`}>
+                    {cat.sterilization_status === 'esterilizado' ? 'Esterilizado' : 'Pendiente'}
+                </span>
                 <Link to={`/cats/${cat.id}`} className="cat-card-button">
                     Ver Detalles
                 </Link>

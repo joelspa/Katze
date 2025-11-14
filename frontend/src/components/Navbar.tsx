@@ -17,7 +17,7 @@ const Navbar = () => {
         <nav className="navbar">
             <div className="nav-container">
                 <Link to="/" className="nav-logo">
-                    Katze 🐱
+                    Katze
                 </Link>
 
                 <ul className="nav-menu">
@@ -28,7 +28,7 @@ const Navbar = () => {
                     </li>
                     <li className="nav-item">
                         <Link to="/education" className="nav-link">
-                            📚 Educación
+                            Educación
                         </Link>
                     </li>
 
@@ -53,7 +53,7 @@ const Navbar = () => {
                                     </li>
                                     <li className="nav-item">
                                         <Link to="/statistics" className="nav-link">
-                                            📊 Estadísticas
+                                            Estadísticas
                                         </Link>
                                     </li>
                                 </>
@@ -68,11 +68,17 @@ const Navbar = () => {
                                     </li>
                                     <li className="nav-item">
                                         <Link to="/statistics" className="nav-link">
-                                            📊 Estadísticas
+                                            Estadísticas
                                         </Link>
                                     </li>
                                 </>
                             )}
+
+                            <li className="nav-item">
+                                <Link to="/profile" className="nav-link">
+                                    Mi Perfil
+                                </Link>
+                            </li>
 
                             <li className="nav-item">
                                 <button onClick={handleLogout} className="nav-button">

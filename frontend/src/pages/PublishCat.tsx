@@ -98,50 +98,116 @@ const PublishCat = () => {
     };
 
     return (
-        <div className="publish-container">
-            <h2>Publicar un Gato para Adopción</h2>
-            <form onSubmit={handleSubmit}>
-                <div className="formGroup">
-                    <label htmlFor="name" className="label">Nombre del Gato</label>
-                    <input type="text" id="name" name="name" className="input" onChange={handleChange} required />
+        <div className="publish-page">
+            <div className="publish-container">
+                <div className="publish-header">
+                    <h2>Publicar un Gato para Adopción</h2>
+                    <p className="publish-subtitle">Completa el formulario para encontrarle un nuevo hogar.</p>
                 </div>
 
-                <div className="formGroup">
-                    <label htmlFor="description" className="label">Descripción e Historia</label>
-                    <textarea id="description" name="description" className="input" onChange={handleChange} rows={4} required />
-                </div>
+                <form onSubmit={handleSubmit} className="publish-form">
+                    <div className="form-grid">
+                        <div className="formGroup">
+                            <label htmlFor="name" className="label">Nombre</label>
+                            <input 
+                                type="text" 
+                                id="name" 
+                                name="name" 
+                                className="input" 
+                                placeholder="Introduce el nombre del gato"
+                                onChange={handleChange} 
+                                required 
+                            />
+                        </div>
 
-                <div className="formGroup">
-                    <label htmlFor="age" className="label">Edad (ej. "6 meses", "2 años")</label>
-                    <input type="text" id="age" name="age" className="input" onChange={handleChange} required />
-                </div>
+                        <div className="formGroup">
+                            <label htmlFor="age" className="label">Edad</label>
+                            <input 
+                                type="text" 
+                                id="age" 
+                                name="age" 
+                                className="input" 
+                                placeholder="Ej: 2 años"
+                                onChange={handleChange} 
+                                required 
+                            />
+                        </div>
 
-                <div className="formGroup">
-                    <label htmlFor="health_status" className="label">Estado de Salud (vacunas, etc.)</label>
-                    <input type="text" id="health_status" name="health_status" className="input" onChange={handleChange} required />
-                </div>
+                        <div className="formGroup">
+                            <label htmlFor="health_status" className="label">Estado de Salud</label>
+                            <input 
+                                type="text" 
+                                id="health_status" 
+                                name="health_status" 
+                                className="input" 
+                                placeholder="Ej: Vacunado, desparasitado"
+                                onChange={handleChange} 
+                                required 
+                            />
+                        </div>
 
-                <div className="formGroup">
-                    <label htmlFor="sterilization_status" className="label">Estado de Esterilización</label>
-                    <select id="sterilization_status" name="sterilization_status" className="input" onChange={handleChange} value={formData.sterilization_status}>
-                        <option value="pendiente">Pendiente</option>
-                        <option value="esterilizado">Ya esterilizado</option>
-                        <option value="no_aplica">No aplica (ej. muy cachorro)</option>
-                    </select>
-                </div>
+                        <div className="formGroup">
+                            <label htmlFor="sterilization_status" className="label">Estado de Esterilización</label>
+                            <select 
+                                id="sterilization_status" 
+                                name="sterilization_status" 
+                                className="select" 
+                                onChange={handleChange} 
+                                value={formData.sterilization_status}
+                            >
+                                <option value="pendiente">Pendiente</option>
+                                <option value="esterilizado">Esterilizado</option>
+                                <option value="no_aplica">No aplica</option>
+                            </select>
+                        </div>
 
-                <div className="formGroup">
-                    <label htmlFor="image" className="label">Foto del Gato</label>
-                    <input type="file" id="image" name="image" className="input" onChange={handleFileChange} accept="image/*" required />
-                    {imageFile && <p>Archivo seleccionado: {imageFile.name}</p>}
-                </div>
+                        <div className="formGroup form-grid-full">
+                            <label htmlFor="description" className="label">Descripción</label>
+                            <textarea 
+                                id="description" 
+                                name="description" 
+                                className="textarea" 
+                                placeholder="Describe su personalidad, historia, y qué tipo de hogar necesita..."
+                                onChange={handleChange} 
+                                required 
+                            />
+                        </div>
 
-                {error && <p className="publish-error">{error}</p>}
+                        <div className="formGroup form-grid-full">
+                            <label className="label">Fotografía del gato</label>
+                            <div className="file-upload">
+                                <label htmlFor="image" className="file-upload-label">
+                                    <div className="file-upload-icon">IMG</div>
+                                    <div className="file-upload-text">
+                                        <strong>Sube una foto</strong> o arrástrala aquí
+                                        <br />
+                                        <small>PNG, JPG, GIF hasta 10MB</small>
+                                    </div>
+                                    <input 
+                                        type="file" 
+                                        id="image" 
+                                        name="image" 
+                                        onChange={handleFileChange} 
+                                        accept="image/*" 
+                                        required 
+                                    />
+                                </label>
+                                {imageFile && (
+                                    <div className="file-selected">
+                                        {imageFile.name} ({(imageFile.size / 1024).toFixed(2)} KB)
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
 
-                <button type="submit" className="publish-button" disabled={loading}>
-                    {loading ? 'Publicando...' : 'Publicar Gato'}
-                </button>
-            </form>
+                    {error && <p className="publish-error">{error}</p>}
+
+                    <button type="submit" className="publish-button" disabled={loading}>
+                        {loading ? 'Publicando...' : 'Publicar Gato'}
+                    </button>
+                </form>
+            </div>
         </div>
     );
 };

@@ -11,6 +11,7 @@ interface EducationalPost {
     content: string;
     author_name: string;
     created_at: string;
+    image_url?: string;
 }
 
 const Education = () => {
@@ -67,7 +68,7 @@ const Education = () => {
         return (
             <div className="education-container">
                 <div className="error-box">
-                    <span className="error-icon">⚠️</span>
+                    <span className="error-icon">ERROR</span>
                     <p>{error}</p>
                 </div>
             </div>
@@ -79,7 +80,7 @@ const Education = () => {
             {/* Hero Section */}
             <div className="education-hero">
                 <div className="hero-content">
-                    <h1>🎓 Centro Educativo Katze</h1>
+                    <h1>📖 Centro Educativo Katze</h1>
                     <p className="hero-subtitle">
                         Aprende todo sobre el cuidado responsable de gatos. Información verificada 
                         por nuestros rescatistas expertos.
@@ -90,7 +91,7 @@ const Education = () => {
             {/* Posts Grid */}
             <div className="posts-section">
                 <div className="section-header">
-                    <h2>📚 Artículos y Charlas</h2>
+                    <h2>Artículos y Charlas</h2>
                     <p>Explora nuestro contenido educativo sobre salud, nutrición, comportamiento y más</p>
                 </div>
 
@@ -98,6 +99,17 @@ const Education = () => {
                     <div className="posts-grid">
                         {posts.map((post) => (
                             <article key={post.id} className="education-card">
+                                {/* Imagen cuadrada si existe */}
+                                {post.image_url && (
+                                    <div className="card-image-container">
+                                        <img 
+                                            src={post.image_url} 
+                                            alt={post.title}
+                                            className="card-image"
+                                        />
+                                    </div>
+                                )}
+                                
                                 <div className="card-header">
                                     <h3>{post.title}</h3>
                                     <div className="card-meta">
@@ -123,7 +135,7 @@ const Education = () => {
                     </div>
                 ) : (
                     <div className="empty-state">
-                        <span className="empty-icon">📖</span>
+                        <span className="empty-icon">📚</span>
                         <p>Aún no hay contenido educativo publicado.</p>
                         <p className="empty-subtitle">Pronto agregaremos artículos y charlas sobre cuidado felino.</p>
                     </div>

@@ -3,7 +3,6 @@
 
 const express = require('express');
 const cors = require('cors');
-const path = require('path');
 const config = require('./config/config');
 
 // Importación centralizada de rutas
@@ -24,9 +23,6 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Servir archivos estáticos de uploads
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-
 // Ruta de verificación del estado del servidor
 app.get('/api', (req, res) => {
     res.send('¡El backend de Katze está funcionando!');
@@ -40,7 +36,7 @@ app.use('/api/applications', applicationRoutes);     // Rutas alternativas para 
 app.use('/api/tracking', trackingRoutes);            // Rutas de seguimiento
 app.use('/api/education', educationRoutes);          // Rutas del módulo educativo
 app.use('/api/statistics', statisticsRoutes);        // Rutas de estadísticas (dashboard)
-app.use('/api/admin/users', userRoutes);             // Rutas de gestión de usuarios (ANTES de /api/admin)
+app.use('/api/users', userRoutes);                   // Rutas de usuarios y perfil
 app.use('/api/admin', adminRoutes);                  // Rutas de administración (protegidas)
 
 // Inicialización del servidor Express

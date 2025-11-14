@@ -1,5 +1,5 @@
 // Rutas de gestión de usuarios
-// Define las rutas para administración de usuarios (solo admin)
+// Define las rutas para administración de usuarios (solo admin) y perfil de usuario
 
 const express = require('express');
 const router = express.Router();
@@ -9,16 +9,22 @@ const authMiddleware = require('../middleware/authMiddleware');
 // Todas las rutas requieren autenticación
 router.use(authMiddleware);
 
-// GET /api/admin/users - Obtener todos los usuarios
-router.get('/', userController.getAllUsers);
+// GET /api/users/profile - Ver perfil propio (cualquier usuario autenticado)
+router.get('/profile', (req, res) => userController.getProfile(req, res));
 
-// GET /api/admin/users/stats/by-role - Estadísticas por rol
-router.get('/stats/by-role', userController.getUserStatsByRole);
+// PUT /api/users/profile - Actualizar perfil propio (cualquier usuario autenticado)
+router.put('/profile', (req, res) => userController.updateProfile(req, res));
 
-// GET /api/admin/users/:id - Obtener un usuario específico
-router.get('/:id', userController.getUserById);
+// GET /api/users - Obtener todos los usuarios (solo admin)
+router.get('/', (req, res) => userController.getAllUsers(req, res));
 
-// PUT /api/admin/users/:id/role - Actualizar rol de usuario
-router.put('/:id/role', userController.updateUserRole);
+// GET /api/users/stats/by-role - Estadísticas por rol (solo admin)
+router.get('/stats/by-role', (req, res) => userController.getUserStatsByRole(req, res));
+
+// GET /api/users/:id - Obtener un usuario específico (solo admin)
+router.get('/:id', (req, res) => userController.getUserById(req, res));
+
+// PUT /api/users/:id/role - Actualizar rol de usuario (solo admin)
+router.put('/:id/role', (req, res) => userController.updateUserRole(req, res));
 
 module.exports = router;

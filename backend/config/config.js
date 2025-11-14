@@ -20,8 +20,8 @@ module.exports = {
     
     // Configuración de seguimiento
     TRACKING_PERIODS: {
-        BIENESTAR_MONTHS: 1,
-        ESTERILIZACION_MONTHS: 4
+        BIENESTAR_MONTHS: 3,
+        ESTERILIZACION_MONTHS: 6
     },
     
     // Roles de usuario
@@ -51,3 +51,4 @@ module.exports = {
         RECHAZADA: 'rechazada'
     }
 };
+

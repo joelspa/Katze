@@ -4,6 +4,9 @@
 import { useState, useEffect } from 'react';
 import axios, { isAxiosError } from 'axios';
 import { useAuth } from '../context/AuthContext';
+import { storage } from '../firebase';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { v4 as uuidv4 } from 'uuid';
 import './AdminDashboard.css';
 
 // Interfaz que define la estructura de un gato en el admin
@@ -38,6 +41,7 @@ interface EducationalPost {
     author_id: number;
     author_name: string;
     created_at: string;
+    image_url?: string;
 }
 
 interface User {
@@ -64,7 +68,9 @@ const AdminDashboard = () => {
     const [posts, setPosts] = useState<EducationalPost[]>([]);
     const [showPostForm, setShowPostForm] = useState(false);
     const [editingPost, setEditingPost] = useState<EducationalPost | null>(null);
-    const [postForm, setPostForm] = useState({ title: '', content: '', eventDate: '' });
+    const [postForm, setPostForm] = useState({ title: '', content: '', eventDate: '', image_url: '' });
+    const [postImageFile, setPostImageFile] = useState<File | null>(null);
+    const [editingPostImageFile, setEditingPostImageFile] = useState<File | null>(null);
     
     // Estados para gestión de usuarios
     const [users, setUsers] = useState<User[]>([]);
@@ -94,19 +100,31 @@ const AdminDashboard = () => {
         }
 
         try {
+            let imageUrl = '';
+            
+            // Si se seleccionó una imagen, subirla a Firebase
+            if (postImageFile) {
+                const fileExtension = postImageFile.name.split('.').pop();
+                const imageRef = ref(storage, `educational_posts/${uuidv4()}.${fileExtension}`);
+                await uploadBytes(imageRef, postImageFile);
+                imageUrl = await getDownloadURL(imageRef);
+            }
+
             const API_URL = 'http://localhost:5000/api/education';
             await axios.post(
                 API_URL,
                 { 
                     title: postForm.title, 
                     content: postForm.content,
-                    event_date: postForm.eventDate || null
+                    event_date: postForm.eventDate || null,
+                    image_url: imageUrl || null
                 },
                 { headers: { 'Authorization': `Bearer ${token}` } }
             );
 
             alert('Charla creada con éxito');
-            setPostForm({ title: '', content: '', eventDate: '' });
+            setPostForm({ title: '', content: '', eventDate: '', image_url: '' });
+            setPostImageFile(null);
             setShowPostForm(false);
             fetchPosts();
         } catch (error: unknown) {
@@ -121,18 +139,34 @@ const AdminDashboard = () => {
         if (!editingPost) return;
 
         try {
+            let imageUrl = editingPost.image_url || '';
+            
+            // Si se seleccionó una nueva imagen, subirla a Firebase
+            if (editingPostImageFile) {
+                const fileExtension = editingPostImageFile.name.split('.').pop();
+                const imageRef = ref(storage, `educational_posts/${uuidv4()}.${fileExtension}`);
+                await uploadBytes(imageRef, editingPostImageFile);
+                imageUrl = await getDownloadURL(imageRef);
+            }
+
             const API_URL = `http://localhost:5000/api/education/${editingPost.id}`;
             await axios.put(
                 API_URL,
-                { title: editingPost.title, content: editingPost.content },
+                { 
+                    title: editingPost.title, 
+                    content: editingPost.content,
+                    image_url: imageUrl || null
+                },
                 { headers: { 'Authorization': `Bearer ${token}` } }
             );
 
             alert('Charla actualizada con éxito');
             setEditingPost(null);
+            setEditingPostImageFile(null);
             fetchPosts();
         } catch (error: unknown) {
             alert('Error al actualizar la charla');
+            console.error(error);
         }
     };
 
@@ -276,7 +310,7 @@ const AdminDashboard = () => {
 
     // Elimina un gato
     const handleDelete = async (catId: number) => {
-        if (!window.confirm('⚠️ ¿Estás seguro de que quieres ELIMINAR permanentemente esta publicación?')) {
+        if (!window.confirm('¿Estás seguro de que quieres ELIMINAR permanentemente esta publicación?')) {
             return;
         }
 
@@ -355,7 +389,7 @@ const AdminDashboard = () => {
 
     return (
         <div className="admin-container">
-            <h1>Panel de Administración</h1>
+            <h1>🛡️ Panel de Administración</h1>
 
             {/* Pestañas de navegación */}
             <div className="admin-tabs">
@@ -369,7 +403,7 @@ const AdminDashboard = () => {
                     className={`tab-button ${activeTab === 'education' ? 'active' : ''}`}
                     onClick={() => setActiveTab('education')}
                 >
-                    📚 Charlas Educativas
+                    🎓 Charlas Educativas
                 </button>
                 <button 
                     className={`tab-button ${activeTab === 'users' ? 'active' : ''}`}
@@ -473,13 +507,13 @@ const AdminDashboard = () => {
                                             className="btn-approve"
                                             onClick={() => handleApproval(cat.id, 'aprobado')}
                                         >
-                                            ✓ Aprobar
+                                            Aprobar
                                         </button>
                                         <button 
                                             className="btn-reject"
                                             onClick={() => handleApproval(cat.id, 'rechazado')}
                                         >
-                                            ✗ Rechazar
+                                            Rechazar
                                         </button>
                                     </>
                                 )}
@@ -488,14 +522,14 @@ const AdminDashboard = () => {
                                     className="btn-edit"
                                     onClick={() => setEditingCat(cat)}
                                 >
-                                    ✎ Editar
+                                    Editar
                                 </button>
                                 
                                 <button 
                                     className="btn-delete"
                                     onClick={() => handleDelete(cat.id)}
                                 >
-                                    🗑 Eliminar
+                                    Eliminar
                                 </button>
                             </div>
                         </div>
@@ -559,7 +593,7 @@ const AdminDashboard = () => {
                         </div>
 
                         <div className="form-group">
-                            <label>💕 Historia del gato (opcional):</label>
+                            <label>Historia del gato (opcional):</label>
                             <textarea 
                                 value={editingCat.story || ''}
                                 onChange={(e) => setEditingCat({...editingCat, story: e.target.value})}
@@ -593,14 +627,14 @@ const AdminDashboard = () => {
                             className="btn-create-post"
                             onClick={() => setShowPostForm(!showPostForm)}
                         >
-                            {showPostForm ? '✕ Cancelar' : '➕ Nueva Charla'}
+                            {showPostForm ? 'Cancelar' : 'Nueva Charla'}
                         </button>
                     </div>
 
                     {/* Formulario para crear charla */}
                     {showPostForm && (
                         <div className="post-form-card">
-                            <h3>✏️ Nueva Charla Educativa</h3>
+                            <h3>Nueva Charla Educativa</h3>
                             <div className="form-group">
                                 <label htmlFor="postTitle">Título de la charla</label>
                                 <input
@@ -614,7 +648,7 @@ const AdminDashboard = () => {
                                 <small>{postForm.title.length}/200 caracteres</small>
                             </div>
                             <div className="form-group">
-                                <label htmlFor="postEventDate">📅 Fecha del evento (opcional)</label>
+                                <label htmlFor="postEventDate">Fecha del evento (opcional)</label>
                                 <input
                                     id="postEventDate"
                                     type="datetime-local"
@@ -622,6 +656,24 @@ const AdminDashboard = () => {
                                     onChange={(e) => setPostForm({ ...postForm, eventDate: e.target.value })}
                                 />
                                 <small>Si no especificas fecha, se usará la fecha actual</small>
+                            </div>
+                            <div className="form-group">
+                                <label htmlFor="postImage">Imagen promocional (opcional)</label>
+                                <input
+                                    id="postImage"
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={(e) => {
+                                        const file = e.target.files?.[0];
+                                        if (file) {
+                                            setPostImageFile(file);
+                                        }
+                                    }}
+                                />
+                                {postImageFile && (
+                                    <small>Archivo seleccionado: {postImageFile.name}</small>
+                                )}
+                                <small>Imagen que se mostrará en la tarjeta de la charla</small>
                             </div>
                             <div className="form-group">
                                 <label htmlFor="postContent">Contenido</label>
@@ -665,18 +717,54 @@ const AdminDashboard = () => {
                                                 rows={6}
                                                 className="edit-textarea"
                                             />
+                                            
+                                            {/* Campo para cambiar imagen */}
+                                            <div className="edit-image-section">
+                                                <label htmlFor={`edit-image-${post.id}`}>Cambiar imagen (opcional)</label>
+                                                {editingPost.image_url && !editingPostImageFile && (
+                                                    <div className="current-image-preview">
+                                                        <small>Imagen actual:</small>
+                                                        <img 
+                                                            src={editingPost.image_url} 
+                                                            alt="Vista previa" 
+                                                            style={{ maxWidth: '200px', maxHeight: '150px', objectFit: 'cover', marginTop: '8px' }}
+                                                        />
+                                                    </div>
+                                                )}
+                                                <input
+                                                    id={`edit-image-${post.id}`}
+                                                    type="file"
+                                                    accept="image/*"
+                                                    onChange={(e) => {
+                                                        const file = e.target.files?.[0];
+                                                        if (file) {
+                                                            setEditingPostImageFile(file);
+                                                        }
+                                                    }}
+                                                    style={{ marginTop: '8px' }}
+                                                />
+                                                {editingPostImageFile && (
+                                                    <small style={{ display: 'block', marginTop: '4px' }}>
+                                                        Nueva imagen: {editingPostImageFile.name}
+                                                    </small>
+                                                )}
+                                            </div>
+                                            
                                             <div className="post-actions">
                                                 <button 
                                                     className="btn-save-post"
                                                     onClick={handleUpdatePost}
                                                 >
-                                                    ✓ Guardar
+                                                    Guardar
                                                 </button>
                                                 <button 
-                                                    className="btn-cancel-edit"
-                                                    onClick={() => setEditingPost(null)}
+                                                    className="btn-cancel-post"
+                                                    onClick={() => {
+                                                        setEditingPost(null);
+                                                        setEditingPostImageFile(null);
+                                                    }}
                                                 >
-                                                    ✕ Cancelar
+                                                    Cancelar
                                                 </button>
                                             </div>
                                         </div>
@@ -689,6 +777,24 @@ const AdminDashboard = () => {
                                                     {new Date(post.created_at).toLocaleDateString('es-ES')}
                                                 </span>
                                             </div>
+                                            
+                                            {/* Mostrar imagen si existe */}
+                                            {post.image_url && (
+                                                <div className="post-image-preview">
+                                                    <img 
+                                                        src={post.image_url} 
+                                                        alt={post.title}
+                                                        style={{ 
+                                                            maxWidth: '100%', 
+                                                            maxHeight: '300px', 
+                                                            objectFit: 'cover',
+                                                            borderRadius: '12px',
+                                                            marginBottom: '16px'
+                                                        }}
+                                                    />
+                                                </div>
+                                            )}
+                                            
                                             <p className="post-content">{post.content}</p>
                                             <div className="post-meta">
                                                 <span className="post-author">Autor: {post.author_name}</span>
@@ -698,13 +804,13 @@ const AdminDashboard = () => {
                                                     className="btn-edit-post"
                                                     onClick={() => setEditingPost(post)}
                                                 >
-                                                    ✏️ Editar
+                                                    Editar
                                                 </button>
                                                 <button 
                                                     className="btn-delete-post"
                                                     onClick={() => handleDeletePost(post.id)}
                                                 >
-                                                    🗑️ Eliminar
+                                                    Eliminar
                                                 </button>
                                             </div>
                                         </>
@@ -713,7 +819,7 @@ const AdminDashboard = () => {
                             ))
                         ) : (
                             <div className="empty-posts">
-                                <p>📖 No hay charlas educativas publicadas aún.</p>
+                                <p>No hay charlas educativas publicadas aún.</p>
                                 <p className="empty-subtitle">Haz clic en "Nueva Charla" para agregar una.</p>
                             </div>
                         )}
@@ -725,7 +831,7 @@ const AdminDashboard = () => {
             {activeTab === 'users' && (
                 <div className="users-section">
                     <div className="section-header">
-                        <h2>👥 Gestión de Usuarios</h2>
+                        <h2>Gestión de Usuarios</h2>
                         <p className="section-subtitle">Administra los roles de los usuarios de la plataforma</p>
                     </div>
 
@@ -754,9 +860,9 @@ const AdminDashboard = () => {
                                             <td>{user.phone || 'N/A'}</td>
                                             <td>
                                                 <span className={`role-badge ${user.role}`}>
-                                                    {user.role === 'adoptante' && '👤 Adoptante'}
-                                                    {user.role === 'rescatista' && '🦸 Rescatista'}
-                                                    {user.role === 'admin' && '⭐ Admin'}
+                                                    {user.role === 'adoptante' && 'Adoptante'}
+                                                    {user.role === 'rescatista' && 'Rescatista'}
+                                                    {user.role === 'admin' && 'Admin'}
                                                 </span>
                                             </td>
                                             <td>{new Date(user.created_at).toLocaleDateString('es-ES')}</td>
@@ -765,7 +871,7 @@ const AdminDashboard = () => {
                                                     className="btn-change-role"
                                                     onClick={() => handleChangeUserRole(user.id, user.role)}
                                                 >
-                                                    🔄 Cambiar Rol
+                                                    Cambiar Rol
                                                 </button>
                                             </td>
                                         </tr>
@@ -775,7 +881,7 @@ const AdminDashboard = () => {
                         </div>
                     ) : (
                         <div className="empty-users">
-                            <p>👥 No se encontraron usuarios.</p>
+                            <p>No se encontraron usuarios.</p>
                         </div>
                     )}
                 </div>

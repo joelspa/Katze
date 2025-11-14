@@ -20,7 +20,7 @@ class AuthService {
     }
 
     // Crea un nuevo usuario en la base de datos
-    async createUser(email, passwordHash, fullName, role, phone = null) {
+    async createUser(email, passwordHash, fullName, role, phone) {
         const result = await db.query(
             'INSERT INTO users (email, password_hash, full_name, "role", phone) VALUES ($1, $2, $3, $4, $5) RETURNING id, email, "role", phone',
             [email, passwordHash, fullName, role, phone]

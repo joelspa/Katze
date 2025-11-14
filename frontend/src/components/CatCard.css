@@ -1,45 +1,98 @@
-/* frontend/src/components/CatCard.css */
+/* CatCard - Modern Card Design */
 .cat-card {
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    margin: 10px;
-    width: 300px;
-    overflow: hidden;
-    /* Para que la imagen no se salga */
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  padding-bottom: var(--spacing-md);
+  background: var(--surface-card);
+  border-radius: var(--border-radius-xl);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  transition: all var(--transition-slow);
+  cursor: pointer;
+  height: 100%;
+}
+
+.cat-card:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-4px);
 }
 
 .cat-card-img {
-    width: 100%;
-    height: 200px;
-    object-fit: cover;
-    /* Asegura que la imagen cubra el espacio */
+  width: 100%;
+  aspect-ratio: 3/4;
+  object-fit: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
 }
 
 .cat-card-body {
-    padding: 15px;
+  padding: var(--spacing-lg);
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: var(--spacing-xs);
 }
 
 .cat-card-title {
-    font-size: 1.5rem;
-    margin-bottom: 10px;
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-tight);
+  color: var(--color-gray-900);
+  margin: 0;
 }
 
 .cat-card-text {
-    margin-bottom: 8px;
-    color: #555;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-height-normal);
+  color: var(--color-gray-700);
+  margin: 0;
+}
+
+.cat-card-status {
+  display: inline-block;
+  padding: 0.25rem var(--spacing-sm);
+  border-radius: var(--border-radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-top: var(--spacing-xs);
+}
+
+.status-esterilizado {
+  background-color: rgba(16, 185, 129, 0.1);
+  color: var(--color-success-dark);
+}
+
+.status-pendiente {
+  background-color: rgba(245, 158, 11, 0.1);
+  color: var(--color-warning-dark);
 }
 
 .cat-card-button {
-    display: inline-block;
-    padding: 8px 12px;
-    background-color: #007bff;
-    color: white;
-    text-decoration: none;
-    border-radius: 4px;
-    text-align: center;
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  padding: 0.625rem var(--spacing-lg);
+  margin-top: var(--spacing-md);
+  background: var(--color-primary);
+  color: var(--color-white);
+  text-decoration: none;
+  border-radius: var(--border-radius-lg);
+  border: none;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: 0.015em;
+  cursor: pointer;
+  transition: all var(--transition-base);
 }
 
 .cat-card-button:hover {
-    background-color: #0056b3;
+  background: var(--color-primary-hover);
+  transform: translateY(-1px);
+  text-decoration: none;
 }

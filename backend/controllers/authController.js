@@ -11,6 +11,11 @@ class AuthController {
         try {
             const { email, password, fullName, role, phone } = req.body;
 
+            // Validación de campos requeridos
+            if (!email || !password || !fullName || !role || !phone) {
+                return ErrorHandler.badRequest(res, 'Todos los campos son requeridos: email, password, fullName, role, phone');
+            }
+
             // Validación de rol
             if (!Validator.isValidRole(role)) {
                 return ErrorHandler.badRequest(res, 'Rol inválido');

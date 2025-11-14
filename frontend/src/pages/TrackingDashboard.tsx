@@ -4,6 +4,9 @@
 import { useState, useEffect } from 'react';
 import axios, { isAxiosError } from 'axios';
 import { useAuth } from '../context/AuthContext';
+import { storage } from '../firebase';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { v4 as uuidv4 } from 'uuid';
 import './TrackingDashboard.css';
 
 // Interfaz que define la estructura de una tarea de seguimiento
@@ -69,37 +72,24 @@ const TrackingDashboard = () => {
         const notes = prompt("Ingresa las notas de seguimiento:");
         if (notes === null) return;
 
-        // Si es tarea de esterilización y se seleccionó un archivo, subirlo primero
+        // Si es tarea de esterilización y se seleccionó un archivo, subirlo a Firebase primero
         let certificateUrl = "";
         if (taskType === 'Seguimiento de Esterilización' && selectedFile && uploadingCertificate === taskId) {
             try {
                 setUploadProgress(0);
-                const formData = new FormData();
-                formData.append('certificate', selectedFile);
 
-                const uploadResponse = await axios.post(
-                    `http://localhost:5000/api/tracking/${taskId}/upload-certificate`,
-                    formData,
-                    {
-                        headers: {
-                            'Authorization': `Bearer ${token}`,
-                            'Content-Type': 'multipart/form-data'
-                        },
-                        onUploadProgress: (progressEvent) => {
-                            if (progressEvent.total) {
-                                const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-                                setUploadProgress(progress);
-                            }
-                        }
-                    }
-                );
+                // Subir archivo a Firebase Storage
+                const fileExtension = selectedFile.name.split('.').pop();
+                const certificateRef = ref(storage, `certificates/${uuidv4()}.${fileExtension}`);
+                
+                await uploadBytes(certificateRef, selectedFile);
+                certificateUrl = await getDownloadURL(certificateRef);
 
-                certificateUrl = uploadResponse.data.data?.file?.url || "";
-                alert('✅ Certificado subido correctamente');
+                setUploadProgress(100);
+                alert('Certificado subido correctamente');
             } catch (error: unknown) {
-                if (isAxiosError(error)) {
-                    alert(`❌ Error al subir certificado: ${error.response?.data?.message || 'Error desconocido'}`);
-                }
+                console.error('Error al subir certificado a Firebase:', error);
+                alert('Error al subir certificado. Por favor, intenta de nuevo.');
                 return;
             }
         }
@@ -136,20 +126,20 @@ const TrackingDashboard = () => {
         // Validar tipo de archivo
         const allowedTypes = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
         if (!allowedTypes.includes(file.type)) {
-            alert('❌ Tipo de archivo no permitido. Solo se aceptan PDF, JPG, PNG y WEBP');
+            alert('Tipo de archivo no permitido. Solo se aceptan PDF, JPG, PNG y WEBP');
             return;
         }
 
         // Validar tamaño (máx 5MB)
         const maxSize = 5 * 1024 * 1024;
         if (file.size > maxSize) {
-            alert('❌ El archivo es demasiado grande. Tamaño máximo: 5MB');
+            alert('El archivo es demasiado grande. Tamaño máximo: 5MB');
             return;
         }
 
         setSelectedFile(file);
         setUploadingCertificate(taskId);
-        alert(`✅ Archivo seleccionado: ${file.name} (${(file.size / 1024).toFixed(2)} KB)`);
+        alert(`Archivo seleccionado: ${file.name} (${(file.size / 1024).toFixed(2)} KB)`);
     };
 
     // Formatea fechas en español para mejor legibilidad
@@ -179,49 +169,72 @@ const TrackingDashboard = () => {
 
     return (
         <div className="dashboard-container">
-            <h1>Panel de Seguimiento</h1>
-            <h2>Tareas Pendientes y Atrasadas</h2>
+            <div className="dashboard-header">
+                <h1>📊 Panel de Seguimiento</h1>
+                <div className="search-bar">
+                    <span className="search-icon">◎</span>
+                    <input 
+                        type="text" 
+                        className="search-input" 
+                        placeholder="Buscar por gato, adoptante o tipo de tarea..."
+                    />
+                </div>
+            </div>
+
             {tasks.length === 0 ? (
-                <p className="no-tasks">¡Genial! No hay tareas de seguimiento pendientes.</p>
+                <p className="no-tasks">✅ ¡Genial! No hay tareas de seguimiento pendientes.</p>
             ) : (
                 <div className="tasks-list">
                     {tasks.map((task) => (
                         <div key={task.id} className={`task-card ${task.status === 'atrasada' ? 'overdue' : ''}`}>
-                            <div className="task-header">
-                                <h3>{task.task_type}</h3>
-                                {task.status === 'atrasada' && (
-                                    <span className="badge-overdue">⚠️ Atrasada</span>
+                            <div className="task-type-badge badge-sterilization">
+                                {task.task_type}
+                            </div>
+                            
+                            <h3>{task.cat_name}</h3>
+                            
+                            <div className="task-info">
+                                <div className="task-info-item">
+                                    <span className="task-info-label">Adoptante:</span> {task.applicant_name}
+                                </div>
+                                {task.sterilization_status && (
+                                    <div className="task-info-item">
+                                        <span className="task-info-label">Estado:</span>
+                                        <span className={`status-badge ${task.sterilization_status}`}>
+                                            {task.sterilization_status}
+                                        </span>
+                                    </div>
                                 )}
                             </div>
                             
-                            {task.description && (
-                                <p className="task-description">{task.description}</p>
-                            )}
+                            <div className={`due-date ${task.status === 'atrasada' ? 'overdue' : ''}`}>
+                                Vence: {formatDate(task.due_date)}
+                            </div>
                             
                             <div className="task-details">
-                                <p><strong>🐱 Gato:</strong> {task.cat_name}</p>
+                                <p><strong>Gato:</strong> {task.cat_name}</p>
                                 {task.sterilization_status && (
                                     <p>
-                                        <strong>💉 Estado esterilización:</strong> 
+                                        <strong>Estado esterilización:</strong> 
                                         <span className={`status-badge ${task.sterilization_status}`}>
-                                            {task.sterilization_status === 'esterilizado' ? 'Esterilizado ✓' : 
+                                            {task.sterilization_status === 'esterilizado' ? 'Esterilizado' : 
                                              task.sterilization_status === 'pendiente' ? 'Pendiente' : 'No aplica'}
                                         </span>
                                     </p>
                                 )}
-                                <p><strong>👤 Adoptante:</strong> {task.applicant_name}</p>
+                                <p><strong>Adoptante:</strong> {task.applicant_name}</p>
                                 {task.applicant_phone && (
-                                    <p><strong>📞 Teléfono:</strong> {task.applicant_phone}</p>
+                                    <p><strong>Teléfono:</strong> {task.applicant_phone}</p>
                                 )}
-                                <p><strong>📅 Vencimiento:</strong> {formatDate(task.due_date)}</p>
-                                <p><strong>👨‍⚕️ Rescatista:</strong> {task.owner_name}</p>
+                                <p><strong>Vencimiento:</strong> {formatDate(task.due_date)}</p>
+                                <p><strong>Rescatista:</strong> {task.owner_name}</p>
                             </div>
                             
                             {/* Sección de subida de certificado para tareas de esterilización */}
                             {task.task_type === 'Seguimiento de Esterilización' && (
                                 <div className="certificate-upload-section">
                                     <label className="certificate-label">
-                                        📄 Certificado de Esterilización (Opcional)
+                                        Certificado de Esterilización (Opcional)
                                     </label>
                                     <div className="file-upload-container">
                                         <input
@@ -233,9 +246,9 @@ const TrackingDashboard = () => {
                                         />
                                         <label htmlFor={`certificate-${task.id}`} className="file-input-label">
                                             {uploadingCertificate === task.id && selectedFile ? (
-                                                <>📎 {selectedFile.name}</>
+                                                <>{selectedFile.name}</>
                                             ) : (
-                                                <>📁 Seleccionar archivo (PDF o imagen)</>
+                                                <>Seleccionar archivo (PDF o imagen)</>
                                             )}
                                         </label>
                                         {uploadingCertificate === task.id && uploadProgress > 0 && (
@@ -258,7 +271,7 @@ const TrackingDashboard = () => {
                                 className="btn-complete"
                                 onClick={() => handleCompleteTask(task.id, task.task_type)}
                             >
-                                ✓ Completar Tarea
+                                Completar Tarea
                             </button>
                         </div>
                     ))}

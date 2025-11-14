@@ -95,15 +95,16 @@ const Statistics = () => {
 
     return (
         <div className="statistics-container">
-            <h1>📊 Dashboard de Estadísticas</h1>
-            <p className="stats-subtitle">
-                Métricas clave de la plataforma y priorización de adopciones
-            </p>
+            <div className="statistics-wrapper">
+                <h1>📈 Dashboard de Estadísticas</h1>
+                <p className="stats-subtitle">
+                    Métricas clave de la plataforma y priorización de adopciones
+                </p>
 
-            {/* Métricas principales */}
-            <div className="metrics-grid">
+                {/* Métricas principales */}
+                <div className="metrics-grid">
                 <div className="metric-card primary">
-                    <div className="metric-icon">🏠</div>
+                    <div className="metric-icon">CASA</div>
                     <div className="metric-content">
                         <h3>{stats.general.total_adopciones}</h3>
                         <p>Adopciones Completadas</p>
@@ -111,7 +112,7 @@ const Statistics = () => {
                 </div>
 
                 <div className="metric-card success">
-                    <div className="metric-icon">🐱</div>
+                    <div className="metric-icon">GATOS</div>
                     <div className="metric-content">
                         <h3>{stats.general.gatos_disponibles}</h3>
                         <p>Gatos Disponibles</p>
@@ -119,7 +120,7 @@ const Statistics = () => {
                 </div>
 
                 <div className="metric-card info">
-                    <div className="metric-icon">💉</div>
+                    <div className="metric-icon">ESTRIL</div>
                     <div className="metric-content">
                         <h3>{stats.general.tasa_esterilizacion}%</h3>
                         <p>Tasa de Esterilización</p>
@@ -128,7 +129,7 @@ const Statistics = () => {
                 </div>
 
                 <div className={`metric-card ${stats.general.tareas_vencidas > 0 ? 'warning' : 'success'}`}>
-                    <div className="metric-icon">{stats.general.tareas_vencidas > 0 ? '⚠️' : '✅'}</div>
+                    <div className="metric-icon">{stats.general.tareas_vencidas > 0 ? 'ALERTA' : 'OK'}</div>
                     <div className="metric-content">
                         <h3>{stats.general.tareas_vencidas}</h3>
                         <p>Tareas Vencidas</p>
@@ -136,18 +137,18 @@ const Statistics = () => {
                 </div>
 
                 <div className="metric-card pending">
-                    <div className="metric-icon">📋</div>
+                    <div className="metric-icon">SOL</div>
                     <div className="metric-content">
                         <h3>{stats.general.solicitudes_pendientes}</h3>
                         <p>Solicitudes Pendientes</p>
                     </div>
                 </div>
-            </div>
+                </div>
 
-            {/* Sección de gatos prioritarios */}
-            <div className="priority-section">
+                {/* Sección de gatos prioritarios */}
+                <div className="priority-section">
                 <div className="section-header">
-                    <h2>🎯 Gatos que Necesitan Adopción Prioritaria</h2>
+                    <h2>Gatos que Necesitan Adopción Prioritaria</h2>
                     <p className="section-subtitle">
                         Estos gatitos llevan más tiempo esperando un hogar. ¡Ayúdalos compartiendo sus perfiles!
                     </p>
@@ -155,14 +156,14 @@ const Statistics = () => {
 
                 {stats.oldestCats.length === 0 ? (
                     <div className="empty-message">
-                        <p>🎉 ¡Excelente! Todos los gatos están siendo adoptados rápidamente.</p>
+                        <p>¡Excelente! Todos los gatos están siendo adoptados rápidamente.</p>
                     </div>
                 ) : (
                     <div className="priority-cats-grid">
                         {stats.oldestCats.map((cat) => (
                             <div key={cat.id} className="priority-cat-card">
                                 <div className="priority-badge">
-                                    ⏰ {Math.floor(cat.dias_publicado)} días
+                                    {Math.floor(cat.dias_publicado)} días
                                 </div>
 
                                 {cat.photos_url && cat.photos_url.length > 0 ? (
@@ -176,7 +177,7 @@ const Statistics = () => {
                                     />
                                 ) : (
                                     <div className="cat-image-placeholder">
-                                        <span>🐱</span>
+                                        <span>GATO</span>
                                     </div>
                                 )}
 
@@ -186,60 +187,61 @@ const Statistics = () => {
                                     
                                     <div className="cat-info-grid">
                                         <div className="info-item">
-                                            <span className="info-label">📅 Edad:</span>
+                                            <span className="info-label">Edad:</span>
                                             <span className="info-value">{cat.age}</span>
                                         </div>
                                         <div className="info-item">
-                                            <span className="info-label">💉 Esterilización:</span>
+                                            <span className="info-label">Esterilización:</span>
                                             <span className={`status-badge ${cat.sterilization_status}`}>
                                                 {cat.sterilization_status === 'esterilizado' ? 'Sí' : 
                                                  cat.sterilization_status === 'pendiente' ? 'Pendiente' : 'N/A'}
                                             </span>
                                         </div>
                                         <div className="info-item full-width">
-                                            <span className="info-label">👨‍⚕️ Rescatista:</span>
+                                            <span className="info-label">Rescatista:</span>
                                             <span className="info-value">{cat.rescatista_name}</span>
                                         </div>
                                     </div>
 
                                     <Link to={`/cats/${cat.id}`} className="btn-view-cat">
-                                        Ver Perfil Completo →
+                                        Ver Perfil Completo
                                     </Link>
                                 </div>
                             </div>
                         ))}
                     </div>
                 )}
-            </div>
+                </div>
 
-            {/* Recomendaciones */}
-            <div className="recommendations-section">
-                <h3>💡 Recomendaciones</h3>
+                {/* Recomendaciones */}
+                <div className="recommendations-section">
+                <h3>Recomendaciones</h3>
                 <ul className="recommendations-list">
                     {stats.general.tareas_vencidas > 0 && (
                         <li className="recommendation warning">
-                            ⚠️ Tienes {stats.general.tareas_vencidas} tareas vencidas. 
+                            Tienes {stats.general.tareas_vencidas} tareas vencidas. 
                             <Link to="/tracking"> Ir a Seguimiento</Link>
                         </li>
                     )}
                     {stats.general.solicitudes_pendientes > 0 && (
                         <li className="recommendation info">
-                            📋 Hay {stats.general.solicitudes_pendientes} solicitudes pendientes de revisión.
+                            Hay {stats.general.solicitudes_pendientes} solicitudes pendientes de revisión.
                             <Link to="/dashboard"> Ver Solicitudes</Link>
                         </li>
                     )}
                     {stats.oldestCats.length > 0 && (
                         <li className="recommendation priority">
-                            🎯 {stats.oldestCats.length} gatos necesitan promoción prioritaria. 
+                            {stats.oldestCats.length} gatos necesitan promoción prioritaria. 
                             Comparte sus perfiles en redes sociales.
                         </li>
                     )}
                     {stats.general.pendientes_esterilizacion > 0 && (
                         <li className="recommendation info">
-                            💉 {stats.general.pendientes_esterilizacion} gatos adoptados pendientes de esterilización.
+                            {stats.general.pendientes_esterilizacion} gatos adoptados pendientes de esterilización.
                         </li>
                     )}
                 </ul>
+                </div>
             </div>
         </div>
     );

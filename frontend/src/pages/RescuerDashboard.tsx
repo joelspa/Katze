@@ -69,25 +69,32 @@ const RescuerDashboard = () => {
 
     // Actualiza el estado de una solicitud (aprobar o rechazar)
     const handleUpdateStatus = async (appId: number, newStatus: 'aprobada' | 'rechazada') => {
-        if (!window.confirm(`¿Estás seguro de que quieres ${newStatus} esta solicitud?`)) {
+        const action = newStatus === 'aprobada' ? 'aprobar' : 'rechazar';
+        if (!window.confirm(`¿Estás seguro de que quieres ${action} esta solicitud?`)) {
             return;
         }
 
         try {
             const API_URL = `http://localhost:5000/api/applications/${appId}/status`;
-            await axios.put(API_URL,
+            const response = await axios.put(API_URL,
                 { status: newStatus },
                 {
                     headers: { 'Authorization': `Bearer ${token}` }
                 }
             );
 
-            alert(`Solicitud ${newStatus} con éxito.`);
+            alert(response.data.message || `Solicitud ${newStatus} con éxito.`);
             fetchApplications();
 
         } catch (error: unknown) {
-            alert('Error al actualizar la solicitud.');
-            console.error(error);
+            if (axios.isAxiosError(error)) {
+                const errorMessage = error.response?.data?.message || error.message;
+                alert(`Error al actualizar la solicitud: ${errorMessage}`);
+                console.error('Error completo:', error.response?.data);
+            } else {
+                alert('Error desconocido al actualizar la solicitud.');
+                console.error(error);
+            }
         }
     };
 
@@ -109,49 +116,52 @@ const RescuerDashboard = () => {
 
     return (
         <div className="dashboard-container">
-            <h1>Panel de Rescatista</h1>
-            <h2>Solicitudes Pendientes</h2>
+            <h1>🏠 Panel de Rescatista</h1>
+            <h2>📋 Solicitudes Pendientes</h2>
             {applications.length === 0 ? (
-                <p>No tienes solicitudes pendientes.</p>
+                <div className="empty-state">
+                    <div className="empty-state-icon">📭</div>
+                    <p className="empty-state-text">No tienes solicitudes pendientes.</p>
+                </div>
             ) : (
                 <div className="applications-list">
                     {applications.map((app) => (
                         <div key={app.id} className="application-card">
-                            <h3>{app.cat_name}</h3>
-                            <p><strong>Solicitante:</strong> {app.applicant_name}</p>
+                            <h3>🐱 Gato: {app.cat_name}</h3>
+                            
+                            <div className="applicant-info">
+                                <p><strong>👤 Solicitante:</strong> {app.applicant_name}</p>
+                            </div>
                             
                             {/* Información de contacto del adoptante */}
-                            <div className="contact-info" style={{ 
-                                background: '#f0f8ff', 
-                                padding: '10px', 
-                                borderRadius: '5px', 
-                                margin: '10px 0',
-                                border: '1px solid #b3d9ff'
-                            }}>
-                                <p style={{ margin: '5px 0', fontSize: '0.95rem' }}>
-                                    📧 <strong>Email:</strong> <a href={`mailto:${app.applicant_email}`}>{app.applicant_email}</a>
+                            <div className="contact-info">
+                                <p>
+                                    <strong>📧 Email:</strong> <a href={`mailto:${app.applicant_email}`}>{app.applicant_email}</a>
                                 </p>
                                 {app.applicant_phone && (
-                                    <p style={{ margin: '5px 0', fontSize: '0.95rem' }}>
-                                        📞 <strong>Teléfono:</strong> <a href={`tel:${app.applicant_phone}`}>{app.applicant_phone}</a>
+                                    <p>
+                                        <strong>📱 Teléfono:</strong> <a href={`tel:${app.applicant_phone}`}>{app.applicant_phone}</a>
                                     </p>
                                 )}
                             </div>
 
-                            <p><strong>Respuestas del formulario:</strong></p>
-                            <pre>{JSON.stringify(app.form_responses, null, 2)}</pre>
+                            <div className="form-responses">
+                                <p className="form-responses-title">📝 Respuestas del formulario:</p>
+                                <pre>{JSON.stringify(app.form_responses, null, 2)}</pre>
+                            </div>
+                            
                             <div className="application-actions">
                                 <button
                                     className="btn-approve"
                                     onClick={() => handleUpdateStatus(app.id, 'aprobada')}
                                 >
-                                    Aprobar
+                                    ✅ Aprobar
                                 </button>
                                 <button
                                     className="btn-reject"
                                     onClick={() => handleUpdateStatus(app.id, 'rechazada')}
                                 >
-                                    Rechazar
+                                    ❌ Rechazar
                                 </button>
                             </div>
                         </div>

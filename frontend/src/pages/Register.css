@@ -1,44 +1,164 @@
 /* frontend/src/pages/Register.css */
 
-.container {
+.register-page {
+    min-height: 100vh;
     display: flex;
-    flex-direction: column;
-    width: 300px;
-    margin: 100px auto;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
     padding: 20px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.container {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    padding: 48px 40px;
+    width: 100%;
+    max-width: 450px;
+    text-align: center;
+}
+
+.logo-section {
+    margin-bottom: 24px;
+}
+
+.logo-icon {
+    font-size: 48px;
+    margin-bottom: 8px;
+}
+
+.logo-text {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--color-gray-900);
+    margin: 0;
+}
+
+.container h2 {
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--color-gray-900);
+    margin-bottom: 8px;
+}
+
+.subtitle {
+    color: var(--color-gray-600);
+    font-size: 14px;
+    margin-bottom: 24px;
 }
 
 .formGroup {
-    margin-bottom: 15px;
-    display: flex;
-    flex-direction: column;
+    margin-bottom: 20px;
+    text-align: left;
 }
 
 .label {
-    margin-bottom: 5px;
-    font-weight: bold;
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: var(--color-gray-600);
+    font-size: 14px;
 }
 
-.input {
-    padding: 8px;
-    font-size: 16px;
-    border-radius: 4px;
-    border: 1px solid #ddd;
+.input-wrapper {
+    position: relative;
+}
+
+.input, .select {
+    width: 100%;
+    padding: 14px 16px;
+    font-size: 15px;
+    border-radius: 8px;
+    border: 1px solid var(--border-default);
+    background-color: var(--surface-panel);
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+}
+
+.input:focus, .select:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    background-color: white;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.input::placeholder {
+    color: var(--color-gray-400);
+}
+
+.show-password-btn {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: var(--color-gray-400);
+    cursor: pointer;
+    font-size: 20px;
+    padding: 4px 8px;
+    transition: color 0.3s ease;
+}
+
+.show-password-btn:hover {
+    color: var(--color-gray-600);
+}
+
+.select {
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23a0aec0' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 16px center;
+    padding-right: 40px;
+}
+
+.phone-note {
+    color: var(--color-gray-600);
+    font-size: 13px;
+    margin-top: 6px;
+    display: block;
 }
 
 .button {
-    padding: 10px;
+    width: 100%;
+    padding: 14px;
     font-size: 16px;
-    background-color: #007bff;
+    font-weight: 600;
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
     color: white;
     border: none;
-    border-radius: 4px;
+    border-radius: 8px;
     cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    margin-top: 8px;
 }
 
 .button:hover {
-    background-color: #0056b3;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
+}
+
+.button:active {
+    transform: translateY(0);
+}
+
+.login-link {
+    margin-top: 24px;
+    font-size: 14px;
+    color: var(--color-gray-600);
+}
+
+.login-link a {
+    color: var(--color-primary);
+    font-weight: 600;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.login-link a:hover {
+    color: var(--color-primary-dark);
+    text-decoration: underline;
 }

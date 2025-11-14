@@ -95,12 +95,15 @@ const Home = () => {
                         </p>
                     </div>
                     <Link to="/education" className="banner-button">
-                        Ver Charlas <span className="arrow">→</span>
+                        Ver Charlas
                     </Link>
                 </div>
             </div>
 
-            <h1>Gatos en Adopción</h1>
+            <h1>🏡 Gatos en Adopción</h1>
+            <p className="home-subtitle">
+                Encuentra a tu nuevo amigo peludo. Cada gato tiene una historia única esperando ser descubierta.
+            </p>
 
             {/* Filtros de búsqueda */}
             <div className="filters-container">
@@ -113,7 +116,7 @@ const Home = () => {
                     >
                         <option value="todos">Todos</option>
                         <option value="esterilizado">Esterilizado</option>
-                        <option value="no_esterilizado">No esterilizado</option>
+                        <option value="pendiente">Pendiente</option>
                     </select>
                 </div>
 

@@ -17,6 +17,7 @@ import PublishCat from './pages/PublishCat';
 import AdminDashboard from './pages/AdminDashboard';
 import Education from './pages/Education';
 import Statistics from './pages/Statistics';
+import Profile from './pages/Profile';
 
 function App() {
   return (
@@ -66,6 +67,14 @@ function App() {
             element={
               <ProtectedRoute allowedRoles={['admin']}>
                 <AdminDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute allowedRoles={['adoptante', 'rescatista', 'admin']}>
+                <Profile />
               </ProtectedRoute>
             }
           />

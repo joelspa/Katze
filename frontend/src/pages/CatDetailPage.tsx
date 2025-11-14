@@ -107,7 +107,7 @@ const CatDetailPage = () => {
                     {/* Historia de rescate si existe */}
                     {cat.story && (
                         <div className="detail-section story-section">
-                            <h3>💕 Su Historia</h3>
+                            <h3>Su Historia</h3>
                             <p className="story-content">{cat.story}</p>
                         </div>
                     )}
