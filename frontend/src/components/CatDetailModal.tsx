@@ -11,8 +11,6 @@ interface CatDetailModalProps {
 }
 
 const CatDetailModal: React.FC<CatDetailModalProps> = ({ cat, isOpen, onClose }) => {
-    if (!isOpen) return null;
-
     // Cierra el modal si se hace clic en el overlay
     const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
         if (e.target === e.currentTarget) {
@@ -31,6 +29,8 @@ const CatDetailModal: React.FC<CatDetailModalProps> = ({ cat, isOpen, onClose })
             document.body.style.overflow = 'unset';
         };
     }, [isOpen]);
+
+    if (!isOpen) return null;
 
     const imageUrl = cat.photos_url && cat.photos_url.length > 0
         ? cat.photos_url[0]

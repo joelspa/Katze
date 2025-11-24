@@ -95,10 +95,10 @@ const Statistics = () => {
 
     // Calcular métricas derivadas
     const totalGatos = stats.general.total_adopciones + stats.general.gatos_disponibles;
-    const tasaAdopcion = totalGatos > 0 
-        ? Math.round((stats.general.total_adopciones / totalGatos) * 100) 
+    const tasaAdopcion = totalGatos > 0
+        ? Math.round((stats.general.total_adopciones / totalGatos) * 100)
         : 0;
-    
+
     const promedioEsperaDias = stats.oldestCats.length > 0
         ? Math.round(stats.oldestCats.reduce((sum, cat) => sum + cat.dias_publicado, 0) / stats.oldestCats.length)
         : 0;
@@ -231,8 +231,8 @@ const Statistics = () => {
                             </div>
                             <div className="health-progress">
                                 <div className="progress-bar">
-                                    <div 
-                                        className="progress-fill success" 
+                                    <div
+                                        className="progress-fill success"
                                         style={{ width: `${stats.general.tasa_esterilizacion}%` }}
                                     ></div>
                                 </div>
@@ -242,8 +242,8 @@ const Statistics = () => {
                                 </div>
                             </div>
                             <p className="health-insight">
-                                {stats.general.tasa_esterilizacion >= 80 
-                                    ? '¡Excelente! Mantén este ritmo.' 
+                                {stats.general.tasa_esterilizacion >= 80
+                                    ? '¡Excelente! Mantén este ritmo.'
                                     : 'Priorizar seguimiento de esterilizaciones.'}
                             </p>
                         </div>
@@ -271,8 +271,8 @@ const Statistics = () => {
                                 </div>
                             </div>
                             <p className="health-insight">
-                                {promedioEsperaDias > 60 
-                                    ? 'Aumentar promoción en redes sociales.' 
+                                {promedioEsperaDias > 60
+                                    ? 'Aumentar promoción en redes sociales.'
                                     : 'Tiempo de adopción dentro del rango esperado.'}
                             </p>
                         </div>
@@ -304,8 +304,8 @@ const Statistics = () => {
                                 </div>
                             </div>
                             <p className="health-insight">
-                                {urgenciasActivas === 0 
-                                    ? 'Todas las operaciones al día.' 
+                                {urgenciasActivas === 0
+                                    ? 'Todas las operaciones al día.'
                                     : `Resolver ${urgenciasActivas} item(s) pendientes.`}
                             </p>
                         </div>
@@ -354,8 +354,8 @@ const Statistics = () => {
 
                             <div className="priority-list">
                                 {stats.oldestCats.map((cat) => {
-                                    const priorityLevel = cat.dias_publicado > 90 ? 'critical' : 
-                                                         cat.dias_publicado > 60 ? 'high' : 'medium';
+                                    const priorityLevel = cat.dias_publicado > 90 ? 'critical' :
+                                        cat.dias_publicado > 60 ? 'high' : 'medium';
                                     return (
                                         <div key={cat.id} className={`priority-item ${priorityLevel}`}>
                                             <div className="priority-indicator">
@@ -365,8 +365,8 @@ const Statistics = () => {
 
                                             <div className="priority-image">
                                                 {cat.photos_url && cat.photos_url.length > 0 ? (
-                                                    <img 
-                                                        src={cat.photos_url[0]} 
+                                                    <img
+                                                        src={cat.photos_url[0]}
                                                         alt={cat.name}
                                                         onError={(e) => {
                                                             e.currentTarget.src = 'https://placehold.co/100x100/e0e0e0/666?text=?';
@@ -388,14 +388,14 @@ const Statistics = () => {
                                                     <span className={`tag ${cat.sterilization_status}`}>
                                                         {cat.sterilization_status === 'esterilizado' ? (
                                                             <>
-                                                                <svg viewBox="0 0 20 20" fill="currentColor" style={{width: '14px', height: '14px', display: 'inline', marginRight: '4px', verticalAlign: 'middle'}}>
+                                                                <svg viewBox="0 0 20 20" fill="currentColor" style={{ width: '14px', height: '14px', display: 'inline', marginRight: '4px', verticalAlign: 'middle' }}>
                                                                     <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                                                                 </svg>
                                                                 Esterilizado
                                                             </>
                                                         ) : (
                                                             <>
-                                                                <svg viewBox="0 0 20 20" fill="currentColor" style={{width: '14px', height: '14px', display: 'inline', marginRight: '4px', verticalAlign: 'middle'}}>
+                                                                <svg viewBox="0 0 20 20" fill="currentColor" style={{ width: '14px', height: '14px', display: 'inline', marginRight: '4px', verticalAlign: 'middle' }}>
                                                                     <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
                                                                 </svg>
                                                                 Pendiente
@@ -404,7 +404,7 @@ const Statistics = () => {
                                                     </span>
                                                 </div>
                                                 <p className="rescuer-info">
-                                                    <svg viewBox="0 0 20 20" fill="currentColor" style={{width: '14px', height: '14px', display: 'inline', marginRight: '4px'}}>
+                                                    <svg viewBox="0 0 20 20" fill="currentColor" style={{ width: '14px', height: '14px', display: 'inline', marginRight: '4px' }}>
                                                         <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
                                                     </svg>
                                                     {cat.rescatista_name}
@@ -415,7 +415,7 @@ const Statistics = () => {
                                                 <Link to={`/cats/${cat.id}`} className="action-btn primary">
                                                     Ver Perfil
                                                 </Link>
-                                                <button 
+                                                <button
                                                     className="action-btn secondary"
                                                     onClick={() => {
                                                         const url = `${window.location.origin}/cats/${cat.id}`;
