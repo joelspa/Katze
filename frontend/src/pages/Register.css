@@ -48,6 +48,28 @@
     margin-bottom: 24px;
 }
 
+.info-box {
+    background: rgba(59, 130, 246, 0.08);
+    border: 1px solid rgba(59, 130, 246, 0.2);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 24px;
+    text-align: left;
+}
+
+.info-box strong {
+    color: var(--color-info-dark);
+    display: block;
+    margin-bottom: 8px;
+}
+
+.info-box p {
+    color: var(--color-gray-700);
+    font-size: 0.9rem;
+    margin: 0;
+    line-height: 1.5;
+}
+
 .formGroup {
     margin-bottom: 20px;
     text-align: left;

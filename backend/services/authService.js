@@ -7,19 +7,19 @@ const db = require('../db');
 const config = require('../config/config');
 
 class AuthService {
-    // Verifica si un email ya está registrado
+    // Chequea si el email ya existe en la DB
     async isEmailRegistered(email) {
         const result = await db.query("SELECT * FROM users WHERE email = $1", [email]);
         return result.rows.length > 0;
     }
 
-    // Crea un hash seguro de la contraseña
+    // Genera hash bcrypt de la contraseña
     async hashPassword(password) {
         const salt = await bcrypt.genSalt(10);
         return await bcrypt.hash(password, salt);
     }
 
-    // Crea un nuevo usuario en la base de datos
+    // Inserta nuevo usuario en la DB
     async createUser(email, passwordHash, fullName, role, phone) {
         const result = await db.query(
             'INSERT INTO users (email, password_hash, full_name, "role", phone) VALUES ($1, $2, $3, $4, $5) RETURNING id, email, "role", phone',

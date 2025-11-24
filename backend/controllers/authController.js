@@ -16,7 +16,11 @@ class AuthController {
                 return ErrorHandler.badRequest(res, 'Todos los campos son requeridos: email, password, fullName, role, phone');
             }
 
-            // Validación de rol
+            // Validación de rol - solo permitir adoptantes en registro público
+            if (role !== 'adoptante') {
+                return ErrorHandler.badRequest(res, 'Solo se permite el registro público como adoptante. Los rescatistas deben ser registrados por un administrador.');
+            }
+            
             if (!Validator.isValidRole(role)) {
                 return ErrorHandler.badRequest(res, 'Rol inválido');
             }

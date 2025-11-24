@@ -20,7 +20,7 @@ class CatService {
         return result.rows[0];
     }
 
-    // Obtiene todos los gatos aprobados y disponibles para adopción con filtros opcionales
+    // Obtiene gatos aprobados y disponibles con filtros opcionales (esterilización, edad)
     async getAllAvailableCats(filters = {}) {
         let query = `
             SELECT * FROM cats 
@@ -62,7 +62,7 @@ class CatService {
         return result.rows;
     }
 
-    // Obtiene un gato específico por ID (solo si está aprobado)
+    // Obtiene un gato por ID si está aprobado
     async getCatById(catId) {
         const result = await db.query(
             "SELECT * FROM cats WHERE id = $1 AND approval_status = 'aprobado'",
@@ -71,7 +71,7 @@ class CatService {
         return result.rows.length > 0 ? result.rows[0] : null;
     }
 
-    // Actualiza el estado de adopción de un gato
+    // Cambia el estado de adopción (en_adopcion, adoptado, etc)
     async updateAdoptionStatus(catId, status) {
         const result = await db.query(
             "UPDATE cats SET adoption_status = $1 WHERE id = $2 RETURNING *",

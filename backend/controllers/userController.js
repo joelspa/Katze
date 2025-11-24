@@ -149,6 +149,53 @@ class UserController {
             return ErrorHandler.serverError(res, 'Error al obtener estadísticas', error);
         }
     }
+
+    // POST /api/admin/users - Crear un nuevo usuario (solo admin)
+    async createUser(req, res) {
+        try {
+            if (req.user.role !== config.USER_ROLES.ADMIN) {
+                return ErrorHandler.forbidden(res, 'Solo los administradores pueden crear usuarios');
+            }
+
+            const { email, password, fullName, role, phone } = req.body;
+
+            // Validaciones
+            if (!email || !password || !fullName || !role) {
+                return ErrorHandler.badRequest(res, 'Email, contraseña, nombre completo y rol son requeridos');
+            }
+
+            if (!Validator.isValidEmail(email)) {
+                return ErrorHandler.badRequest(res, 'Email inválido');
+            }
+
+            if (!Validator.isValidPassword(password)) {
+                return ErrorHandler.badRequest(res, 'La contraseña debe tener al menos 6 caracteres');
+            }
+
+            if (!Validator.isValidRole(role)) {
+                return ErrorHandler.badRequest(res, 'Rol inválido');
+            }
+
+            // Verificar si el email ya existe
+            const emailExists = await userService.isEmailTaken(email);
+            if (emailExists) {
+                return ErrorHandler.badRequest(res, 'El email ya está registrado');
+            }
+
+            // Importar bcrypt para hashear la contraseña
+            const bcrypt = require('bcrypt');
+            const passwordHash = await bcrypt.hash(password, 10);
+
+            // Crear el usuario
+            const newUser = await userService.createUser(email, passwordHash, fullName, role, phone || null);
+            
+            return ErrorHandler.created(res, newUser, 'Usuario creado exitosamente');
+
+        } catch (error) {
+            console.error('[createUser] Error:', error.message, error.stack);
+            return ErrorHandler.serverError(res, 'Error al crear usuario', error);
+        }
+    }
 }
 
 module.exports = new UserController();

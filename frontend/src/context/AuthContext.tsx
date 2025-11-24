@@ -21,7 +21,7 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Funciones helper para gestionar localStorage
+// Recupera usuario desde localStorage con validación
 const getStoredUser = (): User | null => {
     try {
         const storedUser = localStorage.getItem('user');
@@ -37,6 +37,7 @@ const getStoredUser = (): User | null => {
     }
 };
 
+// Recupera token desde localStorage con validación
 const getStoredToken = (): string | null => {
     const token = localStorage.getItem('token');
     if (!token || token === 'undefined' || token === 'null') {
@@ -46,7 +47,7 @@ const getStoredToken = (): string | null => {
     return token;
 };
 
-// Limpia cualquier dato corrupto en localStorage al cargar
+// Limpia datos inválidos del localStorage
 const cleanupLocalStorage = () => {
     const user = localStorage.getItem('user');
     const token = localStorage.getItem('token');
@@ -68,6 +69,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const [user, setUser] = useState<User | null>(getStoredUser());
     const [token, setToken] = useState<string | null>(getStoredToken());
 
+    // Guarda usuario y token en estado + localStorage
     const login = (user: User, token: string) => {
         if (!user || !token) {
             console.error('Intento de login con datos inválidos:', { user, token });
@@ -87,16 +89,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setToken(token);
     };
 
+    // Limpia sesión del estado y localStorage
     const logout = () => {
         setUser(null);
         setToken(null);
-        // Elimina de localStorage
         localStorage.removeItem('token');
         localStorage.removeItem('user');
     };
 
+    // Chequea si hay sesión activa
     const isAuthenticated = () => {
-        // Verifica autenticación desde estado o localStorage
         return !!token || !!getStoredToken();
     };
 

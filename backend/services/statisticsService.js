@@ -4,7 +4,7 @@
 const db = require('../db');
 
 class StatisticsService {
-    // Obtiene gatos que llevan más tiempo sin adoptar (prioridad)
+    // Gatos con más días publicados sin adoptar
     async getOldestCatsInAdoption(limit = 10) {
         const result = await db.query(
             `SELECT 
@@ -28,7 +28,7 @@ class StatisticsService {
         return result.rows;
     }
 
-    // Obtiene estadísticas generales del sistema
+    // Estadísticas generales: adopciones, esterilización, tareas, etc
     async getGeneralStatistics() {
         // Total de adopciones completadas
         const adoptionsResult = await db.query(

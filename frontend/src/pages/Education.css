@@ -55,12 +55,15 @@
     margin: 0;
 }
 
-/* Posts Grid */
+/* Posts Grid - Full Width Single Column */
 .posts-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    display: flex;
+    flex-direction: column;
     gap: 32px;
     margin-bottom: 48px;
+    max-width: 900px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 /* Education Card */
@@ -83,7 +86,7 @@
 /* Contenedor de imagen cuadrado */
 .card-image-container {
     width: 100%;
-    aspect-ratio: 1 / 1;
+    aspect-ratio: 16 / 9;
     overflow: hidden;
     background: var(--color-gray-100);
     position: relative;
@@ -92,7 +95,7 @@
 .card-image {
     width: 100%;
     height: 100%;
-    object-fit: contain;
+    object-fit: cover;
     object-position: center;
     background: var(--color-gray-50);
     transition: transform 0.3s ease;
@@ -225,6 +228,7 @@
     from {
         opacity: 0;
     }
+
     to {
         opacity: 1;
     }
@@ -235,6 +239,7 @@
         opacity: 0;
         transform: translateY(20px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -266,7 +271,6 @@
     }
 
     .posts-grid {
-        grid-template-columns: 1fr;
         gap: var(--spacing-lg);
     }
 

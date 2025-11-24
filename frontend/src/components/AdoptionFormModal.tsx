@@ -31,13 +31,14 @@ const AdoptionFormModal: React.FC<AdoptionFormModalProps> = ({ catId, catName, o
 
     const { token } = useAuth();
 
-    // Valida que todos los campos requeridos estén completos
+    // Valida campos requeridos del formulario
     const isFormValid = () => {
         return formData.acceptsSterilization && 
                formData.acceptsFollowUp && 
                formData.reason.trim().length >= 20;
     };
 
+    // Envía solicitud de adopción al backend
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         
@@ -239,7 +240,12 @@ const AdoptionFormModal: React.FC<AdoptionFormModalProps> = ({ catId, catName, o
 
                     {/* Sección 3: Disponibilidad */}
                     <div className="form-section">
-                        <h3 className="section-title">⏰ Disponibilidad</h3>
+                        <h3 className="section-title">
+                            <svg viewBox="0 0 20 20" fill="currentColor" style={{width: '20px', height: '20px', marginRight: '8px', verticalAlign: 'middle'}}>
+                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
+                            </svg>
+                            Disponibilidad
+                        </h3>
                         
                         <div className="checkbox-group">
                             <label className="checkbox-label">
@@ -311,7 +317,10 @@ const AdoptionFormModal: React.FC<AdoptionFormModalProps> = ({ catId, catName, o
 
                         <div className="info-box">
                             <p>
-                                ℹ️ <strong>Importante:</strong> La adopción es un compromiso a largo plazo. 
+                                <svg viewBox="0 0 20 20" fill="currentColor" style={{width: '18px', height: '18px', marginRight: '6px', verticalAlign: 'middle'}}>
+                                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                                </svg>
+                                <strong>Importante:</strong> La adopción es un compromiso a largo plazo. 
                                 Asegúrate de estar preparado para cuidar del gato durante toda su vida (15-20 años).
                             </p>
                         </div>

@@ -5,59 +5,59 @@ Guía rápida de todos los endpoints de la API.
 ## Autenticación
 
 ```
-POST /api/auth/register
-POST /api/auth/login
+POST /api/auth/register    # Registrar nuevo usuario
+POST /api/auth/login       # Iniciar sesión
 ```
 
 ## Gatos
 
 ```
-GET    /api/cats
-GET    /api/cats/:id
-POST   /api/cats
-PUT    /api/cats/:id
-DELETE /api/cats/:id
+GET    /api/cats           # Listar todos los gatos disponibles
+GET    /api/cats/:id       # Obtener detalles de un gato específico
+POST   /api/cats           # Publicar un nuevo gato (rescatista)
+PUT    /api/cats/:id       # Actualizar información del gato
+DELETE /api/cats/:id       # Eliminar publicación de gato
 ```
 
 ## Solicitudes de Adopción
 
 ```
-POST /api/applications/apply/:id
-GET  /api/applications/received
-PUT  /api/applications/:id/status
+POST /api/applications/apply/:id        # Solicitar adopción de un gato
+GET  /api/applications/received         # Ver solicitudes recibidas (rescatista)
+PUT  /api/applications/:id/status       # Aprobar/rechazar solicitud
 ```
 
 ## Seguimiento Post-Adopción
 
 ```
-GET  /api/tracking/tasks
-PUT  /api/tracking/tasks/:id/complete
-POST /api/tracking/tasks/:id/wellness
+GET  /api/tracking/tasks                # Ver tareas de seguimiento pendientes
+PUT  /api/tracking/tasks/:id/complete   # Marcar tarea como completada
+POST /api/tracking/tasks/:id/wellness   # Registrar reporte de bienestar
 ```
 
 ## Educación
 
 ```
-GET  /api/education/talks
-GET  /api/education/talks/:id
-POST /api/education/talks
-PUT  /api/education/talks/:id
-POST /api/education/talks/:id/register
+GET  /api/education/talks               # Listar todas las charlas educativas
+GET  /api/education/talks/:id           # Obtener detalles de una charla
+POST /api/education/talks               # Crear nueva charla (rescatista)
+PUT  /api/education/talks/:id           # Actualizar información de charla
+POST /api/education/talks/:id/register  # Registrarse a una charla
 ```
 
 ## Estadísticas
 
 ```
-GET /api/statistics/general
-GET /api/statistics/adoption-trends
+GET /api/statistics/general             # Estadísticas generales del sistema
+GET /api/statistics/adoption-trends     # Tendencias de adopción
 ```
 
 ## Usuarios
 
 ```
-GET /api/users/profile
-PUT /api/users/profile
-GET /api/users
-GET /api/users/:id
-PUT /api/users/:id/role
+GET /api/users/profile      # Ver perfil del usuario autenticado
+PUT /api/users/profile      # Actualizar perfil propio
+GET /api/users              # Listar todos los usuarios (admin)
+GET /api/users/:id          # Obtener usuario específico (admin)
+PUT /api/users/:id/role     # Cambiar rol de usuario (admin)
 ```

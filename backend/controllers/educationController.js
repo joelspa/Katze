@@ -23,7 +23,7 @@ class EducationController {
             const { id } = req.params;
 
             const post = await educationService.getPostById(id);
-            
+
             if (!post) {
                 return ErrorHandler.notFound(res, 'Artículo no encontrado');
             }
@@ -48,9 +48,9 @@ class EducationController {
             }
 
             const newPost = await educationService.createPost(
-                title, 
-                content, 
-                authorId, 
+                title,
+                content,
+                authorId,
                 event_date,
                 content_type || 'articulo',
                 category || 'general',
@@ -68,7 +68,7 @@ class EducationController {
     async updatePost(req, res) {
         try {
             const { id } = req.params;
-            const { title, content, event_date, content_type, category, image_url } = req.body;
+            const { title, content, event_date, content_type, category, image_url, created_at } = req.body;
 
             // Valida los datos del artículo
             const validation = Validator.validateEducationalPost(title, content);
@@ -77,15 +77,16 @@ class EducationController {
             }
 
             const updatedPost = await educationService.updatePost(
-                id, 
-                title, 
-                content, 
+                id,
+                title,
+                content,
                 event_date,
                 content_type,
                 category,
-                image_url
+                image_url,
+                created_at
             );
-            
+
             if (!updatedPost) {
                 return ErrorHandler.notFound(res, 'Contenido no encontrado');
             }
@@ -103,7 +104,7 @@ class EducationController {
             const { id } = req.params;
 
             const deleted = await educationService.deletePost(id);
-            
+
             if (!deleted) {
                 return ErrorHandler.notFound(res, 'Artículo no encontrado');
             }

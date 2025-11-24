@@ -5,11 +5,15 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios, { isAxiosError } from 'axios';
 import { useAuth } from '../context/AuthContext';
+import { useModal } from '../hooks/useModal';
+import CustomModal from '../components/CustomModal';
 import './Login.css';
 
 const Login = () => {
     const navigate = useNavigate();
     const { login } = useAuth();
+    const [loading, setLoading] = useState(false);
+    const { modalState, showAlert, closeModal } = useModal();
     const [formData, setFormData] = useState({
         email: '',
         password: '',
@@ -24,6 +28,8 @@ const Login = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        setLoading(true);
+        
         try {
             const API_URL = 'http://localhost:5000/api/auth/login';
             const response = await axios.post(API_URL, formData);
@@ -40,13 +46,12 @@ const Login = () => {
 
             // Valida que tengamos los datos necesarios
             if (!token || !user) {
+                setLoading(false);
                 throw new Error('Respuesta del servidor incompleta');
             }
 
             // Guarda el token y usuario en el contexto y localStorage
             login(user, token);
-
-            alert('¡Login exitoso!');
 
             // Redirige según el rol del usuario
             if (user.role === 'rescatista' || user.role === 'admin') {
@@ -56,19 +61,29 @@ const Login = () => {
             }
 
         } catch (error: unknown) {
+            setLoading(false); // Detener loading ANTES de mostrar el modal
+            
             let errorMessage = 'Ocurrió un error desconocido';
             if (isAxiosError(error)) {
-                errorMessage = error.response?.data?.message || 'Error del servidor';
+                errorMessage = error.response?.data?.message || 'Credenciales inválidas';
             } else if (error instanceof Error) {
                 errorMessage = error.message;
             }
             console.error('Error en el login:', errorMessage);
-            alert('Error en el login: ' + errorMessage);
+            await showAlert(errorMessage, 'Error de Autenticación');
         }
     };
 
     return (
         <div className="login-page">
+            {loading && (
+                <div className="loading-overlay">
+                    <div className="loading-spinner">
+                        <div className="spinner"></div>
+                        <p>Iniciando sesión...</p>
+                    </div>
+                </div>
+            )}
             <div className="container">
                 <div className="logo-section">
                     <div className="logo-icon">K</div>
@@ -117,6 +132,18 @@ const Login = () => {
                     ¿No tienes una cuenta? <a href="/register">Regístrate aquí</a>
                 </div>
             </div>
+
+            <CustomModal
+                isOpen={modalState.isOpen}
+                onClose={closeModal}
+                type={modalState.type}
+                title={modalState.title}
+                message={modalState.message}
+                onConfirm={modalState.onConfirm}
+                onCancel={modalState.onCancel}
+                confirmText={modalState.confirmText}
+                cancelText={modalState.cancelText}
+            />
         </div>
     );
 };

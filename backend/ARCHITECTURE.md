@@ -14,6 +14,7 @@ backend/
 │   ├── authController.js        # Autenticación
 │   ├── catController.js         # Gestión de gatos
 │   ├── educationController.js   # Charlas educativas
+│   ├── statisticsController.js  # Métricas y estadísticas
 │   ├── trackingController.js    # Seguimiento post-adopción
 │   └── userController.js        # Gestión de usuarios
 │
@@ -22,17 +23,20 @@ backend/
 │   ├── authService.js
 │   ├── catService.js
 │   ├── educationService.js
+│   ├── statisticsService.js     # Cálculo de métricas
 │   ├── trackingService.js
 │   └── userService.js
 │
 ├── routes/              # Definición de endpoints
-│   ├── index.js                 # Router principal
-│   ├── applicationRoutes.js
-│   ├── authRoutes.js
-│   ├── catRoutes.js
-│   ├── educationRoutes.js
-│   ├── trackingRoutes.js
-│   └── userRoutes.js
+│   ├── index.js                 # Router principal (exporta todas)
+│   ├── adminRoutes.js           # Rutas de administración
+│   ├── applicationRoutes.js     # Solicitudes de adopción
+│   ├── authRoutes.js            # Login y registro
+│   ├── catRoutes.js             # CRUD de gatos
+│   ├── educationRoutes.js       # Charlas educativas
+│   ├── statisticsRoutes.js      # Métricas del sistema
+│   ├── trackingRoutes.js        # Seguimiento post-adopción
+│   └── userRoutes.js            # Perfil y gestión de usuarios
 │
 ├── middleware/          # Middlewares personalizados
 │   ├── authMiddleware.js        # Verificación de JWT

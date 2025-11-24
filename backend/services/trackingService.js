@@ -4,7 +4,7 @@
 const db = require('../db');
 
 class TrackingService {
-    // Crea una nueva tarea de seguimiento con descripción opcional
+    // Crea tarea de seguimiento post-adopción
     async createTask(applicationId, taskType, dueDate, description = null) {
         const result = await db.query(
             `INSERT INTO tracking_tasks (application_id, task_type, due_date, status, description)
@@ -16,7 +16,7 @@ class TrackingService {
         return result.rows[0];
     }
 
-    // Obtiene tareas pendientes (filtradas por rescatista si no es admin)
+    // Lista tareas pendientes (filtradas por rescatista o todas si es admin)
     async getPendingTasks(userId, isAdmin) {
         // Primero, marcar tareas atrasadas
         await db.query("SELECT mark_overdue_tasks()");
@@ -40,7 +40,7 @@ class TrackingService {
         return result.rows;
     }
 
-    // Marca una tarea como completada
+    // Completa tarea con notas y certificado opcional
     async completeTask(taskId, notes, certificateUrl) {
         const result = await db.query(
             `UPDATE tracking_tasks 
@@ -53,7 +53,7 @@ class TrackingService {
         return result.rows.length > 0 ? result.rows[0] : null;
     }
 
-    // Obtiene el ID del gato asociado a una tarea a través de la solicitud
+    // Obtiene ID del gato de una tarea vía la solicitud
     async getCatIdByTask(taskId) {
         const result = await db.query(`
             SELECT c.id FROM cats c

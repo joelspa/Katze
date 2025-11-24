@@ -4,6 +4,7 @@
 const express = require('express');
 const router = express.Router();
 const catController = require('../controllers/catController');
+const userController = require('../controllers/userController');
 const authMiddleware = require('../middleware/authMiddleware');
 const adminMiddleware = require('../middleware/adminMiddleware');
 
@@ -27,5 +28,22 @@ router.put('/cats/:id/edit', catController.editCat);
 
 // Elimina una publicación
 router.delete('/cats/:id', catController.deleteCat);
+
+// ========== GESTIÓN DE USUARIOS ==========
+
+// Obtiene todos los usuarios
+router.get('/users', userController.getAllUsers);
+
+// Crea un nuevo usuario (solo admin puede crear rescatistas)
+router.post('/users', userController.createUser);
+
+// Obtiene un usuario específico
+router.get('/users/:id', userController.getUserById);
+
+// Actualiza el rol de un usuario
+router.put('/users/:id/role', userController.updateUserRole);
+
+// Obtiene estadísticas de usuarios por rol
+router.get('/users/stats/by-role', userController.getUserStatsByRole);
 
 module.exports = router;

@@ -17,13 +17,7 @@ class CatController {
 
             const { name, description, age, health_status, sterilization_status, photos_url, story } = req.body;
 
-            // Valida datos del gato
-            const validation = Validator.validateCatData({ name, sterilization_status });
-            if (!validation.isValid) {
-                return ErrorHandler.badRequest(res, validation.errors.join(', '));
-            }
-
-            // Prepara datos del gato
+            // Prepara datos del gato (por defecto pendiente de aprobación)
             const catData = {
                 name,
                 description,
@@ -33,17 +27,13 @@ class CatController {
                 photos_url,
                 story,
                 owner_id: req.user.id,
-                approval_status: req.approval_status // Definido por el middleware de moderación
+                approval_status: config.APPROVAL_STATUS.PENDIENTE
             };
 
-            // Crea el gato
+            // Crea el gato en la DB
             const newCat = await catService.createCat(catData);
 
-            const message = catData.approval_status === config.APPROVAL_STATUS.APROBADO
-                ? 'Gato publicado con éxito'
-                : 'Publicación enviada a revisión por posible infracción';
-
-            return ErrorHandler.created(res, { cat: newCat }, message);
+            return ErrorHandler.created(res, { cat: newCat }, 'Gato publicado, pendiente de aprobación');
 
         } catch (error) {
             return ErrorHandler.serverError(res, 'Error al crear publicación', error);
@@ -73,7 +63,7 @@ class CatController {
             const { id } = req.params;
 
             const cat = await catService.getCatById(id);
-            
+
             if (!cat) {
                 return ErrorHandler.notFound(res, 'Gato no encontrado o pendiente de aprobación');
             }
@@ -96,8 +86,8 @@ class CatController {
             }
 
             const cats = await catService.getAllCatsForAdmin();
-            
-            return ErrorHandler.success(res, { 
+
+            return ErrorHandler.success(res, {
                 cats,
                 summary: {
                     total: cats.length,
@@ -125,7 +115,7 @@ class CatController {
 
             // Valida el estado
             const validStatuses = [
-                config.APPROVAL_STATUS.APROBADO, 
+                config.APPROVAL_STATUS.APROBADO,
                 config.APPROVAL_STATUS.RECHAZADO,
                 config.APPROVAL_STATUS.PENDIENTE
             ];
@@ -135,7 +125,7 @@ class CatController {
 
             // Actualiza el estado
             const updatedCat = await catService.updateApprovalStatus(id, status);
-            
+
             if (!updatedCat) {
                 return ErrorHandler.notFound(res, 'Gato no encontrado');
             }
@@ -166,7 +156,7 @@ class CatController {
 
             const { id } = req.params;
             const cat = await catService.getCatByIdForAdmin(id);
-            
+
             if (!cat) {
                 return ErrorHandler.notFound(res, 'Gato no encontrado');
             }

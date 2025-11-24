@@ -4,6 +4,8 @@
 import { useState, useEffect } from 'react';
 import axios, { isAxiosError } from 'axios';
 import { useAuth } from '../context/AuthContext';
+import { useModal } from '../hooks/useModal';
+import CustomModal from '../components/CustomModal';
 import { storage } from '../firebase';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { v4 as uuidv4 } from 'uuid';
@@ -41,6 +43,7 @@ interface EducationalPost {
     author_id: number;
     author_name: string;
     created_at: string;
+    event_date?: string;
     image_url?: string;
 }
 
@@ -56,6 +59,7 @@ interface User {
 type TabType = 'cats' | 'education' | 'users';
 
 const AdminDashboard = () => {
+    const { modalState, showAlert, showConfirm, showPrompt, closeModal } = useModal();
     const [activeTab, setActiveTab] = useState<TabType>('cats');
     const [cats, setCats] = useState<AdminCat[]>([]);
     const [summary, setSummary] = useState<Summary | null>(null);
@@ -68,6 +72,7 @@ const AdminDashboard = () => {
     const [posts, setPosts] = useState<EducationalPost[]>([]);
     const [showPostForm, setShowPostForm] = useState(false);
     const [editingPost, setEditingPost] = useState<EducationalPost | null>(null);
+    const [editingPostEventDate, setEditingPostEventDate] = useState<string>('');
     const [postForm, setPostForm] = useState({ title: '', content: '', eventDate: '', image_url: '' });
     const [postImageFile, setPostImageFile] = useState<File | null>(null);
     const [editingPostImageFile, setEditingPostImageFile] = useState<File | null>(null);
@@ -75,6 +80,14 @@ const AdminDashboard = () => {
     // Estados para gestión de usuarios
     const [users, setUsers] = useState<User[]>([]);
     const [loadingUsers, setLoadingUsers] = useState(false);
+    const [showCreateUserForm, setShowCreateUserForm] = useState(false);
+    const [newUserForm, setNewUserForm] = useState({
+        email: '',
+        password: '',
+        fullName: '',
+        role: 'rescatista',
+        phone: ''
+    });
     
     const { token } = useAuth();
 
@@ -155,6 +168,7 @@ const AdminDashboard = () => {
                 { 
                     title: editingPost.title, 
                     content: editingPost.content,
+                    event_date: editingPostEventDate || null,
                     image_url: imageUrl || null
                 },
                 { headers: { 'Authorization': `Bearer ${token}` } }
@@ -163,16 +177,18 @@ const AdminDashboard = () => {
             alert('Charla actualizada con éxito');
             setEditingPost(null);
             setEditingPostImageFile(null);
+            setEditingPostEventDate('');
             fetchPosts();
         } catch (error: unknown) {
-            alert('Error al actualizar la charla');
+            await showAlert('Error al actualizar la charla. Por favor, inténtalo de nuevo.', 'Error');
             console.error(error);
         }
     };
 
     // Elimina una charla educativa
     const handleDeletePost = async (postId: number) => {
-        if (!window.confirm('¿Estás seguro de que quieres eliminar esta charla?')) {
+        const confirmed = await showConfirm('¿Estás seguro de que quieres eliminar esta charla? Esta acción no se puede deshacer.', 'Confirmar Eliminación');
+        if (!confirmed) {
             return;
         }
 
@@ -182,7 +198,7 @@ const AdminDashboard = () => {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
 
-            alert('Charla eliminada con éxito');
+            await showAlert('Charla eliminada con éxito', 'Operación Exitosa');
             fetchPosts();
         } catch (error: unknown) {
             alert('Error al eliminar la charla');
@@ -205,7 +221,7 @@ const AdminDashboard = () => {
             setUsers(usersData);
         } catch (error) {
             console.error('Error al cargar usuarios:', error);
-            alert('Error al cargar usuarios');
+            await showAlert('Error al cargar la lista de usuarios. Por favor, recarga la página.', 'Error');
         } finally {
             setLoadingUsers(false);
         }
@@ -214,13 +230,15 @@ const AdminDashboard = () => {
     // Cambia el rol de un usuario
     const handleChangeUserRole = async (userId: number, currentRole: string) => {
         const roles = ['adoptante', 'rescatista', 'admin'];
-        const newRole = window.prompt(
-            `Cambiar rol del usuario (actual: ${currentRole})\nRoles disponibles: adoptante, rescatista, admin`,
-            currentRole
+        const newRole = await showPrompt(
+            `Rol actual: ${currentRole}\n\nIngresa el nuevo rol:`,
+            'Roles: adoptante, rescatista, admin',
+            currentRole,
+            'Cambiar Rol de Usuario'
         );
 
-        if (!newRole || !roles.includes(newRole)) {
-            alert('Rol no válido');
+        if (!newRole || !roles.includes(newRole.trim().toLowerCase())) {
+            await showAlert('Rol no válido. Los roles disponibles son: adoptante, rescatista, admin', 'Error');
             return;
         }
 
@@ -236,11 +254,48 @@ const AdminDashboard = () => {
                 { headers: { 'Authorization': `Bearer ${token}` } }
             );
 
-            alert(`Rol actualizado a: ${newRole}`);
+            await showAlert(`Rol actualizado exitosamente a: ${newRole}`, 'Cambio Completado');
             fetchUsers();
         } catch (error: unknown) {
             if (isAxiosError(error)) {
                 alert(error.response?.data?.message || 'Error al actualizar rol');
+            }
+        }
+    };
+
+    // Crea un nuevo usuario (solo admin)
+    const handleCreateUser = async () => {
+        if (!newUserForm.email || !newUserForm.password || !newUserForm.fullName || !newUserForm.role) {
+            alert('Por favor completa todos los campos requeridos');
+            return;
+        }
+
+        if (newUserForm.password.length < 6) {
+            alert('La contraseña debe tener al menos 6 caracteres');
+            return;
+        }
+
+        try {
+            const API_URL = 'http://localhost:5000/api/admin/users';
+            await axios.post(
+                API_URL,
+                newUserForm,
+                { headers: { 'Authorization': `Bearer ${token}` } }
+            );
+
+            alert('Usuario creado exitosamente');
+            setNewUserForm({
+                email: '',
+                password: '',
+                fullName: '',
+                role: 'rescatista',
+                phone: ''
+            });
+            setShowCreateUserForm(false);
+            fetchUsers();
+        } catch (error: unknown) {
+            if (isAxiosError(error)) {
+                alert(error.response?.data?.message || 'Error al crear usuario');
             }
         }
     };
@@ -288,11 +343,16 @@ const AdminDashboard = () => {
     // Actualiza el estado de aprobación de un gato
     const handleApproval = async (catId: number, status: 'aprobado' | 'rechazado') => {
         const action = status === 'aprobado' ? 'aprobar' : 'rechazar';
-        if (!window.confirm(`¿Estás seguro de que quieres ${action} esta publicación?`)) {
+        const confirmed = await showConfirm(
+            `¿Estás seguro de que quieres ${action} esta publicación?`,
+            'Confirmar Acción'
+        );
+        if (!confirmed) {
             return;
         }
 
         try {
+            setLoading(true);
             const API_URL = `http://localhost:5000/api/admin/cats/${catId}/approval`;
             await axios.put(
                 API_URL,
@@ -300,31 +360,83 @@ const AdminDashboard = () => {
                 { headers: { 'Authorization': `Bearer ${token}` } }
             );
 
+            // Actualizar inmediatamente el estado local antes de recargar
+            setCats(prevCats => 
+                prevCats.map(cat => 
+                    cat.id === catId 
+                        ? { ...cat, approval_status: status }
+                        : cat
+                )
+            );
+
+            // Recalcular el resumen
+            const updatedCats = cats.map(cat => 
+                cat.id === catId 
+                    ? { ...cat, approval_status: status }
+                    : cat
+            );
+            
+            setSummary({
+                total: updatedCats.length,
+                pendientes: updatedCats.filter(c => c.approval_status === 'pendiente').length,
+                aprobados: updatedCats.filter(c => c.approval_status === 'aprobado').length,
+                rechazados: updatedCats.filter(c => c.approval_status === 'rechazado').length
+            });
+
             alert(`Publicación ${status === 'aprobado' ? 'aprobada' : 'rechazada'} con éxito`);
-            fetchCats();
+            
+            // Recargar desde el servidor para asegurar consistencia
+            await fetchCats();
         } catch (error: unknown) {
-            alert('Error al actualizar el estado');
+            await showAlert('Error al actualizar el estado. Por favor, inténtalo de nuevo.', 'Error');
             console.error(error);
+            // Recargar en caso de error para restaurar el estado correcto
+            await fetchCats();
+        } finally {
+            setLoading(false);
         }
     };
 
     // Elimina un gato
     const handleDelete = async (catId: number) => {
-        if (!window.confirm('¿Estás seguro de que quieres ELIMINAR permanentemente esta publicación?')) {
+        const confirmed = await showConfirm(
+            '¿Estás seguro de que quieres ELIMINAR permanentemente esta publicación? Esta acción no se puede deshacer.',
+            '¡ADVERTENCIA!'
+        );
+        if (!confirmed) {
             return;
         }
 
         try {
+            setLoading(true);
             const API_URL = `http://localhost:5000/api/admin/cats/${catId}`;
             await axios.delete(API_URL, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
 
+            // Actualizar inmediatamente el estado local
+            setCats(prevCats => prevCats.filter(cat => cat.id !== catId));
+            
+            // Recalcular el resumen
+            const updatedCats = cats.filter(cat => cat.id !== catId);
+            setSummary({
+                total: updatedCats.length,
+                pendientes: updatedCats.filter(c => c.approval_status === 'pendiente').length,
+                aprobados: updatedCats.filter(c => c.approval_status === 'aprobado').length,
+                rechazados: updatedCats.filter(c => c.approval_status === 'rechazado').length
+            });
+
             alert('Publicación eliminada con éxito');
-            fetchCats();
+            
+            // Recargar desde el servidor para asegurar consistencia
+            await fetchCats();
         } catch (error: unknown) {
             alert('Error al eliminar la publicación');
             console.error(error);
+            // Recargar en caso de error
+            await fetchCats();
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -389,7 +501,12 @@ const AdminDashboard = () => {
 
     return (
         <div className="admin-container">
-            <h1>🛡️ Panel de Administración</h1>
+            <h1>
+                <svg viewBox="0 0 20 20" fill="currentColor" style={{width: '28px', height: '28px', marginRight: '10px', verticalAlign: 'middle'}}>
+                    <path fillRule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                </svg>
+                Panel de Administración
+            </h1>
 
             {/* Pestañas de navegación */}
             <div className="admin-tabs">
@@ -397,19 +514,28 @@ const AdminDashboard = () => {
                     className={`tab-button ${activeTab === 'cats' ? 'active' : ''}`}
                     onClick={() => setActiveTab('cats')}
                 >
-                    🐱 Gestión de Gatos
+                    <svg viewBox="0 0 20 20" fill="currentColor" style={{width: '20px', height: '20px', marginRight: '8px'}}>
+                        <path d="M10 3.5a1.5 1.5 0 013 0V4a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-.5a1.5 1.5 0 000 3h.5a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-.5a1.5 1.5 0 00-3 0v.5a1 1 0 01-1 1H6a1 1 0 01-1-1v-3a1 1 0 00-1-1h-.5a1.5 1.5 0 010-3H4a1 1 0 001-1V6a1 1 0 011-1h3a1 1 0 001-1v-.5z" />
+                    </svg>
+                    Gestión de Gatos
                 </button>
                 <button 
                     className={`tab-button ${activeTab === 'education' ? 'active' : ''}`}
                     onClick={() => setActiveTab('education')}
                 >
-                    🎓 Charlas Educativas
+                    <svg viewBox="0 0 20 20" fill="currentColor" style={{width: '20px', height: '20px', marginRight: '8px'}}>
+                        <path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3zM3.31 9.397L5 10.12v4.102a8.969 8.969 0 00-1.05-.174 1 1 0 01-.89-.89 11.115 11.115 0 01.25-3.762zM9.3 16.573A9.026 9.026 0 007 14.935v-3.957l1.818.78a3 3 0 002.364 0l5.508-2.361a11.026 11.026 0 01.25 3.762 1 1 0 01-.89.89 8.968 8.968 0 00-5.35 2.524 1 1 0 01-1.4 0zM6 18a1 1 0 001-1v-2.065a8.935 8.935 0 00-2-.712V17a1 1 0 001 1z" />
+                    </svg>
+                    Charlas Educativas
                 </button>
                 <button 
                     className={`tab-button ${activeTab === 'users' ? 'active' : ''}`}
                     onClick={() => setActiveTab('users')}
                 >
-                    👥 Gestión de Usuarios
+                    <svg viewBox="0 0 20 20" fill="currentColor" style={{width: '20px', height: '20px', marginRight: '8px'}}>
+                        <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" />
+                    </svg>
+                    Gestión de Usuarios
                 </button>
             </div>
 
@@ -470,67 +596,94 @@ const AdminDashboard = () => {
             {filteredCats.length === 0 ? (
                 <p className="no-results">No hay publicaciones {filter === 'all' ? '' : filter + 's'}.</p>
             ) : (
-                <div className="admin-cats-list">
+                <div className="admin-cats-grid">
                     {filteredCats.map((cat) => (
-                        <div key={cat.id} className="admin-cat-card">
-                            <div className="cat-header">
-                                <h3>{cat.name}</h3>
-                                <span className={`status-badge ${getStatusColor(cat.approval_status)}`}>
-                                    {cat.approval_status}
-                                </span>
-                            </div>
-
+                        <div key={cat.id} className="admin-cat-card-compact">
                             {cat.photos_url && cat.photos_url.length > 0 && (
-                                <img 
-                                    src={cat.photos_url[0]} 
-                                    alt={cat.name}
-                                    className="cat-thumbnail"
-                                    onError={(e) => {
-                                        e.currentTarget.src = 'https://placehold.co/200x150/e0e0e0/666?text=Sin+Foto';
-                                    }}
-                                />
+                                <div className="cat-image-container">
+                                    <img 
+                                        src={cat.photos_url[0]} 
+                                        alt={cat.name}
+                                        className="cat-thumbnail-compact"
+                                        onError={(e) => {
+                                            e.currentTarget.src = 'https://placehold.co/300x300/e0e0e0/666?text=Sin+Foto';
+                                        }}
+                                    />
+                                    <span className={`status-badge-overlay ${getStatusColor(cat.approval_status)}`}>
+                                        {cat.approval_status}
+                                    </span>
+                                </div>
                             )}
 
-                            <div className="cat-info">
-                                <p><strong>Descripción:</strong> {cat.description}</p>
-                                <p><strong>Edad:</strong> {cat.age}</p>
-                                <p><strong>Salud:</strong> {cat.health_status}</p>
-                                <p><strong>Esterilización:</strong> {cat.sterilization_status}</p>
-                                <p><strong>Publicado por:</strong> {cat.owner_name} ({cat.owner_email})</p>
-                                <p><strong>Fecha:</strong> {new Date(cat.created_at).toLocaleDateString('es-ES')}</p>
-                            </div>
+                            <div className="cat-content-compact">
+                                <h3 className="cat-name-compact">{cat.name}</h3>
+                                
+                                <div className="cat-quick-info">
+                                    <span className="info-tag">{cat.age}</span>
+                                    <span className="info-tag">{cat.sterilization_status}</span>
+                                </div>
 
-                            <div className="cat-actions">
-                                {cat.approval_status === 'pendiente' && (
-                                    <>
-                                        <button 
-                                            className="btn-approve"
-                                            onClick={() => handleApproval(cat.id, 'aprobado')}
-                                        >
-                                            Aprobar
-                                        </button>
-                                        <button 
-                                            className="btn-reject"
-                                            onClick={() => handleApproval(cat.id, 'rechazado')}
-                                        >
-                                            Rechazar
-                                        </button>
-                                    </>
-                                )}
+                                <p className="cat-description-compact">{cat.description}</p>
                                 
-                                <button 
-                                    className="btn-edit"
-                                    onClick={() => setEditingCat(cat)}
-                                >
-                                    Editar
-                                </button>
-                                
-                                <button 
-                                    className="btn-delete"
-                                    onClick={() => handleDelete(cat.id)}
-                                >
-                                    Eliminar
-                                </button>
+                                <div className="cat-meta">
+                                    <p className="meta-text">
+                                        <svg viewBox="0 0 20 20" fill="currentColor" style={{width: '14px', height: '14px', display: 'inline', marginRight: '4px'}}>
+                                            <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+                                        </svg>
+                                        {cat.owner_name}
+                                    </p>
+                                    <p className="meta-text">
+                                        <svg viewBox="0 0 20 20" fill="currentColor" style={{width: '14px', height: '14px', display: 'inline', marginRight: '4px'}}>
+                                            <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
+                                        </svg>
+                                        {new Date(cat.created_at).toLocaleDateString('es-ES')}
+                                    </p>
+                                </div>
+
+                                <div className="cat-actions-compact">
+                                    {cat.approval_status === 'pendiente' && (
+                                        <>
+                                            <button 
+                                                className="btn-compact btn-approve"
+                                                onClick={() => handleApproval(cat.id, 'aprobado')}
+                                                title="Aprobar"
+                                            >
+                                                <svg viewBox="0 0 20 20" fill="currentColor">
+                                                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                                </svg>
+                                            </button>
+                                            <button 
+                                                className="btn-compact btn-reject"
+                                                onClick={() => handleApproval(cat.id, 'rechazado')}
+                                                title="Rechazar"
+                                            >
+                                                <svg viewBox="0 0 20 20" fill="currentColor">
+                                                    <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                                                </svg>
+                                            </button>
+                                        </>
+                                    )}
+                                    
+                                    <button 
+                                        className="btn-compact btn-edit"
+                                        onClick={() => setEditingCat(cat)}
+                                        title="Editar"
+                                    >
+                                        <svg viewBox="0 0 20 20" fill="currentColor">
+                                            <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                                        </svg>
+                                    </button>
+                                    
+                                    <button 
+                                        className="btn-compact btn-delete"
+                                        onClick={() => handleDelete(cat.id)}
+                                        title="Eliminar"
+                                    >
+                                        <svg viewBox="0 0 20 20" fill="currentColor">
+                                            <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
+                                        </svg>
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     ))}
@@ -718,6 +871,19 @@ const AdminDashboard = () => {
                                                 className="edit-textarea"
                                             />
                                             
+                                            {/* Campo para fecha de evento */}
+                                            <div className="edit-date-section" style={{ marginBottom: '16px' }}>
+                                                <label htmlFor={`edit-date-${post.id}`}>Fecha de evento (opcional)</label>
+                                                <input
+                                                    id={`edit-date-${post.id}`}
+                                                    type="date"
+                                                    value={editingPostEventDate}
+                                                    onChange={(e) => setEditingPostEventDate(e.target.value)}
+                                                    className="edit-input"
+                                                    style={{ marginTop: '8px' }}
+                                                />
+                                            </div>
+                                            
                                             {/* Campo para cambiar imagen */}
                                             <div className="edit-image-section">
                                                 <label htmlFor={`edit-image-${post.id}`}>Cambiar imagen (opcional)</label>
@@ -762,6 +928,7 @@ const AdminDashboard = () => {
                                                     onClick={() => {
                                                         setEditingPost(null);
                                                         setEditingPostImageFile(null);
+                                                        setEditingPostEventDate('');
                                                     }}
                                                 >
                                                     Cancelar
@@ -802,7 +969,10 @@ const AdminDashboard = () => {
                                             <div className="post-actions">
                                                 <button 
                                                     className="btn-edit-post"
-                                                    onClick={() => setEditingPost(post)}
+                                                    onClick={() => {
+                                                        setEditingPost(post);
+                                                        setEditingPostEventDate(post.event_date ? post.event_date.split('T')[0] : '');
+                                                    }}
                                                 >
                                                     Editar
                                                 </button>
@@ -831,12 +1001,106 @@ const AdminDashboard = () => {
             {activeTab === 'users' && (
                 <div className="users-section">
                     <div className="section-header">
-                        <h2>Gestión de Usuarios</h2>
-                        <p className="section-subtitle">Administra los roles de los usuarios de la plataforma</p>
+                        <div>
+                            <h2>Gestión de Usuarios</h2>
+                            <p className="section-subtitle">Administra los roles de los usuarios de la plataforma</p>
+                        </div>
+                        <div className="section-actions">
+                            <span className="stat-badge">Total: {users.length}</span>
+                            <button 
+                                className="btn-create-user"
+                                onClick={() => setShowCreateUserForm(!showCreateUserForm)}
+                            >
+                                {showCreateUserForm ? 'Cancelar' : '+ Nuevo Usuario'}
+                            </button>
+                        </div>
                     </div>
 
+                    {/* Formulario para crear nuevo usuario */}
+                    {showCreateUserForm && (
+                        <div className="create-user-form">
+                            <h3>Crear Nuevo Usuario</h3>
+                            <p className="form-subtitle">Los rescatistas solo pueden ser creados desde este panel</p>
+                            <div className="form-grid">
+                                <div className="form-field">
+                                    <label>Nombre Completo *</label>
+                                    <input
+                                        type="text"
+                                        value={newUserForm.fullName}
+                                        onChange={(e) => setNewUserForm({ ...newUserForm, fullName: e.target.value })}
+                                        placeholder="Ej: Juan Pérez"
+                                    />
+                                </div>
+                                <div className="form-field">
+                                    <label>Email *</label>
+                                    <input
+                                        type="email"
+                                        value={newUserForm.email}
+                                        onChange={(e) => setNewUserForm({ ...newUserForm, email: e.target.value })}
+                                        placeholder="usuario@ejemplo.com"
+                                    />
+                                </div>
+                                <div className="form-field">
+                                    <label>Contraseña *</label>
+                                    <input
+                                        type="password"
+                                        value={newUserForm.password}
+                                        onChange={(e) => setNewUserForm({ ...newUserForm, password: e.target.value })}
+                                        placeholder="Mínimo 6 caracteres"
+                                    />
+                                </div>
+                                <div className="form-field">
+                                    <label>Teléfono</label>
+                                    <input
+                                        type="tel"
+                                        value={newUserForm.phone}
+                                        onChange={(e) => setNewUserForm({ ...newUserForm, phone: e.target.value })}
+                                        placeholder="+591 7123 4567"
+                                    />
+                                </div>
+                                <div className="form-field">
+                                    <label>Rol *</label>
+                                    <select
+                                        value={newUserForm.role}
+                                        onChange={(e) => setNewUserForm({ ...newUserForm, role: e.target.value })}
+                                    >
+                                        <option value="rescatista">Rescatista</option>
+                                        <option value="adoptante">Adoptante</option>
+                                        <option value="admin">Admin</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div className="form-actions">
+                                <button 
+                                    className="btn-save"
+                                    onClick={handleCreateUser}
+                                >
+                                    Crear Usuario
+                                </button>
+                                <button 
+                                    className="btn-cancel"
+                                    onClick={() => {
+                                        setShowCreateUserForm(false);
+                                        setNewUserForm({
+                                            email: '',
+                                            password: '',
+                                            fullName: '',
+                                            role: 'rescatista',
+                                            phone: ''
+                                        });
+                                    }}
+                                >
+                                    Cancelar
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
                     {loadingUsers ? (
-                        <p className="loading-message">Cargando usuarios...</p>
+                        <div className="loading-message">
+                            <div className="spinner" style={{ margin: '0 auto 16px' }}></div>
+                            <p>Cargando usuarios...</p>
+                        </div>
                     ) : users.length > 0 ? (
                         <div className="users-table-container">
                             <table className="users-table">
@@ -886,6 +1150,19 @@ const AdminDashboard = () => {
                     )}
                 </div>
             )}
+
+            <CustomModal
+                isOpen={modalState.isOpen}
+                onClose={closeModal}
+                type={modalState.type}
+                title={modalState.title}
+                message={modalState.message}
+                onConfirm={modalState.onConfirm}
+                inputPlaceholder={modalState.inputPlaceholder}
+                inputDefaultValue={modalState.inputDefaultValue}
+                confirmText={modalState.confirmText}
+                cancelText={modalState.cancelText}
+            />
         </div>
     );
 };

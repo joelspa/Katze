@@ -4,7 +4,7 @@
 const db = require('../db');
 
 class UserService {
-    // Obtener todos los usuarios (solo para admin)
+    // Lista todos los usuarios (solo admin)
     async getAllUsers() {
         const query = `
             SELECT 
@@ -21,7 +21,7 @@ class UserService {
         return result.rows;
     }
 
-    // Obtener un usuario por ID
+    // Busca usuario por ID
     async getUserById(userId) {
         const query = `
             SELECT 
@@ -38,7 +38,7 @@ class UserService {
         return result.rows[0];
     }
 
-    // Actualizar el rol de un usuario
+    // Cambia el rol de un usuario (adoptante, rescatista, admin)
     async updateUserRole(userId, newRole) {
         // Validar que el rol sea válido
         const validRoles = ['adoptante', 'rescatista', 'admin'];
@@ -79,6 +79,33 @@ class UserService {
     async userExists(userId) {
         const query = 'SELECT EXISTS(SELECT 1 FROM users WHERE id = $1)';
         const result = await db.query(query, [userId]);
+        return result.rows[0].exists;
+    }
+
+    // Crear un nuevo usuario (solo para admin)
+    async createUser(email, passwordHash, fullName, role, phone) {
+        const query = `
+            INSERT INTO users (email, password_hash, full_name, role, phone)
+            VALUES ($1, $2, $3, $4, $5)
+            RETURNING id, email, full_name, role, phone, created_at
+        `;
+        const result = await db.query(query, [email, passwordHash, fullName, role, phone]);
+        return result.rows[0];
+    }
+
+    // Verificar si un email ya está registrado (excluyendo un userId específico)
+    async isEmailTaken(email, excludeUserId = null) {
+        let query = 'SELECT EXISTS(SELECT 1 FROM users WHERE email = $1';
+        const params = [email];
+        
+        if (excludeUserId) {
+            query += ' AND id != $2)';
+            params.push(excludeUserId);
+        } else {
+            query += ')';
+        }
+        
+        const result = await db.query(query, params);
         return result.rows[0].exists;
     }
 }

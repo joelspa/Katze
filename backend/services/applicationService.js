@@ -4,7 +4,7 @@
 const db = require('../db');
 
 class ApplicationService {
-    // Crea una nueva solicitud de adopción
+    // Crea solicitud de adopción con respuestas del formulario
     async createApplication(applicantId, catId, formResponses) {
         const formResponsesJson = JSON.stringify(formResponses);
         
@@ -23,7 +23,8 @@ class ApplicationService {
         const query = `
             SELECT 
                 app.*, 
-                cat.name as cat_name, 
+                cat.name as cat_name,
+                cat.photos_url as cat_photos,
                 u.full_name as applicant_name,
                 u.email as applicant_email,
                 u.phone as applicant_phone
@@ -43,7 +44,8 @@ class ApplicationService {
         const query = `
             SELECT 
                 app.*, 
-                cat.name as cat_name, 
+                cat.name as cat_name,
+                cat.photos_url as cat_photos,
                 u.full_name as applicant_name,
                 u.email as applicant_email,
                 u.phone as applicant_phone,

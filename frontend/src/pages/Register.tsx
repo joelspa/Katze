@@ -3,9 +3,12 @@
 
 import React, { useState } from 'react';
 import axios, { isAxiosError } from 'axios';
+import { useModal } from '../hooks/useModal';
+import CustomModal from '../components/CustomModal';
 import './Register.css';
 
 const Register = () => {
+    const { modalState, showAlert, closeModal } = useModal();
     const [formData, setFormData] = useState({
         fullName: '',
         email: '',
@@ -29,7 +32,7 @@ const Register = () => {
             const API_URL = 'http://localhost:5000/api/auth/register';
             const response = await axios.post(API_URL, formData);
             console.log('¡Usuario registrado!', response.data);
-            alert('¡Registro exitoso!');
+            await showAlert('¡Registro exitoso! Ya puedes iniciar sesión con tu cuenta.', 'Registro Completado');
 
         } catch (error: unknown) {
             // Manejo seguro de errores con verificación de tipo
@@ -42,7 +45,7 @@ const Register = () => {
             }
 
             console.error('Error en el registro:', errorMessage);
-            alert('Error en el registro: ' + errorMessage);
+            await showAlert('Error en el registro: ' + errorMessage, 'Error de Registro');
         }
     };
 
@@ -56,6 +59,16 @@ const Register = () => {
                 
                 <h2>Registro de Usuario</h2>
                 <p className="subtitle">Crea una cuenta para empezar a encontrar tu nuevo amigo felino.</p>
+                
+                <div className="info-box">
+                    <strong>
+                        <svg viewBox="0 0 20 20" fill="currentColor" style={{width: '18px', height: '18px', marginRight: '6px', verticalAlign: 'middle'}}>
+                            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                        </svg>
+                        Nota importante:
+                    </strong>
+                    <p>El registro público es solo para adoptantes. Si deseas ser rescatista, contacta a un administrador para que te registre en el sistema.</p>
+                </div>
                 
                 <form onSubmit={handleSubmit}>
                     <div className="formGroup">
@@ -106,19 +119,8 @@ const Register = () => {
                         </div>
                     </div>
                     
-                    <div className="formGroup">
-                        <label htmlFor="role" className="label">Quiero registrarme como:</label>
-                        <select
-                            id="role"
-                            name="role"
-                            className="select"
-                            onChange={handleChange}
-                            value={formData.role}
-                        >
-                            <option value="adoptante">Adoptante</option>
-                            <option value="rescatista">Rescatista</option>
-                        </select>
-                    </div>
+                    {/* El rol siempre será adoptante en registro público */}
+                    <input type="hidden" name="role" value="adoptante" />
                     
                     <button type="submit" className="button">
                         Registrarse
@@ -129,6 +131,18 @@ const Register = () => {
                     ¿Ya tienes una cuenta? <a href="/login">Inicia sesión</a>
                 </div>
             </div>
+
+            <CustomModal
+                isOpen={modalState.isOpen}
+                onClose={closeModal}
+                type={modalState.type}
+                title={modalState.title}
+                message={modalState.message}
+                onConfirm={modalState.onConfirm}
+                onCancel={modalState.onCancel}
+                confirmText={modalState.confirmText}
+                cancelText={modalState.cancelText}
+            />
         </div>
     );
 };

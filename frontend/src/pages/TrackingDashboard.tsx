@@ -4,6 +4,8 @@
 import { useState, useEffect } from 'react';
 import axios, { isAxiosError } from 'axios';
 import { useAuth } from '../context/AuthContext';
+import { useModal } from '../hooks/useModal';
+import CustomModal from '../components/CustomModal';
 import { storage } from '../firebase';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { v4 as uuidv4 } from 'uuid';
@@ -24,6 +26,7 @@ interface TrackingTask {
 }
 
 const TrackingDashboard = () => {
+    const { modalState, showAlert, showPrompt, closeModal } = useModal();
     const [tasks, setTasks] = useState<TrackingTask[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -69,7 +72,12 @@ const TrackingDashboard = () => {
 
     // Marca una tarea como completada
     const handleCompleteTask = async (taskId: number, taskType: string) => {
-        const notes = prompt("Ingresa las notas de seguimiento:");
+        const notes = await showPrompt(
+            "Ingresa las notas de seguimiento para esta tarea:",
+            "Escribe aquí tus observaciones...",
+            "",
+            "Completar Tarea"
+        );
         if (notes === null) return;
 
         // Si es tarea de esterilización y se seleccionó un archivo, subirlo a Firebase primero
@@ -86,10 +94,9 @@ const TrackingDashboard = () => {
                 certificateUrl = await getDownloadURL(certificateRef);
 
                 setUploadProgress(100);
-                alert('Certificado subido correctamente');
             } catch (error: unknown) {
                 console.error('Error al subir certificado a Firebase:', error);
-                alert('Error al subir certificado. Por favor, intenta de nuevo.');
+                await showAlert('Error al subir el certificado. Por favor, intenta de nuevo.', 'Error de Carga');
                 return;
             }
         }
@@ -106,14 +113,14 @@ const TrackingDashboard = () => {
                 }
             );
 
-            alert('¡Tarea completada con éxito!');
+            await showAlert('¡Tarea completada con éxito!', 'Operación Exitosa');
             setUploadingCertificate(null);
             setSelectedFile(null);
             setUploadProgress(0);
             fetchTasks();
 
         } catch (error: unknown) {
-            alert('Error al completar la tarea.');
+            await showAlert('Error al completar la tarea. Por favor, inténtalo de nuevo.', 'Error');
             console.error(error);
         }
     };
@@ -126,20 +133,19 @@ const TrackingDashboard = () => {
         // Validar tipo de archivo
         const allowedTypes = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
         if (!allowedTypes.includes(file.type)) {
-            alert('Tipo de archivo no permitido. Solo se aceptan PDF, JPG, PNG y WEBP');
+            showAlert('Tipo de archivo no permitido. Solo se aceptan PDF, JPG, PNG y WEBP', 'Archivo Inválido');
             return;
         }
 
         // Validar tamaño (máx 5MB)
         const maxSize = 5 * 1024 * 1024;
         if (file.size > maxSize) {
-            alert('El archivo es demasiado grande. Tamaño máximo: 5MB');
+            showAlert('El archivo es demasiado grande. Tamaño máximo: 5MB', 'Archivo Muy Grande');
             return;
         }
 
         setSelectedFile(file);
         setUploadingCertificate(taskId);
-        alert(`Archivo seleccionado: ${file.name} (${(file.size / 1024).toFixed(2)} KB)`);
     };
 
     // Formatea fechas en español para mejor legibilidad
@@ -170,7 +176,12 @@ const TrackingDashboard = () => {
     return (
         <div className="dashboard-container">
             <div className="dashboard-header">
-                <h1>📊 Panel de Seguimiento</h1>
+                <h1>
+                    <svg viewBox="0 0 20 20" fill="currentColor" style={{width: '28px', height: '28px', marginRight: '10px', verticalAlign: 'middle'}}>
+                        <path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z" />
+                    </svg>
+                    Panel de Seguimiento
+                </h1>
                 <div className="search-bar">
                     <span className="search-icon">◎</span>
                     <input 
@@ -182,7 +193,12 @@ const TrackingDashboard = () => {
             </div>
 
             {tasks.length === 0 ? (
-                <p className="no-tasks">✅ ¡Genial! No hay tareas de seguimiento pendientes.</p>
+                <p className="no-tasks">
+                    <svg viewBox="0 0 20 20" fill="currentColor" style={{width: '20px', height: '20px', display: 'inline-block', marginRight: '8px', verticalAlign: 'middle'}}>
+                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    </svg>
+                    ¡Genial! No hay tareas de seguimiento pendientes.
+                </p>
             ) : (
                 <div className="tasks-list">
                     {tasks.map((task) => (
@@ -277,6 +293,19 @@ const TrackingDashboard = () => {
                     ))}
                 </div>
             )}
+
+            <CustomModal
+                isOpen={modalState.isOpen}
+                onClose={closeModal}
+                type={modalState.type}
+                title={modalState.title}
+                message={modalState.message}
+                onConfirm={modalState.onConfirm}
+                inputPlaceholder={modalState.inputPlaceholder}
+                inputDefaultValue={modalState.inputDefaultValue}
+                confirmText={modalState.confirmText}
+                cancelText={modalState.cancelText}
+            />
         </div>
     );
 };

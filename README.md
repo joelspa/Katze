@@ -85,18 +85,23 @@ VITE_FIREBASE_STORAGE_BUCKET=tu_bucket
 
 ## Base de Datos
 
-El proyecto incluye el esquema SQL en `backend/db.js` con:
-- Tablas principales (users, cats, applications, tracking_tasks, education_talks)
-- Vistas para consultas optimizadas
-- Triggers automáticos
+El proyecto incluye:
+- **Schema SQL**: Tablas principales (users, cats, applications, tracking_tasks, education_talks)
+- **Seed**: Ejecuta `npm run seed` en backend para datos de prueba
+- **Credenciales de prueba**:
+  - Admin: admin@test.com / password123
+  - Rescatista: rescatista@test.com / password123
+  - Adoptante: adoptante@test.com / password123
 
-## Contribuir
+## Scripts Disponibles
 
-1. Crea un branch para tu feature
-2. Realiza tus cambios
-3. Asegúrate que todo funcione
-4. Envía un pull request
+### Backend
+- `npm start` - Inicia servidor en producción
+- `npm run dev` - Inicia con nodemon (desarrollo)
+- `npm run seed` - Siembra base de datos con datos de prueba
 
-## Licencia
+### Frontend
+- `npm run dev` - Inicia servidor de desarrollo (Vite)
+- `npm run build` - Compila para producción
+- `npm run preview` - Vista previa del build
 
-Este proyecto es de uso académico.

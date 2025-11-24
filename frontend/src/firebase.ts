@@ -1,24 +1,21 @@
-// frontend/src/firebase.ts
-import { initializeApp } from "firebase/app";
-// 1. Quita 'getAnalytics' e importa 'getStorage'
-import { getStorage } from "firebase/storage";
+// Configuración de Firebase
+// Setup de Firebase para almacenamiento de imágenes
 
-// ----------------------------------------------------------------
-// TUS LLAVES (¡Están perfectas!)
-// ----------------------------------------------------------------
+import { initializeApp } from 'firebase/app';
+import { getStorage } from 'firebase/storage';
+
+// Configuración del proyecto Firebase
 const firebaseConfig = {
     apiKey: "AIzaSyCLQKRTdZ6cSC0juOaY5zjwDhP9d-Cc5wQ",
     authDomain: "katze-app.firebaseapp.com",
     projectId: "katze-app",
-    storageBucket: "katze-app.firebasestorage.app", // Corregí un typo, debe ser .app y no .appspot.com (¡Bien hecho!)
-    messagingSenderId: "847252170771",
-    appId: "1:847252170771:web:3276c8dc8973d5f00df7e6",
-    measurementId: "G-9YF5MVQ1KP"
+    storageBucket: "katze-app.firebasestorage.app",
+    messagingSenderId: "716332773584",
+    appId: "1:716332773584:web:b08d8fca3d7821a3c8de92"
 };
-// ----------------------------------------------------------------
 
-// Initialize Firebase
+// Inicializa la app de Firebase
 const app = initializeApp(firebaseConfig);
 
-// 2. Quita 'analytics' y exporta 'storage'
+// Exporta el servicio de storage para subir imágenes
 export const storage = getStorage(app);
