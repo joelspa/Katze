@@ -36,6 +36,13 @@ interface Summary {
     rechazados: number;
 }
 
+interface TrackingStats {
+    tareas_pendientes: string;
+    tareas_vencidas: string;
+    tareas_completadas: string;
+    esterilizaciones_pendientes: string;
+}
+
 interface EducationalPost {
     id: number;
     title: string;
@@ -56,17 +63,32 @@ interface User {
     created_at: string;
 }
 
-type TabType = 'cats' | 'education' | 'users';
+interface TrackingTask {
+    id: number;
+    due_date: string;
+    status: string;
+    task_type: string;
+    description?: string;
+    cat_name: string;
+    applicant_name: string;
+    applicant_phone?: string;
+    owner_name: string;
+    sterilization_status?: string;
+}
+
+type TabType = 'cats' | 'education' | 'users' | 'tracking';
 
 const AdminDashboard = () => {
     const { modalState, showAlert, showConfirm, showPrompt, closeModal } = useModal();
     const [activeTab, setActiveTab] = useState<TabType>('cats');
     const [cats, setCats] = useState<AdminCat[]>([]);
     const [summary, setSummary] = useState<Summary | null>(null);
+    const [trackingStats, setTrackingStats] = useState<TrackingStats | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [filter, setFilter] = useState<'all' | 'pendiente' | 'aprobado' | 'rechazado'>('pendiente');
     const [editingCat, setEditingCat] = useState<AdminCat | null>(null);
+    const [photoIndexes, setPhotoIndexes] = useState<{[key: number]: number}>({});
     
     // Estados para charlas educativas
     const [posts, setPosts] = useState<EducationalPost[]>([]);
@@ -88,6 +110,11 @@ const AdminDashboard = () => {
         role: 'rescatista',
         phone: ''
     });
+
+    // Estados para seguimiento
+    const [trackingTasks, setTrackingTasks] = useState<TrackingTask[]>([]);
+    const [loadingTasks, setLoadingTasks] = useState(false);
+    const [selectedTask, setSelectedTask] = useState<TrackingTask | null>(null);
     
     const { token } = useAuth();
 
@@ -227,6 +254,26 @@ const AdminDashboard = () => {
         }
     };
 
+    // Carga todas las tareas de seguimiento (admin ve todas)
+    const fetchTrackingTasks = async () => {
+        if (!token) return;
+
+        try {
+            setLoadingTasks(true);
+            const API_URL = 'http://localhost:5000/api/tracking';
+            const response = await axios.get(API_URL, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const tasksData = response.data.data?.tasks || response.data.tasks || response.data;
+            setTrackingTasks(tasksData);
+        } catch (error) {
+            console.error('Error al cargar tareas de seguimiento:', error);
+            await showAlert('Error al cargar tareas. Por favor, recarga la página.', 'Error');
+        } finally {
+            setLoadingTasks(false);
+        }
+    };
+
     // Cambia el rol de un usuario
     const handleChangeUserRole = async (userId: number, currentRole: string) => {
         const roles = ['adoptante', 'rescatista', 'admin'];
@@ -312,14 +359,40 @@ const AdminDashboard = () => {
 
         try {
             setLoading(true);
-            const API_URL = 'http://localhost:5000/api/admin/cats';
-            const response = await axios.get(API_URL, {
+            
+            // Obtener gatos
+            const catsResponse = await axios.get('http://localhost:5000/api/admin/cats', {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
 
-            const responseData = response.data.data || response.data;
-            setCats(responseData.cats || []);
-            setSummary(responseData.summary || null);
+            const catsData = catsResponse.data.data || catsResponse.data;
+            setCats(catsData.cats || []);
+            setSummary(catsData.summary || null);
+            
+            // Obtener estadísticas del dashboard (incluyendo tracking)
+            try {
+                const statsResponse = await axios.get('http://localhost:5000/api/admin/dashboard/stats', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const statsData = statsResponse.data.data || statsResponse.data;
+                console.log('Estadísticas recibidas:', statsData);
+                setTrackingStats(statsData.tracking || {
+                    tareas_pendientes: '0',
+                    tareas_vencidas: '0',
+                    tareas_completadas: '0',
+                    esterilizaciones_pendientes: '0'
+                });
+            } catch (statsError) {
+                console.error('Error al cargar estadísticas de seguimiento:', statsError);
+                // Establecer valores por defecto si falla
+                setTrackingStats({
+                    tareas_pendientes: '0',
+                    tareas_vencidas: '0',
+                    tareas_completadas: '0',
+                    esterilizaciones_pendientes: '0'
+                });
+            }
+            
             setError(null);
         } catch (error: unknown) {
             let errorMessage = 'Error al cargar las publicaciones';
@@ -337,6 +410,9 @@ const AdminDashboard = () => {
         fetchPosts();
         if (activeTab === 'users') {
             fetchUsers();
+        }
+        if (activeTab === 'tracking') {
+            fetchTrackingTasks();
         }
     }, [token, activeTab]);
 
@@ -537,32 +613,41 @@ const AdminDashboard = () => {
                     </svg>
                     Gestión de Usuarios
                 </button>
+                <button 
+                    className={`tab-button ${activeTab === 'tracking' ? 'active' : ''}`}
+                    onClick={() => setActiveTab('tracking')}
+                >
+                    <svg viewBox="0 0 20 20" fill="currentColor" style={{width: '20px', height: '20px', marginRight: '8px'}}>
+                        <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
+                    </svg>
+                    Panel de Seguimiento
+                </button>
             </div>
 
             {/* Tab de Gestión de Gatos */}
             {activeTab === 'cats' && (
                 <>
-                    {/* Resumen estadístico */}
-            {summary && (
-                <div className="admin-summary">
-                    <div className="summary-card">
-                        <h3>{summary.total}</h3>
-                        <p>Total</p>
-                    </div>
-                    <div className="summary-card pending">
-                        <h3>{summary.pendientes}</h3>
-                        <p>Pendientes</p>
-                    </div>
-                    <div className="summary-card approved">
-                        <h3>{summary.aprobados}</h3>
-                        <p>Aprobados</p>
-                    </div>
-                    <div className="summary-card rejected">
-                        <h3>{summary.rechazados}</h3>
-                        <p>Rechazados</p>
-                    </div>
-                </div>
-            )}
+                    {/* Resumen estadístico - Gatos */}
+                    {summary && (
+                        <div className="admin-summary">
+                            <div className="summary-card">
+                                <h3>{summary.total}</h3>
+                                <p>Total Gatos</p>
+                            </div>
+                            <div className="summary-card pending">
+                                <h3>{summary.pendientes}</h3>
+                                <p>Pendientes</p>
+                            </div>
+                            <div className="summary-card approved">
+                                <h3>{summary.aprobados}</h3>
+                                <p>Aprobados</p>
+                            </div>
+                            <div className="summary-card rejected">
+                                <h3>{summary.rechazados}</h3>
+                                <p>Rechazados</p>
+                            </div>
+                        </div>
+                    )}
 
             {/* Filtros */}
             <div className="admin-filters">
@@ -597,23 +682,91 @@ const AdminDashboard = () => {
                 <p className="no-results">No hay publicaciones {filter === 'all' ? '' : filter + 's'}.</p>
             ) : (
                 <div className="admin-cats-grid">
-                    {filteredCats.map((cat) => (
-                        <div key={cat.id} className="admin-cat-card-compact">
-                            {cat.photos_url && cat.photos_url.length > 0 && (
-                                <div className="cat-image-container">
-                                    <img 
-                                        src={cat.photos_url[0]} 
-                                        alt={cat.name}
-                                        className="cat-thumbnail-compact"
-                                        onError={(e) => {
-                                            e.currentTarget.src = 'https://placehold.co/300x300/e0e0e0/666?text=Sin+Foto';
-                                        }}
-                                    />
-                                    <span className={`status-badge-overlay ${getStatusColor(cat.approval_status)}`}>
-                                        {cat.approval_status}
-                                    </span>
-                                </div>
-                            )}
+                    {filteredCats.map((cat) => {
+                        const currentPhotoIndex = photoIndexes[cat.id] || 0;
+                        const photos = cat.photos_url && cat.photos_url.length > 0 
+                            ? cat.photos_url 
+                            : ['https://placehold.co/300x300/e0e0e0/666?text=Sin+Foto'];
+                        const currentPhoto = photos[currentPhotoIndex];
+                        
+                        const handlePrevPhoto = (e: React.MouseEvent) => {
+                            e.stopPropagation();
+                            setPhotoIndexes(prev => ({
+                                ...prev,
+                                [cat.id]: currentPhotoIndex === 0 ? photos.length - 1 : currentPhotoIndex - 1
+                            }));
+                        };
+
+                        const handleNextPhoto = (e: React.MouseEvent) => {
+                            e.stopPropagation();
+                            setPhotoIndexes(prev => ({
+                                ...prev,
+                                [cat.id]: currentPhotoIndex === photos.length - 1 ? 0 : currentPhotoIndex + 1
+                            }));
+                        };
+
+                        return (
+                            <div key={cat.id} className="admin-cat-card-compact">
+                            <div className="cat-image-container admin-cat-image-container">
+                                <img 
+                                    src={currentPhoto} 
+                                    alt={`${cat.name} - Foto ${currentPhotoIndex + 1}`}
+                                    className="cat-thumbnail-compact"
+                                    onError={(e) => {
+                                        e.currentTarget.src = 'https://placehold.co/300x300/e0e0e0/666?text=Sin+Foto';
+                                    }}
+                                />
+                                
+                                {/* Controles de navegación si hay más de una foto */}
+                                {photos.length > 1 && (
+                                    <>
+                                        <button 
+                                            className="admin-photo-nav admin-photo-prev"
+                                            onClick={handlePrevPhoto}
+                                            aria-label="Foto anterior"
+                                        >
+                                            <svg viewBox="0 0 20 20" fill="currentColor">
+                                                <path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
+                                            </svg>
+                                        </button>
+                                        <button 
+                                            className="admin-photo-nav admin-photo-next"
+                                            onClick={handleNextPhoto}
+                                            aria-label="Foto siguiente"
+                                        >
+                                            <svg viewBox="0 0 20 20" fill="currentColor">
+                                                <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                                            </svg>
+                                        </button>
+                                        
+                                        {/* Indicadores de foto */}
+                                        <div className="admin-photo-indicators">
+                                            {photos.map((_, index) => (
+                                                <span
+                                                    key={index}
+                                                    className={`admin-photo-dot ${index === currentPhotoIndex ? 'active' : ''}`}
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        setPhotoIndexes(prev => ({
+                                                            ...prev,
+                                                            [cat.id]: index
+                                                        }));
+                                                    }}
+                                                />
+                                            ))}
+                                        </div>
+                                        
+                                        {/* Contador de fotos */}
+                                        <div className="admin-photo-counter">
+                                            {currentPhotoIndex + 1} / {photos.length}
+                                        </div>
+                                    </>
+                                )}
+                                
+                                <span className={`status-badge-overlay ${getStatusColor(cat.approval_status)}`}>
+                                    {cat.approval_status}
+                                </span>
+                            </div>
 
                             <div className="cat-content-compact">
                                 <h3 className="cat-name-compact">{cat.name}</h3>
@@ -685,8 +838,9 @@ const AdminDashboard = () => {
                                     </button>
                                 </div>
                             </div>
-                        </div>
-                    ))}
+                            </div>
+                        );
+                    })}
                 </div>
             )}
 
@@ -1148,6 +1302,218 @@ const AdminDashboard = () => {
                             <p>No se encontraron usuarios.</p>
                         </div>
                     )}
+                </div>
+            )}
+
+            {/* Tab de Panel de Seguimiento */}
+            {activeTab === 'tracking' && (
+                <div className="tracking-tab">
+                    <h2 className="tracking-title">
+                        <svg viewBox="0 0 20 20" fill="currentColor" style={{width: '24px', height: '24px', marginRight: '12px'}}>
+                            <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
+                        </svg>
+                        Panel de Seguimiento - Todas las Tareas
+                    </h2>
+
+                    {loadingTasks ? (
+                        <div className="loading-container">
+                            <div className="spinner"></div>
+                            <p>Cargando tareas...</p>
+                        </div>
+                    ) : trackingTasks.length > 0 ? (
+                        <div className="tracking-tasks-container">
+                            <div className="tasks-summary-info">
+                                <p>Total de tareas: <strong>{trackingTasks.length}</strong></p>
+                                <p>
+                                    <span className="status-badge-inline pendiente">
+                                        Pendientes: {trackingTasks.filter(t => t.status === 'pendiente').length}
+                                    </span>
+                                    <span className="status-badge-inline atrasada">
+                                        Atrasadas: {trackingTasks.filter(t => t.status === 'atrasada').length}
+                                    </span>
+                                    <span className="status-badge-inline completada">
+                                        Completadas: {trackingTasks.filter(t => t.status === 'completada').length}
+                                    </span>
+                                </p>
+                            </div>
+
+                            <div className="tasks-table-wrapper">
+                                <table className="tasks-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Tipo de Tarea</th>
+                                            <th>Gato</th>
+                                            <th>Adoptante</th>
+                                            <th>Rescatista</th>
+                                            <th>Fecha Límite</th>
+                                            <th>Estado</th>
+                                            <th>Descripción</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {trackingTasks.map((task) => (
+                                            <tr 
+                                                key={task.id} 
+                                                className={`task-row ${task.status}`}
+                                                onClick={() => setSelectedTask(task)}
+                                                style={{ cursor: 'pointer' }}
+                                            >
+                                                <td>
+                                                    <span className={`task-type-badge ${task.task_type === 'Seguimiento de Esterilización' ? 'sterilization' : 'welfare'}`}>
+                                                        {task.task_type}
+                                                    </span>
+                                                </td>
+                                                <td className="cat-name">{task.cat_name}</td>
+                                                <td>
+                                                    <div className="applicant-info">
+                                                        <span className="applicant-name">{task.applicant_name}</span>
+                                                        {task.applicant_phone && (
+                                                            <span className="applicant-phone">{task.applicant_phone}</span>
+                                                        )}
+                                                    </div>
+                                                </td>
+                                                <td className="owner-name">{task.owner_name}</td>
+                                                <td className={`due-date ${task.status === 'atrasada' ? 'overdue' : ''}`}>
+                                                    {new Date(task.due_date).toLocaleDateString('es-ES', {
+                                                        year: 'numeric',
+                                                        month: 'short',
+                                                        day: 'numeric'
+                                                    })}
+                                                </td>
+                                                <td>
+                                                    <span className={`status-badge ${task.status}`}>
+                                                        {task.status === 'pendiente' && 'Pendiente'}
+                                                        {task.status === 'atrasada' && 'Atrasada'}
+                                                        {task.status === 'completada' && 'Completada'}
+                                                    </span>
+                                                </td>
+                                                <td className="task-description">
+                                                    {task.description || 'Sin descripción'}
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="empty-tasks">
+                            <svg viewBox="0 0 20 20" fill="currentColor" style={{width: '48px', height: '48px', marginBottom: '16px', opacity: 0.3}}>
+                                <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
+                            </svg>
+                            <p>No hay tareas de seguimiento registradas.</p>
+                        </div>
+                    )}
+                </div>
+            )}
+
+            {/* Modal de detalle de tarea */}
+            {selectedTask && (
+                <div className="task-detail-modal-overlay" onClick={() => setSelectedTask(null)}>
+                    <div className="task-detail-modal" onClick={(e) => e.stopPropagation()}>
+                        <button className="modal-close-btn" onClick={() => setSelectedTask(null)}>
+                            <svg viewBox="0 0 20 20" fill="currentColor" style={{width: '24px', height: '24px'}}>
+                                <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                            </svg>
+                        </button>
+                        
+                        <h2 className="task-modal-title">
+                            <svg viewBox="0 0 20 20" fill="currentColor" style={{width: '28px', height: '28px', marginRight: '12px'}}>
+                                <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
+                            </svg>
+                            Detalle de Tarea de Seguimiento
+                        </h2>
+
+                        <div className="task-modal-content">
+                            <div className="task-detail-section">
+                                <h3>Información General</h3>
+                                <div className="task-detail-grid">
+                                    <div className="task-detail-item">
+                                        <label>Tipo de Tarea:</label>
+                                        <span className={`task-type-badge ${selectedTask.task_type === 'Seguimiento de Esterilización' ? 'sterilization' : 'welfare'}`}>
+                                            {selectedTask.task_type}
+                                        </span>
+                                    </div>
+                                    <div className="task-detail-item">
+                                        <label>Estado:</label>
+                                        <span className={`status-badge ${selectedTask.status}`}>
+                                            {selectedTask.status === 'pendiente' && 'Pendiente'}
+                                            {selectedTask.status === 'atrasada' && 'Atrasada'}
+                                            {selectedTask.status === 'completada' && 'Completada'}
+                                        </span>
+                                    </div>
+                                    <div className="task-detail-item">
+                                        <label>Fecha Límite:</label>
+                                        <span className={`due-date-text ${selectedTask.status === 'atrasada' ? 'overdue' : ''}`}>
+                                            {new Date(selectedTask.due_date).toLocaleDateString('es-ES', {
+                                                weekday: 'long',
+                                                year: 'numeric',
+                                                month: 'long',
+                                                day: 'numeric'
+                                            })}
+                                        </span>
+                                    </div>
+                                    {selectedTask.sterilization_status && (
+                                        <div className="task-detail-item">
+                                            <label>Estado de Esterilización:</label>
+                                            <span className="sterilization-status">{selectedTask.sterilization_status}</span>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+
+                            <div className="task-detail-section">
+                                <h3>Información del Gato</h3>
+                                <div className="task-detail-grid">
+                                    <div className="task-detail-item">
+                                        <label>Nombre del Gato:</label>
+                                        <span className="cat-name-modal">{selectedTask.cat_name}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="task-detail-section">
+                                <h3>Información del Adoptante</h3>
+                                <div className="task-detail-grid">
+                                    <div className="task-detail-item">
+                                        <label>Nombre:</label>
+                                        <span>{selectedTask.applicant_name}</span>
+                                    </div>
+                                    {selectedTask.applicant_phone && (
+                                        <div className="task-detail-item">
+                                            <label>Teléfono:</label>
+                                            <a href={`tel:${selectedTask.applicant_phone}`} className="phone-link">
+                                                {selectedTask.applicant_phone}
+                                            </a>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+
+                            <div className="task-detail-section">
+                                <h3>Rescatista Responsable</h3>
+                                <div className="task-detail-grid">
+                                    <div className="task-detail-item">
+                                        <label>Nombre:</label>
+                                        <span className="owner-name-modal">{selectedTask.owner_name}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {selectedTask.description && (
+                                <div className="task-detail-section">
+                                    <h3>Descripción</h3>
+                                    <p className="task-description-full">{selectedTask.description}</p>
+                                </div>
+                            )}
+                        </div>
+
+                        <div className="task-modal-footer">
+                            <button className="btn-close-modal" onClick={() => setSelectedTask(null)}>
+                                Cerrar
+                            </button>
+                        </div>
+                    </div>
                 </div>
             )}
 

@@ -1,18 +1,18 @@
 /* frontend/src/pages/Register.css */
 
 .register-page {
-    min-height: 100vh;
+    min-height: calc(100vh - 80px);
     display: flex;
     align-items: center;
     justify-content: center;
     background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
-    padding: 20px;
+    padding: var(--spacing-md);
 }
 
 .container {
-    background: white;
-    border-radius: 16px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    background: var(--surface-card);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-lg);
     padding: 48px 40px;
     width: 100%;
     max-width: 450px;
@@ -30,28 +30,28 @@
 
 .logo-text {
     font-size: 28px;
-    font-weight: 700;
+    font-weight: var(--font-weight-bold);
     color: var(--color-gray-900);
     margin: 0;
 }
 
 .container h2 {
     font-size: 24px;
-    font-weight: 600;
+    font-weight: var(--font-weight-semibold);
     color: var(--color-gray-900);
     margin-bottom: 8px;
 }
 
 .subtitle {
     color: var(--color-gray-600);
-    font-size: 14px;
+    font-size: var(--font-size-sm);
     margin-bottom: 24px;
 }
 
 .info-box {
     background: rgba(59, 130, 246, 0.08);
     border: 1px solid rgba(59, 130, 246, 0.2);
-    border-radius: 12px;
+    border-radius: var(--border-radius-md);
     padding: 16px;
     margin-bottom: 24px;
     text-align: left;
@@ -78,30 +78,32 @@
 .label {
     display: block;
     margin-bottom: 8px;
-    font-weight: 500;
+    font-weight: var(--font-weight-medium);
     color: var(--color-gray-600);
-    font-size: 14px;
+    font-size: var(--font-size-sm);
 }
 
 .input-wrapper {
     position: relative;
 }
 
-.input, .select {
+.input,
+.select {
     width: 100%;
     padding: 14px 16px;
-    font-size: 15px;
-    border-radius: 8px;
+    font-size: var(--font-size-base);
+    border-radius: var(--border-radius-md);
     border: 1px solid var(--border-default);
     background-color: var(--surface-panel);
-    transition: all 0.3s ease;
+    transition: var(--transition-base);
     box-sizing: border-box;
 }
 
-.input:focus, .select:focus {
+.input:focus,
+.select:focus {
     outline: none;
     border-color: var(--color-primary);
-    background-color: white;
+    background-color: var(--color-white);
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
@@ -120,7 +122,7 @@
     cursor: pointer;
     font-size: 20px;
     padding: 4px 8px;
-    transition: color 0.3s ease;
+    transition: var(--transition-base);
 }
 
 .show-password-btn:hover {
@@ -146,21 +148,21 @@
 .button {
     width: 100%;
     padding: 14px;
-    font-size: 16px;
-    font-weight: 600;
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-semibold);
     background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
-    color: white;
+    color: var(--color-white);
     border: none;
-    border-radius: 8px;
+    border-radius: var(--border-radius-md);
     cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    transition: var(--transition-base);
+    box-shadow: var(--shadow-md);
     margin-top: 8px;
 }
 
 .button:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
+    box-shadow: var(--shadow-lg);
 }
 
 .button:active {
@@ -169,15 +171,15 @@
 
 .login-link {
     margin-top: 24px;
-    font-size: 14px;
+    font-size: var(--font-size-sm);
     color: var(--color-gray-600);
 }
 
 .login-link a {
     color: var(--color-primary);
-    font-weight: 600;
+    font-weight: var(--font-weight-semibold);
     text-decoration: none;
-    transition: color 0.3s ease;
+    transition: var(--transition-base);
 }
 
 .login-link a:hover {

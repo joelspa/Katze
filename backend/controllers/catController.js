@@ -15,7 +15,7 @@ class CatController {
                 return ErrorHandler.forbidden(res, 'Solo rescatistas pueden publicar gatos');
             }
 
-            const { name, description, age, health_status, sterilization_status, photos_url, story } = req.body;
+            const { name, description, age, health_status, sterilization_status, photos_url, story, breed, living_space_requirement } = req.body;
 
             // Prepara datos del gato (por defecto pendiente de aprobación)
             const catData = {
@@ -26,6 +26,8 @@ class CatController {
                 sterilization_status,
                 photos_url,
                 story,
+                breed,
+                living_space_requirement,
                 owner_id: req.user.id,
                 approval_status: config.APPROVAL_STATUS.PENDIENTE
             };
@@ -46,7 +48,8 @@ class CatController {
             // Extraer filtros desde query params
             const filters = {
                 sterilization_status: req.query.sterilization_status,
-                age: req.query.age
+                age: req.query.age,
+                living_space: req.query.living_space
             };
 
             const cats = await catService.getAllAvailableCats(filters);
@@ -247,6 +250,38 @@ class CatController {
 
         } catch (error) {
             return ErrorHandler.serverError(res, 'Error al obtener información de contacto', error);
+        }
+    }
+
+    // Obtiene estadísticas completas del dashboard admin
+    async getAdminDashboardStats(req, res) {
+        try {
+            // Verifica que el usuario sea admin
+            if (req.user.role !== config.USER_ROLES.ADMIN) {
+                return ErrorHandler.forbidden(res, 'Solo administradores pueden acceder');
+            }
+
+            const trackingService = require('../services/trackingService');
+            
+            // Obtener estadísticas de gatos
+            const cats = await catService.getAllCatsForAdmin();
+            const catStats = {
+                total: cats.length,
+                pendientes: cats.filter(c => c.approval_status === 'pendiente').length,
+                aprobados: cats.filter(c => c.approval_status === 'aprobado').length,
+                rechazados: cats.filter(c => c.approval_status === 'rechazado').length
+            };
+            
+            // Obtener estadísticas de tareas de seguimiento
+            const trackingStats = await trackingService.getTrackingStats();
+            
+            return ErrorHandler.success(res, {
+                cats: catStats,
+                tracking: trackingStats
+            });
+
+        } catch (error) {
+            return ErrorHandler.serverError(res, 'Error al obtener estadísticas del dashboard', error);
         }
     }
 }

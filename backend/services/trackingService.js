@@ -98,6 +98,62 @@ class TrackingService {
         
         return result.rows[0]?.belongs || false;
     }
+
+    // Obtiene estadísticas de tareas de seguimiento
+    async getTrackingStats() {
+        try {
+            // Verificar si la tabla existe primero
+            const tableCheck = await db.query(`
+                SELECT EXISTS (
+                    SELECT FROM information_schema.tables 
+                    WHERE table_name = 'tracking_tasks'
+                )
+            `);
+            
+            if (!tableCheck.rows[0].exists) {
+                // Si la tabla no existe, retornar valores por defecto
+                return {
+                    tareas_pendientes: '0',
+                    tareas_vencidas: '0',
+                    tareas_completadas: '0',
+                    esterilizaciones_pendientes: '0'
+                };
+            }
+
+            // Intentar marcar tareas atrasadas primero (si la función existe)
+            try {
+                await db.query("SELECT mark_overdue_tasks()");
+            } catch (err) {
+                // Si la función no existe, continuar sin marcar
+                console.log('Función mark_overdue_tasks no disponible, continuando...');
+            }
+
+            const result = await db.query(`
+                SELECT 
+                    COUNT(*) FILTER (WHERE status IN ('pendiente', 'atrasada') OR (status = 'pendiente' AND due_date < CURRENT_DATE)) as tareas_pendientes,
+                    COUNT(*) FILTER (WHERE status = 'atrasada' OR (status = 'pendiente' AND due_date < CURRENT_DATE)) as tareas_vencidas,
+                    COUNT(*) FILTER (WHERE status = 'completada') as tareas_completadas,
+                    COUNT(*) FILTER (WHERE task_type = 'Seguimiento de Esterilización' AND (status IN ('pendiente', 'atrasada') OR (status = 'pendiente' AND due_date < CURRENT_DATE))) as esterilizaciones_pendientes
+                FROM tracking_tasks
+            `);
+            
+            return result.rows[0] || {
+                tareas_pendientes: '0',
+                tareas_vencidas: '0',
+                tareas_completadas: '0',
+                esterilizaciones_pendientes: '0'
+            };
+        } catch (error) {
+            console.error('Error en getTrackingStats:', error);
+            // Retornar valores por defecto en caso de error
+            return {
+                tareas_pendientes: '0',
+                tareas_vencidas: '0',
+                tareas_completadas: '0',
+                esterilizaciones_pendientes: '0'
+            };
+        }
+    }
 }
 
 module.exports = new TrackingService();

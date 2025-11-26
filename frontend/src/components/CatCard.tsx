@@ -16,6 +16,8 @@ export interface Cat {
     sterilization_status: 'esterilizado' | 'pendiente' | 'no_aplica';
     health_status?: string;
     story?: string;
+    breed?: string;
+    living_space_requirement?: 'casa_grande' | 'departamento' | 'cualquiera';
 }
 
 interface CatCardProps {
@@ -24,10 +26,55 @@ interface CatCardProps {
 
 const CatCard: React.FC<CatCardProps> = ({ cat }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
+    const [touchStart, setTouchStart] = useState<number | null>(null);
+    const [touchEnd, setTouchEnd] = useState<number | null>(null);
+    
     // Usa la primera foto o una imagen placeholder si no hay fotos
-    const imageUrl = cat.photos_url && cat.photos_url.length > 0
-        ? cat.photos_url[0]
-        : 'https://placehold.co/300x200/e0e0e0/666?text=Sin+Foto';
+    const photos = cat.photos_url && cat.photos_url.length > 0
+        ? cat.photos_url
+        : ['https://placehold.co/300x200/e0e0e0/666?text=Sin+Foto'];
+    
+    const imageUrl = photos[currentPhotoIndex];
+    
+    // Distancia mínima de swipe (en px)
+    const minSwipeDistance = 50;
+
+    const handlePrevPhoto = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        setCurrentPhotoIndex((prev) => (prev === 0 ? photos.length - 1 : prev - 1));
+    };
+
+    const handleNextPhoto = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        setCurrentPhotoIndex((prev) => (prev === photos.length - 1 ? 0 : prev + 1));
+    };
+
+    // Manejo de touch para swipe
+    const onTouchStart = (e: React.TouchEvent) => {
+        setTouchEnd(null);
+        setTouchStart(e.targetTouches[0].clientX);
+    };
+
+    const onTouchMove = (e: React.TouchEvent) => {
+        setTouchEnd(e.targetTouches[0].clientX);
+    };
+
+    const onTouchEnd = (e: React.TouchEvent) => {
+        if (!touchStart || !touchEnd) return;
+        
+        const distance = touchStart - touchEnd;
+        const isLeftSwipe = distance > minSwipeDistance;
+        const isRightSwipe = distance < -minSwipeDistance;
+
+        if (isLeftSwipe) {
+            // Swipe izquierda: siguiente foto
+            setCurrentPhotoIndex((prev) => (prev === photos.length - 1 ? 0 : prev + 1));
+        } else if (isRightSwipe) {
+            // Swipe derecha: foto anterior
+            setCurrentPhotoIndex((prev) => (prev === 0 ? photos.length - 1 : prev - 1));
+        }
+    };
 
     // Función para obtener la clase CSS según el estado de esterilización
     const getStatusClass = () => {
@@ -38,6 +85,18 @@ const CatCard: React.FC<CatCardProps> = ({ cat }) => {
                 return 'status-pendiente';
             default:
                 return '';
+        }
+    };
+
+    // Función para obtener el icono y texto según el tipo de vivienda
+    const getLivingSpaceInfo = () => {
+        switch (cat.living_space_requirement) {
+            case 'casa_grande':
+                return { icon: <svg viewBox="0 0 24 24" fill="currentColor" style={{width: '16px', height: '16px', display: 'inline', marginRight: '4px', verticalAlign: 'middle'}}><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>, text: 'Casa Grande' };
+            case 'departamento':
+                return { icon: <svg viewBox="0 0 24 24" fill="currentColor" style={{width: '16px', height: '16px', display: 'inline', marginRight: '4px', verticalAlign: 'middle'}}><path d="M12 7V3H2v18h20V7H12zM6 19H4v-2h2v2zm0-4H4v-2h2v2zm0-4H4V9h2v2zm0-4H4V5h2v2zm4 12H8v-2h2v2zm0-4H8v-2h2v2zm0-4H8V9h2v2zm0-4H8V5h2v2zm10 12h-8v-2h2v-2h-2v-2h2v-2h-2V9h8v10zm-2-8h-2v2h2v-2zm0 4h-2v2h2v-2z"/></svg>, text: 'Departamento' };
+            default:
+                return { icon: <svg viewBox="0 0 24 24" fill="currentColor" style={{width: '16px', height: '16px', display: 'inline', marginRight: '4px', verticalAlign: 'middle'}}><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>, text: 'Cualquier espacio' };
         }
     };
 
@@ -53,15 +112,64 @@ const CatCard: React.FC<CatCardProps> = ({ cat }) => {
     return (
         <>
             <div className="cat-card" onClick={handleCardClick}>
-                <div className="cat-card-image-container">
+                <div 
+                    className="cat-card-image-container"
+                    onTouchStart={onTouchStart}
+                    onTouchMove={onTouchMove}
+                    onTouchEnd={onTouchEnd}
+                >
                     <img
                         src={imageUrl}
-                        alt={cat.name}
+                        alt={`${cat.name} - Foto ${currentPhotoIndex + 1}`}
                         className="cat-card-img"
                         onError={(e) => {
                             e.currentTarget.src = 'https://placehold.co/300x200/e0e0e0/666?text=Sin+Foto';
                         }}
                     />
+                    
+                    {/* Controles de navegación si hay más de una foto */}
+                    {photos.length > 1 && (
+                        <>
+                            <button 
+                                className="cat-card-photo-nav cat-card-photo-prev"
+                                onClick={handlePrevPhoto}
+                                aria-label="Foto anterior"
+                            >
+                                <svg viewBox="0 0 20 20" fill="currentColor">
+                                    <path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
+                                </svg>
+                            </button>
+                            <button 
+                                className="cat-card-photo-nav cat-card-photo-next"
+                                onClick={handleNextPhoto}
+                                aria-label="Foto siguiente"
+                            >
+                                <svg viewBox="0 0 20 20" fill="currentColor">
+                                    <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                                </svg>
+                            </button>
+                            
+                            {/* Indicadores de foto */}
+                            <div className="cat-card-photo-indicators">
+                                {photos.map((_, index) => (
+                                    <span
+                                        key={index}
+                                        className={`cat-card-photo-dot ${index === currentPhotoIndex ? 'active' : ''}`}
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            setCurrentPhotoIndex(index);
+                                        }}
+                                    />
+                                ))}
+                            </div>
+                            
+                            {/* Contador de fotos */}
+                            <div className="cat-card-photo-counter">
+                                {currentPhotoIndex + 1} / {photos.length}
+                            </div>
+                        </>
+                    )}
+                    
                     <span className={`cat-card-badge ${getStatusClass()}`}>
                         <svg viewBox="0 0 20 20" fill="currentColor" style={{width: '14px', height: '14px', display: 'inline', marginRight: '4px'}}>
                             {cat.sterilization_status === 'esterilizado' ? (
@@ -77,6 +185,23 @@ const CatCard: React.FC<CatCardProps> = ({ cat }) => {
                     <div className="cat-card-header">
                         <h3 className="cat-card-title">{cat.name}</h3>
                         <span className="cat-card-age">{cat.age}</span>
+                    </div>
+
+                    {/* Badges de Raza y Tipo de Vivienda */}
+                    <div className="cat-card-badges">
+                        {cat.breed && (
+                            <span className="cat-card-breed-badge">
+                                <svg viewBox="0 0 24 24" fill="currentColor" style={{width: '16px', height: '16px', display: 'inline', marginRight: '4px', verticalAlign: 'middle'}}>
+                                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
+                                </svg>
+                                {cat.breed}
+                            </span>
+                        )}
+                        {cat.living_space_requirement && (
+                            <span className="cat-card-living-badge">
+                                {getLivingSpaceInfo().icon} {getLivingSpaceInfo().text}
+                            </span>
+                        )}
                     </div>
 
                     <p className="cat-card-description">

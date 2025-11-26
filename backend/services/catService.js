@@ -6,21 +6,21 @@ const db = require('../db');
 class CatService {
     // Crea una nueva publicación de gato
     async createCat(catData) {
-        const { name, description, age, health_status, sterilization_status, photos_url, owner_id, approval_status, story } = catData;
+        const { name, description, age, health_status, sterilization_status, photos_url, owner_id, approval_status, story, breed, living_space_requirement } = catData;
         
         const photosJson = JSON.stringify(photos_url || []);
         
         const result = await db.query(
-            `INSERT INTO cats (name, description, age, health_status, sterilization_status, photos_url, owner_id, approval_status, story)
-             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+            `INSERT INTO cats (name, description, age, health_status, sterilization_status, photos_url, owner_id, approval_status, story, breed, living_space_requirement)
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
              RETURNING *`,
-            [name, description, age, health_status, sterilization_status, photosJson, owner_id, approval_status, story]
+            [name, description, age, health_status, sterilization_status, photosJson, owner_id, approval_status, story, breed || 'Mestizo', living_space_requirement || 'cualquiera']
         );
         
         return result.rows[0];
     }
 
-    // Obtiene gatos aprobados y disponibles con filtros opcionales (esterilización, edad)
+    // Obtiene gatos aprobados y disponibles con filtros opcionales (esterilización, edad, tipo de vivienda)
     async getAllAvailableCats(filters = {}) {
         let query = `
             SELECT * FROM cats 
@@ -56,7 +56,15 @@ class CatService {
             }
         }
 
-        query += ` ORDER BY created_at DESC`;
+        // Filtro por tipo de vivienda requerida
+        if (filters.living_space && filters.living_space !== 'todos') {
+            query += ` AND living_space_requirement = $${paramIndex}`;
+            params.push(filters.living_space);
+            paramIndex++;
+        }
+
+        // Ordenar por tiempo en adopción: los gatos más antiguos primero (mayor prioridad)
+        query += ` ORDER BY created_at ASC`;
         
         const result = await db.query(query, params);
         return result.rows;

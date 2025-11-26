@@ -63,6 +63,8 @@
   line-height: var(--line-height-normal);
   color: var(--color-gray-700);
   margin: 0;
+  flex-grow: 1;
+  /* Empuja el contenido siguiente hacia abajo */
 }
 
 .cat-card-status {
@@ -92,7 +94,8 @@
   align-items: center;
   justify-content: center;
   padding: 0.625rem var(--spacing-lg);
-  margin-top: var(--spacing-md);
+  margin-top: auto;
+  /* Siempre al final de la card */
   background: var(--color-primary);
   color: var(--color-white);
   text-decoration: none;
@@ -109,4 +112,195 @@
   background: var(--color-primary-hover);
   transform: translateY(-1px);
   text-decoration: none;
+}
+
+/* Badges de Raza y Tipo de Vivienda */
+.cat-card-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-xs);
+  margin: var(--spacing-sm) 0;
+}
+
+.cat-card-breed-badge,
+.cat-card-living-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.35rem var(--spacing-sm);
+  border-radius: var(--border-radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  white-space: nowrap;
+}
+
+.cat-card-breed-badge {
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(124, 58, 237, 0.15) 100%);
+  color: #7c3aed;
+  border: 1px solid rgba(139, 92, 246, 0.2);
+}
+
+.cat-card-living-badge {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(37, 99, 235, 0.15) 100%);
+  color: #2563eb;
+  border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+/* ===========================
+   CARRUSEL DE FOTOS CON SWIPE
+   =========================== */
+
+.cat-card-image-container {
+  position: relative;
+  width: 100%;
+  height: 280px;
+  overflow: hidden;
+  background: var(--color-gray-200);
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: pan-y pinch-zoom;
+}
+
+.cat-card-image-container img {
+  transition: transform 0.3s ease;
+}
+
+/* Botones de navegación */
+.cat-card-photo-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 36px;
+  height: 36px;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  border: none;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+  transition: all 0.3s ease;
+  opacity: 0;
+}
+
+.cat-card-image-container:hover .cat-card-photo-nav {
+  opacity: 1;
+}
+
+.cat-card-photo-nav:hover {
+  background: rgba(0, 0, 0, 0.8);
+  transform: translateY(-50%) scale(1.1);
+}
+
+.cat-card-photo-nav:active {
+  transform: translateY(-50%) scale(0.95);
+}
+
+.cat-card-photo-nav svg {
+  width: 20px;
+  height: 20px;
+  color: white;
+}
+
+.cat-card-photo-prev {
+  left: 8px;
+}
+
+.cat-card-photo-next {
+  right: 8px;
+}
+
+/* Indicadores de foto (dots) */
+.cat-card-photo-indicators {
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 6px;
+  z-index: 10;
+}
+
+.cat-card-photo-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.cat-card-photo-dot:hover {
+  background: rgba(255, 255, 255, 0.8);
+  transform: scale(1.2);
+}
+
+.cat-card-photo-dot.active {
+  background: white;
+  width: 24px;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Contador de fotos */
+.cat-card-photo-counter {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+  color: white;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Responsive para móvil */
+@media (max-width: 768px) {
+  .cat-card-image-container {
+    height: 240px;
+  }
+  
+  /* En móvil, mostrar siempre los botones */
+  .cat-card-photo-nav {
+    opacity: 0.8;
+  }
+  
+  .cat-card-photo-nav:active {
+    opacity: 1;
+  }
+  
+  /* Botones más grandes en móvil para mejor táctil */
+  .cat-card-photo-nav {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .cat-card-photo-nav svg {
+    width: 22px;
+    height: 22px;
+  }
+}
+
+@media (max-width: 480px) {
+  .cat-card-image-container {
+    height: 220px;
+  }
+  
+  /* Dots más grandes en móvil */
+  .cat-card-photo-dot {
+    width: 10px;
+    height: 10px;
+  }
+  
+  .cat-card-photo-dot.active {
+    width: 28px;
+  }
 }

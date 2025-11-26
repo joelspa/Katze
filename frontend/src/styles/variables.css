@@ -54,17 +54,17 @@
   /* Verde éxito */
   --color-success-light: #00c87a;
   --color-success-dark: #008552;
-  
+
   --color-warning: #ffa500;
   /* Naranja advertencia */
   --color-warning-light: #ffb732;
   --color-warning-dark: #ff8c00;
-  
+
   --color-error: #dc2626;
   /* Rojo error */
   --color-error-light: #ef4444;
   --color-error-dark: #b91c1c;
-  
+
   --color-info: #2563eb;
   /* Azul info */
   --color-info-light: #3b82f6;
@@ -147,26 +147,5 @@
   --font-weight-semibold: 600;
   --font-weight-bold: 700;
   --font-weight-extrabold: 800;
-
-  /* ===== LINE HEIGHTS ===== */
-  --line-height-tight: 1.25;
-  --line-height-normal: 1.5;
-  --line-height-relaxed: 1.625;
-
-  /* ===== Z-INDEX LAYERS ===== */
-  --z-base: 1;
-  --z-dropdown: 100;
-  --z-sticky: 1000;
-  --z-fixed: 1100;
-  --z-modal-backdrop: 1200;
-  --z-modal: 1300;
-  --z-popover: 1400;
-  --z-tooltip: 1500;
-
-  /* ===== OPACITY ===== */
-  --opacity-disabled: 0.5;
-  --opacity-hover: 0.8;
-
-  /* ===== CONTAINER MAX WIDTHS ===== */
   --container-2xl: 1536px;
 }

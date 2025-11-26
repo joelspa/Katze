@@ -4,7 +4,7 @@
     max-width: 1200px;
     margin: auto;
     background: var(--bg-secondary);
-    min-height: calc(100vh - 70px);
+    /* min-height handled by page-container */
 }
 
 .page-header {
@@ -22,7 +22,7 @@
 
 .dashboard-container h1 {
     font-size: var(--font-size-4xl);
-    font-weight: 700;
+    font-weight: var(--font-weight-bold);
     color: var(--color-gray-900);
     margin: 0;
 }
@@ -42,7 +42,7 @@
 
 .dashboard-container h2 {
     font-size: 20px;
-    font-weight: 600;
+    font-weight: var(--font-weight-semibold);
     color: var(--color-gray-600);
     margin: 0;
 }
@@ -83,16 +83,16 @@
     background: var(--surface-card);
     border-radius: 20px;
     overflow: hidden;
-    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+    box-shadow: var(--shadow-md);
     border: 1px solid var(--border-default);
-    transition: all 0.3s ease;
+    transition: var(--transition-base);
     cursor: pointer;
     display: flex;
     flex-direction: column;
 }
 
 .application-card-compact:hover {
-    box-shadow: 0 16px 40px rgba(15, 23, 42, 0.15);
+    box-shadow: var(--shadow-lg);
     transform: translateY(-4px);
     border-color: var(--color-primary);
 }
@@ -109,7 +109,7 @@
     height: 100%;
     object-fit: cover;
     object-position: center;
-    transition: transform 0.3s ease;
+    transition: var(--transition-base);
 }
 
 .application-card-compact:hover .cat-photo-preview img {
@@ -132,7 +132,7 @@
     justify-content: center;
     background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
     border-radius: 12px;
-    color: white;
+    color: var(--color-white);
 }
 
 .cat-icon svg {
@@ -143,7 +143,7 @@
 .cat-name {
     font-size: 1.2rem;
     font-weight: var(--font-weight-bold);
-    color: var(--text-primary);
+    color: var(--color-gray-900);
     margin: 0;
 }
 
@@ -162,7 +162,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--text-secondary);
+    color: var(--color-gray-600);
 }
 
 .applicant-avatar svg {
@@ -178,7 +178,7 @@
 .applicant-name {
     font-size: 0.95rem;
     font-weight: var(--font-weight-semibold);
-    color: var(--text-primary);
+    color: var(--color-gray-900);
     margin: 0 0 4px 0;
     white-space: nowrap;
     overflow: hidden;
@@ -187,7 +187,7 @@
 
 .applicant-email {
     font-size: 0.85rem;
-    color: var(--text-tertiary);
+    color: var(--color-gray-500);
     margin: 0;
     white-space: nowrap;
     overflow: hidden;
@@ -235,7 +235,7 @@
     gap: 4px;
     padding: 4px 8px;
     border-radius: 8px;
-    transition: all 0.2s ease;
+    transition: var(--transition-base);
 }
 
 .btn-view-details svg {
@@ -259,7 +259,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 9999;
+    z-index: var(--z-modal-backdrop);
     padding: 20px;
     animation: fadeIn 0.3s ease;
 }
@@ -268,6 +268,7 @@
     from {
         opacity: 0;
     }
+
     to {
         opacity: 1;
     }
@@ -280,9 +281,10 @@
     width: 100%;
     max-height: 90vh;
     overflow-y: auto;
-    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.3);
+    box-shadow: var(--shadow-xl);
     animation: slideUp 0.3s ease;
     position: relative;
+    z-index: var(--z-modal);
 }
 
 @keyframes slideUp {
@@ -290,6 +292,7 @@
         opacity: 0;
         transform: translateY(40px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -305,12 +308,12 @@
     border-radius: 50%;
     background: var(--surface-panel);
     border: none;
-    color: var(--text-secondary);
+    color: var(--color-gray-600);
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.2s ease;
+    transition: var(--transition-base);
     z-index: 10;
 }
 
@@ -321,7 +324,7 @@
 
 .modal-close:hover {
     background: var(--color-error);
-    color: white;
+    color: var(--color-white);
     transform: rotate(90deg);
 }
 
@@ -345,7 +348,7 @@
     justify-content: center;
     background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
     border-radius: 50%;
-    color: white;
+    color: var(--color-white);
 }
 
 .modal-icon-svg svg {
@@ -373,13 +376,13 @@
 .modal-header h2 {
     font-size: 1.75rem;
     font-weight: var(--font-weight-bold);
-    color: var(--text-primary);
+    color: var(--color-gray-900);
     margin: 0 0 8px 0;
 }
 
 .modal-subtitle {
     font-size: 1rem;
-    color: var(--text-secondary);
+    color: var(--color-gray-600);
     margin: 0;
 }
 
@@ -404,7 +407,7 @@
 .section-title {
     font-size: 1.1rem;
     font-weight: var(--font-weight-semibold);
-    color: var(--text-primary);
+    color: var(--color-gray-900);
     display: flex;
     align-items: center;
     gap: 10px;
@@ -431,7 +434,7 @@
 
 .info-label {
     font-size: 0.85rem;
-    color: var(--text-tertiary);
+    color: var(--color-gray-500);
     font-weight: var(--font-weight-medium);
     text-transform: uppercase;
     letter-spacing: 0.5px;
@@ -439,14 +442,14 @@
 
 .info-value {
     font-size: 1rem;
-    color: var(--text-primary);
+    color: var(--color-gray-900);
     font-weight: var(--font-weight-medium);
 }
 
 .info-link {
     color: var(--color-primary);
     text-decoration: none;
-    transition: color 0.2s ease;
+    transition: var(--transition-base);
 }
 
 .info-link:hover {
@@ -472,14 +475,14 @@
 
 .response-question {
     font-size: 0.85rem;
-    color: var(--text-secondary);
+    color: var(--color-gray-600);
     font-weight: var(--font-weight-semibold);
     text-transform: capitalize;
 }
 
 .response-answer {
     font-size: 1rem;
-    color: var(--text-primary);
+    color: var(--color-gray-900);
     line-height: 1.5;
 }
 
@@ -488,7 +491,7 @@
     padding: 16px;
     border-radius: 12px;
     font-size: 0.85rem;
-    color: var(--text-secondary);
+    color: var(--color-gray-600);
     overflow-x: auto;
     white-space: pre-wrap;
     border: 1px solid var(--border-default);
@@ -513,7 +516,7 @@
     align-items: center;
     justify-content: center;
     gap: 8px;
-    transition: all 0.2s ease;
+    transition: var(--transition-base);
 }
 
 .btn-modal svg {
@@ -523,7 +526,7 @@
 
 .btn-approve-modal {
     background: linear-gradient(135deg, var(--color-secondary), var(--color-secondary-dark));
-    color: white;
+    color: var(--color-white);
 }
 
 .btn-approve-modal:hover {
@@ -540,7 +543,7 @@
 
 .btn-reject-modal:hover {
     background: var(--color-error);
-    color: white;
+    color: var(--color-white);
     transform: translateY(-2px);
     box-shadow: 0 8px 20px rgba(239, 68, 68, 0.4);
 }
@@ -735,7 +738,7 @@
     height: 80px;
     margin: 0 auto 20px;
     opacity: 0.5;
-    color: var(--text-tertiary);
+    color: var(--color-gray-400);
 }
 
 .empty-state-text {

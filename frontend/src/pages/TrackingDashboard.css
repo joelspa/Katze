@@ -4,7 +4,7 @@
     max-width: 1280px;
     margin: auto;
     background: var(--bg-secondary);
-    min-height: calc(100vh - 70px);
+    /* min-height handled by page-container */
 }
 
 .dashboard-header {
@@ -40,8 +40,8 @@
     border-radius: 16px;
     font-size: 15px;
     background: var(--surface-card);
-    transition: all 0.3s ease;
-    box-shadow: 0 10px 25px rgba(15, 23, 42, 0.08);
+    transition: var(--transition-base);
+    box-shadow: var(--shadow-md);
 }
 
 .search-input:focus {
@@ -70,16 +70,16 @@
     background: var(--surface-card);
     border-radius: 20px;
     padding: 28px;
-    box-shadow: 0 16px 40px rgba(15, 23, 42, 0.08);
+    box-shadow: var(--shadow-md);
     display: flex;
     flex-direction: column;
-    transition: all 0.3s ease;
+    transition: var(--transition-base);
     border: 1px solid var(--border-default);
 }
 
 .task-card:hover {
     transform: translateY(-4px);
-    box-shadow: 0 24px 50px rgba(15, 23, 42, 0.12);
+    box-shadow: var(--shadow-lg);
     border-color: rgba(59, 130, 246, 0.3);
 }
 
@@ -93,7 +93,7 @@
     padding: 6px 14px;
     border-radius: 20px;
     font-size: 12px;
-    font-weight: 600;
+    font-weight: var(--font-weight-semibold);
     margin-bottom: 16px;
     text-transform: uppercase;
     letter-spacing: 0.5px;
@@ -117,7 +117,7 @@
 .task-card h3 {
     margin: 0 0 12px 0;
     font-size: 20px;
-    font-weight: 700;
+    font-weight: var(--font-weight-bold);
     color: var(--color-gray-900);
 }
 
@@ -135,7 +135,7 @@
 }
 
 .task-info-label {
-    font-weight: 600;
+    font-weight: var(--font-weight-semibold);
     color: var(--color-gray-800);
 }
 
@@ -147,7 +147,7 @@
     background: var(--surface-panel);
     border-radius: 10px;
     font-size: 13px;
-    font-weight: 600;
+    font-weight: var(--font-weight-semibold);
     margin-top: 12px;
 }
 
@@ -182,7 +182,7 @@
     padding: 4px 12px;
     border-radius: 12px;
     font-size: 12px;
-    font-weight: 600;
+    font-weight: var(--font-weight-semibold);
 }
 
 .status-badge.esterilizado {
@@ -205,12 +205,12 @@
     padding: 14px 20px;
     border: none;
     border-radius: 8px;
-    color: white;
+    color: var(--color-white);
     background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
-    font-weight: 600;
+    font-weight: var(--font-weight-semibold);
     font-size: 15px;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: var(--transition-base);
     box-shadow: 0 4px 12px rgba(6, 182, 212, 0.3);
 }
 
@@ -250,7 +250,7 @@
 
 .certificate-label {
     display: block;
-    font-weight: 600;
+    font-weight: var(--font-weight-semibold);
     color: var(--color-gray-700);
     margin-bottom: 10px;
     font-size: 0.95rem;
@@ -268,10 +268,10 @@
     display: inline-block;
     padding: 14px 20px;
     background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
-    color: white;
+    color: var(--color-white);
     border-radius: 12px;
     cursor: pointer;
-    font-weight: 600;
+    font-weight: var(--font-weight-semibold);
     font-size: 0.95rem;
     transition: transform 0.2s, box-shadow 0.2s;
     text-align: center;
@@ -305,7 +305,7 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    font-weight: 600;
+    font-weight: var(--font-weight-semibold);
     font-size: 0.85rem;
     color: var(--color-gray-800);
 }

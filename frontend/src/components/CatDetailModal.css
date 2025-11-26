@@ -74,6 +74,7 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 0;
+    min-height: 600px;
 }
 
 .cat-modal-image-section {
@@ -82,14 +83,108 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    min-height: 400px;
+    height: 100%;
+    min-height: 600px;
+    /* Llena todo el espacio disponible */
+    user-select: none;
+    touch-action: pan-y;
+    overflow: hidden;
 }
 
 .cat-modal-image {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    object-position: center;
+    /* Llena el contenedor completamente, recortando si es necesario */
     display: block;
+}
+
+/* Botones de navegación del carrusel */
+.cat-modal-photo-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    border: none;
+    color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    z-index: 5;
+    opacity: 0;
+}
+
+.cat-modal-image-section:hover .cat-modal-photo-nav {
+    opacity: 1;
+}
+
+.cat-modal-photo-nav:hover {
+    background: rgba(0, 0, 0, 0.85);
+    transform: translateY(-50%) scale(1.1);
+}
+
+.cat-modal-photo-prev {
+    left: 16px;
+}
+
+.cat-modal-photo-next {
+    right: 16px;
+}
+
+/* Indicadores de puntos */
+.cat-modal-photo-indicators {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 8px;
+    z-index: 5;
+}
+
+.cat-modal-photo-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(4px);
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    padding: 0;
+}
+
+.cat-modal-photo-dot.active {
+    background: white;
+    width: 28px;
+    border-radius: 5px;
+}
+
+.cat-modal-photo-dot:hover {
+    background: rgba(255, 255, 255, 0.8);
+    transform: scale(1.2);
+}
+
+/* Contador de fotos */
+.cat-modal-photo-counter {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(4px);
+    color: white;
+    padding: 8px 14px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    z-index: 5;
 }
 
 .cat-modal-gallery-indicator {
@@ -172,6 +267,18 @@
     color: white;
 }
 
+.cat-modal-badge.breed {
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.9) 0%, rgba(124, 58, 237, 1) 100%);
+    color: white;
+    font-weight: 600;
+}
+
+.cat-modal-badge.living-space {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.9) 0%, rgba(37, 99, 235, 1) 100%);
+    color: white;
+    font-weight: 600;
+}
+
 .cat-modal-section {
     border-top: 2px solid var(--color-gray-light);
     padding-top: 16px;
@@ -250,7 +357,8 @@
     }
 
     .cat-modal-image-section {
-        min-height: 300px;
+        height: 350px;
+        /* Altura fija en mobile */
     }
 
     .cat-modal-info-section {
@@ -267,6 +375,55 @@
 
     .cat-modal-btn {
         width: 100%;
+    }
+
+    /* Mostrar siempre los controles del carrusel en móvil */
+    .cat-modal-photo-nav {
+        opacity: 1;
+        width: 40px;
+        height: 40px;
+    }
+
+    .cat-modal-photo-prev {
+        left: 12px;
+    }
+
+    .cat-modal-photo-next {
+        right: 12px;
+    }
+
+    .cat-modal-photo-indicators {
+        bottom: 16px;
+        gap: 6px;
+    }
+
+    .cat-modal-photo-dot {
+        width: 8px;
+        height: 8px;
+    }
+
+    .cat-modal-photo-dot.active {
+        width: 24px;
+    }
+
+    .cat-modal-photo-counter {
+        font-size: 0.75rem;
+        padding: 6px 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .cat-modal-photo-indicators {
+        gap: 5px;
+    }
+
+    .cat-modal-photo-dot {
+        width: 7px;
+        height: 7px;
+    }
+
+    .cat-modal-photo-dot.active {
+        width: 20px;
     }
 }
 

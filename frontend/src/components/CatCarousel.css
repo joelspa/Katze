@@ -1,0 +1,134 @@
+/* Estilos para el carrusel de gatos */
+
+.carousel-container {
+    position: relative;
+    padding: 0 60px;
+    margin-bottom: 40px;
+}
+
+.carousel-track {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+    overflow: hidden;
+}
+
+.carousel-item {
+    width: 100%;
+}
+
+.carousel-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: var(--color-primary);
+    border: none;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    z-index: 10;
+}
+
+.carousel-btn:hover:not(:disabled) {
+    background: #d99a2a;
+    transform: translateY(-50%) scale(1.1);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
+.carousel-btn:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+.carousel-btn svg {
+    width: 24px;
+    height: 24px;
+    color: white;
+}
+
+.prev-btn {
+    left: 0;
+}
+
+.next-btn {
+    right: 0;
+}
+
+.carousel-indicators {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 24px;
+}
+
+.indicator {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #e0e0e0;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.indicator:hover {
+    background: #bbb;
+}
+
+.indicator.active {
+    background: var(--color-primary);
+    width: 32px;
+    border-radius: 6px;
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+    .carousel-track {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+    }
+}
+
+@media (max-width: 900px) {
+    .carousel-track {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+    }
+
+    .carousel-container {
+        padding: 0 50px;
+    }
+
+    .carousel-btn {
+        width: 40px;
+        height: 40px;
+    }
+
+    .carousel-btn svg {
+        width: 20px;
+        height: 20px;
+    }
+}
+
+@media (max-width: 600px) {
+    .carousel-track {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    .carousel-container {
+        padding: 0 45px;
+    }
+
+    .carousel-btn {
+        width: 36px;
+        height: 36px;
+    }
+}

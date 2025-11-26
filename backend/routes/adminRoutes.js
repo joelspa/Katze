@@ -12,6 +12,11 @@ const adminMiddleware = require('../middleware/adminMiddleware');
 router.use(authMiddleware);
 router.use(adminMiddleware);
 
+// ========== ESTADÍSTICAS DEL DASHBOARD ==========
+
+// Obtiene estadísticas completas del dashboard admin
+router.get('/dashboard/stats', catController.getAdminDashboardStats);
+
 // ========== GESTIÓN DE PUBLICACIONES DE GATOS ==========
 
 // Obtiene TODAS las publicaciones (incluidas pendientes)

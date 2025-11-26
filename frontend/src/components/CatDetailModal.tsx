@@ -1,5 +1,5 @@
 // Modal para mostrar detalles completos de un gato
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import './CatDetailModal.css';
 import type { Cat } from './CatCard';
@@ -11,6 +11,16 @@ interface CatDetailModalProps {
 }
 
 const CatDetailModal: React.FC<CatDetailModalProps> = ({ cat, isOpen, onClose }) => {
+    const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
+    const [touchStart, setTouchStart] = useState<number | null>(null);
+    const [touchEnd, setTouchEnd] = useState<number | null>(null);
+
+    const photos = cat.photos_url && cat.photos_url.length > 0
+        ? cat.photos_url
+        : ['https://placehold.co/400x300/e0e0e0/666?text=Sin+Foto'];
+
+    const minSwipeDistance = 50;
+
     // Cierra el modal si se hace clic en el overlay
     const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
         if (e.target === e.currentTarget) {
@@ -30,11 +40,55 @@ const CatDetailModal: React.FC<CatDetailModalProps> = ({ cat, isOpen, onClose })
         };
     }, [isOpen]);
 
+    // Resetear índice de foto cuando cambia el gato o se cierra el modal
+    React.useEffect(() => {
+        if (isOpen) {
+            setCurrentPhotoIndex(0);
+        }
+    }, [isOpen, cat.id]);
+
+    // Funciones de navegación del carrusel
+    const handlePrevPhoto = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        setCurrentPhotoIndex((prev) => 
+            prev === 0 ? photos.length - 1 : prev - 1
+        );
+    };
+
+    const handleNextPhoto = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        setCurrentPhotoIndex((prev) => 
+            prev === photos.length - 1 ? 0 : prev + 1
+        );
+    };
+
+    // Manejo de eventos táctiles para swipe
+    const onTouchStart = (e: React.TouchEvent) => {
+        setTouchEnd(null);
+        setTouchStart(e.targetTouches[0].clientX);
+    };
+
+    const onTouchMove = (e: React.TouchEvent) => {
+        setTouchEnd(e.targetTouches[0].clientX);
+    };
+
+    const onTouchEnd = () => {
+        if (!touchStart || !touchEnd) return;
+        
+        const distance = touchStart - touchEnd;
+        const isLeftSwipe = distance > minSwipeDistance;
+        const isRightSwipe = distance < -minSwipeDistance;
+
+        if (isLeftSwipe) {
+            handleNextPhoto({} as React.MouseEvent);
+        } else if (isRightSwipe) {
+            handlePrevPhoto({} as React.MouseEvent);
+        }
+    };
+
     if (!isOpen) return null;
 
-    const imageUrl = cat.photos_url && cat.photos_url.length > 0
-        ? cat.photos_url[0]
-        : 'https://placehold.co/400x300/e0e0e0/666?text=Sin+Foto';
+    const imageUrl = photos[currentPhotoIndex];
 
     return (
         <div className="cat-modal-overlay" onClick={handleOverlayClick}>
@@ -46,22 +100,64 @@ const CatDetailModal: React.FC<CatDetailModalProps> = ({ cat, isOpen, onClose })
                 </button>
 
                 <div className="cat-modal-body">
-                    <div className="cat-modal-image-section">
+                    <div 
+                        className="cat-modal-image-section"
+                        onTouchStart={onTouchStart}
+                        onTouchMove={onTouchMove}
+                        onTouchEnd={onTouchEnd}
+                    >
                         <img
                             src={imageUrl}
-                            alt={cat.name}
+                            alt={`${cat.name} - Foto ${currentPhotoIndex + 1}`}
                             className="cat-modal-image"
                             onError={(e) => {
                                 e.currentTarget.src = 'https://placehold.co/400x300/e0e0e0/666?text=Sin+Foto';
                             }}
                         />
-                        {cat.photos_url && cat.photos_url.length > 1 && (
-                            <div className="cat-modal-gallery-indicator">
-                                <svg viewBox="0 0 20 20" fill="currentColor" style={{width: '16px', height: '16px', marginRight: '6px'}}>
-                                    <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd" />
-                                </svg>
-                                +{cat.photos_url.length - 1} fotos más
-                            </div>
+                        
+                        {photos.length > 1 && (
+                            <>
+                                {/* Botones de navegación */}
+                                <button 
+                                    className="cat-modal-photo-nav cat-modal-photo-prev"
+                                    onClick={handlePrevPhoto}
+                                    aria-label="Foto anterior"
+                                >
+                                    <svg viewBox="0 0 24 24" fill="currentColor" style={{width: '24px', height: '24px'}}>
+                                        <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+                                    </svg>
+                                </button>
+                                
+                                <button 
+                                    className="cat-modal-photo-nav cat-modal-photo-next"
+                                    onClick={handleNextPhoto}
+                                    aria-label="Foto siguiente"
+                                >
+                                    <svg viewBox="0 0 24 24" fill="currentColor" style={{width: '24px', height: '24px'}}>
+                                        <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
+                                    </svg>
+                                </button>
+
+                                {/* Indicadores de puntos */}
+                                <div className="cat-modal-photo-indicators">
+                                    {photos.map((_, index) => (
+                                        <button
+                                            key={index}
+                                            className={`cat-modal-photo-dot ${index === currentPhotoIndex ? 'active' : ''}`}
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                setCurrentPhotoIndex(index);
+                                            }}
+                                            aria-label={`Ir a foto ${index + 1}`}
+                                        />
+                                    ))}
+                                </div>
+
+                                {/* Contador de fotos */}
+                                <div className="cat-modal-photo-counter">
+                                    {currentPhotoIndex + 1} / {photos.length}
+                                </div>
+                            </>
                         )}
                     </div>
 
@@ -72,6 +168,40 @@ const CatDetailModal: React.FC<CatDetailModalProps> = ({ cat, isOpen, onClose })
                         </div>
 
                         <div className="cat-modal-status-badges">
+                            {cat.breed && (
+                                <span className="cat-modal-badge breed">
+                                    <svg viewBox="0 0 24 24" fill="currentColor" style={{width: '16px', height: '16px', marginRight: '6px'}}>
+                                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
+                                    </svg>
+                                    {cat.breed}
+                                </span>
+                            )}
+                            {cat.living_space_requirement && (
+                                <span className="cat-modal-badge living-space">
+                                    {cat.living_space_requirement === 'casa_grande' ? (
+                                        <>
+                                            <svg viewBox="0 0 24 24" fill="currentColor" style={{width: '16px', height: '16px', marginRight: '6px'}}>
+                                                <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+                                            </svg>
+                                            Casa Grande
+                                        </>
+                                    ) : cat.living_space_requirement === 'departamento' ? (
+                                        <>
+                                            <svg viewBox="0 0 24 24" fill="currentColor" style={{width: '16px', height: '16px', marginRight: '6px'}}>
+                                                <path d="M12 7V3H2v18h20V7H12zM6 19H4v-2h2v2zm0-4H4v-2h2v2zm0-4H4V9h2v2zm0-4H4V5h2v2zm4 12H8v-2h2v2zm0-4H8v-2h2v2zm0-4H8V9h2v2zm0-4H8V5h2v2zm10 12h-8v-2h2v-2h-2v-2h2v-2h-2V9h8v10zm-2-8h-2v2h2v-2zm0 4h-2v2h2v-2z"/>
+                                            </svg>
+                                            Departamento
+                                        </>
+                                    ) : (
+                                        <>
+                                            <svg viewBox="0 0 24 24" fill="currentColor" style={{width: '16px', height: '16px', marginRight: '6px'}}>
+                                                <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+                                            </svg>
+                                            Cualquier espacio
+                                        </>
+                                    )}
+                                </span>
+                            )}
                             <span className={`cat-modal-badge ${cat.sterilization_status}`}>
                                 <svg viewBox="0 0 20 20" fill="currentColor" style={{width: '16px', height: '16px', marginRight: '6px'}}>
                                     {cat.sterilization_status === 'esterilizado' ? (

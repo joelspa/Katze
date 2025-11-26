@@ -23,12 +23,17 @@ const Navbar = () => {
                 <ul className="nav-menu">
                     <li className="nav-item">
                         <Link to="/" className="nav-link">
-                            Inicio (Gatos)
+                            Inicio
+                        </Link>
+                    </li>
+                    <li className="nav-item">
+                        <Link to="/catalogo" className="nav-link">
+                            Catálogo
                         </Link>
                     </li>
                     <li className="nav-item">
                         <Link to="/education" className="nav-link">
-                            Educación
+                            Blog
                         </Link>
                     </li>
 
@@ -51,11 +56,6 @@ const Navbar = () => {
                                             Panel Seguimiento
                                         </Link>
                                     </li>
-                                    <li className="nav-item">
-                                        <Link to="/statistics" className="nav-link">
-                                            Estadísticas
-                                        </Link>
-                                    </li>
                                 </>
                             )}
 
@@ -64,11 +64,6 @@ const Navbar = () => {
                                     <li className="nav-item">
                                         <Link to="/admin" className="nav-link">
                                             Admin
-                                        </Link>
-                                    </li>
-                                    <li className="nav-item">
-                                        <Link to="/statistics" className="nav-link">
-                                            Estadísticas
                                         </Link>
                                     </li>
                                 </>
