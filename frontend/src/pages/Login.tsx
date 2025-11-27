@@ -7,6 +7,7 @@ import axios, { isAxiosError } from 'axios';
 import { useAuth } from '../context/AuthContext';
 import { useModal } from '../hooks/useModal';
 import CustomModal from '../components/CustomModal';
+import Footer from '../components/Footer';
 import './Login.css';
 
 const Login = () => {
@@ -149,6 +150,8 @@ const Login = () => {
                 confirmText={modalState.confirmText}
                 cancelText={modalState.cancelText}
             />
+
+            <Footer />
         </div>
     );
 };

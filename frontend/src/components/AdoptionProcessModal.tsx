@@ -220,20 +220,12 @@ const AdoptionProcessModal = ({ isOpen, onClose }: AdoptionProcessModalProps) =>
                                 <span className="cost-label">Costo de adopción</span>
                                 <span className="cost-value free">¡GRATIS!</span>
                             </div>
-                            <div className="cost-row">
-                                <span className="cost-label">Vacunas básicas</span>
-                                <span className="cost-value free">✓ Incluidas</span>
-                            </div>
-                            <div className="cost-row">
-                                <span className="cost-label">Desparasitación inicial</span>
-                                <span className="cost-value free">✓ Incluida</span>
-                            </div>
                             <div className="cost-note">
-                                <strong>Sin fines de lucro:</strong> Somos una organización sin fines de lucro. 
-                                La adopción es completamente gratuita. Si deseas, puedes hacer una donación voluntaria para ayudarnos a seguir rescatando más gatos.
+                                <strong>Sin fines de lucro:</strong> Somos una organización sin fines de lucro dedicada al rescate y protección de gatos en situación de calle. 
+                                Cada adopción representa una vida salvada y una familia feliz. Tu decisión de adoptar nos permite seguir rescatando más gatos que necesitan ayuda.
                             </div>
                             <div className="cost-disclaimer">
-                                <strong>Importante:</strong> Los gastos de esterilización, vacunas de refuerzo y futuros cuidados veterinarios 
+                                <strong>Importante:</strong> Los gastos de esterilización, vacunas y futuros cuidados veterinarios 
                                 son responsabilidad del adoptante. Te recomendamos contar con un presupuesto para el cuidado continuo de tu nuevo compañero.
                             </div>
                         </div>
@@ -253,7 +245,6 @@ const AdoptionProcessModal = ({ isOpen, onClose }: AdoptionProcessModalProps) =>
                             <li>Visita opcional al mes de la adopción</li>
                             <li>Asesoría veterinaria por WhatsApp</li>
                             <li>Grupo de apoyo de adoptantes en redes sociales</li>
-                            <li>Descuentos en clínicas veterinarias aliadas</li>
                         </ul>
                     </section>
 

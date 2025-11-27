@@ -1,5 +1,5 @@
 // frontend/src/pages/PublishCat.tsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios, { isAxiosError } from 'axios';
 import { useAuth } from '../context/AuthContext';

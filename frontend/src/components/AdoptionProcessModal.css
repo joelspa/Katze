@@ -79,20 +79,28 @@
 .modal-header {
     background: linear-gradient(135deg, #F2B137 0%, #d99a2a 100%);
     color: white;
-    padding: 48px 40px 40px;
+    padding: 60px 40px 40px;
     text-align: center;
     border-radius: 16px 16px 0 0;
 }
 
 .modal-header h2 {
-    font-size: clamp(1.75rem, 4vw, 2.5rem);
+    font-size: clamp(1.5rem, 3.5vw, 2.25rem);
     font-weight: 800;
-    margin-bottom: 12px;
+    margin-bottom: 16px;
+    line-height: 1.3;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
 }
 
 .modal-header p {
-    font-size: 18px;
+    font-size: clamp(15px, 2.5vw, 17px);
     opacity: 0.95;
+    line-height: 1.6;
+    max-width: 700px;
+    margin: 0 auto;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
 }
 
 .modal-body {
@@ -484,7 +492,21 @@
     }
 
     .modal-header {
-        padding: 40px 24px 32px;
+        padding: 60px 20px 32px;
+    }
+
+    .modal-header h2 {
+        font-size: 1.35rem;
+        line-height: 1.35;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+    }
+
+    .modal-header p {
+        font-size: 15px;
+        line-height: 1.6;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
     }
 
     .modal-body {
@@ -533,4 +555,212 @@
 
 .adoption-modal-content::-webkit-scrollbar-thumb:hover {
     background: #d99a2a;
+}
+
+/* ===== DARK MODE ===== */
+[data-theme="dark"] .adoption-modal-overlay {
+    background: rgba(0, 0, 0, 0.85);
+}
+
+[data-theme="dark"] .adoption-modal-content {
+    background: var(--surface-card);
+    border: 1px solid var(--border-default);
+}
+
+[data-theme="dark"] .modal-close-btn {
+    background: var(--surface-elevated);
+}
+
+[data-theme="dark"] .modal-close-btn svg {
+    stroke: var(--color-white);
+}
+
+[data-theme="dark"] .modal-close-btn:hover {
+    background: var(--bg-secondary);
+}
+
+[data-theme="dark"] .modal-header {
+    background: linear-gradient(135deg, rgba(242, 177, 55, 0.2) 0%, rgba(217, 154, 42, 0.15) 100%);
+    border-bottom: 2px solid var(--border-default);
+}
+
+[data-theme="dark"] .modal-header h2 {
+    color: var(--color-white);
+}
+
+[data-theme="dark"] .modal-header p {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+[data-theme="dark"] .modal-body {
+    background: var(--surface-card);
+}
+
+[data-theme="dark"] .process-section h3 {
+    color: var(--color-white);
+}
+
+[data-theme="dark"] .section-icon {
+    background: linear-gradient(135deg, var(--color-accent), #d99a2a);
+}
+
+[data-theme="dark"] .checklist-item {
+    background: var(--bg-secondary);
+    border-left-color: var(--color-accent);
+}
+
+[data-theme="dark"] .checklist-item .check {
+    color: var(--color-accent-light);
+}
+
+[data-theme="dark"] .checklist-item strong {
+    color: var(--color-white);
+}
+
+[data-theme="dark"] .checklist-item p {
+    color: rgba(230, 241, 255, 0.85);
+}
+
+[data-theme="dark"] .timeline::before {
+    background: linear-gradient(to bottom, var(--color-accent), #d99a2a);
+}
+
+[data-theme="dark"] .timeline-number {
+    background: var(--color-accent);
+}
+
+[data-theme="dark"] .timeline-content {
+    background: var(--bg-secondary);
+}
+
+[data-theme="dark"] .timeline-content:hover {
+    background: var(--surface-elevated);
+}
+
+[data-theme="dark"] .timeline-content h4 {
+    color: var(--color-white);
+}
+
+[data-theme="dark"] .timeline-content p {
+    color: rgba(230, 241, 255, 0.85);
+}
+
+[data-theme="dark"] .time-estimate {
+    background: var(--color-accent);
+}
+
+[data-theme="dark"] .document-card {
+    background: var(--bg-secondary);
+}
+
+[data-theme="dark"] .document-card:hover {
+    background: var(--surface-elevated);
+}
+
+[data-theme="dark"] .document-card h4 {
+    color: var(--color-white);
+}
+
+[data-theme="dark"] .document-card p {
+    color: rgba(230, 241, 255, 0.85);
+}
+
+[data-theme="dark"] .doc-icon svg {
+    color: var(--color-accent-light);
+}
+
+[data-theme="dark"] .costs-table {
+    background: var(--bg-secondary);
+}
+
+[data-theme="dark"] .cost-row {
+    border-bottom-color: var(--border-default);
+}
+
+[data-theme="dark"] .cost-label {
+    color: rgba(230, 241, 255, 0.9);
+}
+
+[data-theme="dark"] .cost-value {
+    color: var(--color-accent-light);
+}
+
+[data-theme="dark"] .cost-value.free {
+    color: #6ee7b7;
+}
+
+[data-theme="dark"] .cost-note {
+    background: rgba(16, 185, 129, 0.15);
+    border-left-color: #6ee7b7;
+    color: rgba(230, 241, 255, 0.85);
+}
+
+[data-theme="dark"] .cost-note strong {
+    color: var(--color-white);
+}
+
+[data-theme="dark"] .cost-disclaimer {
+    background: rgba(255, 159, 28, 0.15);
+    border-left-color: var(--color-accent-light);
+    color: rgba(230, 241, 255, 0.85);
+}
+
+[data-theme="dark"] .cost-disclaimer strong {
+    color: var(--color-white);
+}
+
+[data-theme="dark"] .support-list li {
+    color: rgba(230, 241, 255, 0.85);
+}
+
+[data-theme="dark"] .support-list li::before {
+    color: var(--color-accent-light);
+}
+
+[data-theme="dark"] .faq-item {
+    background: var(--bg-secondary);
+}
+
+[data-theme="dark"] .faq-item:hover {
+    background: var(--surface-elevated);
+}
+
+[data-theme="dark"] .faq-item summary {
+    color: var(--color-white);
+}
+
+[data-theme="dark"] .faq-item summary::before {
+    color: var(--color-accent-light);
+}
+
+[data-theme="dark"] .faq-item p {
+    color: rgba(230, 241, 255, 0.85);
+}
+
+[data-theme="dark"] .modal-footer {
+    background: var(--bg-secondary);
+    border-top: 1px solid var(--border-default);
+}
+
+[data-theme="dark"] .btn-secondary {
+    background: var(--surface-elevated);
+    color: var(--color-white);
+    border-color: var(--border-default);
+}
+
+[data-theme="dark"] .btn-secondary:hover {
+    background: var(--surface-panel);
+    border-color: var(--color-accent);
+}
+
+[data-theme="dark"] .adoption-modal-content::-webkit-scrollbar-track {
+    background: var(--bg-secondary);
+}
+
+[data-theme="dark"] .adoption-modal-content::-webkit-scrollbar-thumb {
+    background: var(--color-accent);
+}
+
+[data-theme="dark"] .adoption-modal-content::-webkit-scrollbar-thumb:hover {
+    background: var(--color-accent-light);
 }

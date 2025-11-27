@@ -157,3 +157,51 @@
     margin: 20px auto;
     max-width: 600px;
 }
+
+/* ===========================
+   DARK MODE
+   =========================== */
+
+[data-theme="dark"] .detail-page {
+    background: var(--bg-primary);
+}
+
+[data-theme="dark"] .detail-container {
+    background: var(--surface-card);
+    border: 1px solid var(--border-default);
+}
+
+[data-theme="dark"] .detail-info h1 {
+    color: var(--color-white);
+}
+
+[data-theme="dark"] .detail-age {
+    color: rgba(230, 241, 255, 0.80);
+}
+
+[data-theme="dark"] .detail-section h3 {
+    color: var(--color-white);
+}
+
+[data-theme="dark"] .story-section {
+    background: rgba(59, 130, 246, 0.08);
+    border-color: rgba(59, 130, 246, 0.3);
+}
+
+[data-theme="dark"] .story-section h3 {
+    color: var(--color-white);
+}
+
+[data-theme="dark"] .story-content {
+    color: rgba(230, 241, 255, 0.85);
+}
+
+[data-theme="dark"] .loading-message {
+    color: rgba(230, 241, 255, 0.85);
+}
+
+[data-theme="dark"] .error-message {
+    background-color: rgba(239, 68, 68, 0.15);
+    border-color: rgba(239, 68, 68, 0.3);
+    color: #fca5a5;
+}

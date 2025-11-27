@@ -5,6 +5,7 @@ import React, { useState, useEffect } from 'react';
 import axios, { isAxiosError } from 'axios';
 import { useModal } from '../hooks/useModal';
 import CustomModal from '../components/CustomModal';
+import Footer from '../components/Footer';
 import './Register.css';
 
 const Register = () => {
@@ -148,6 +149,8 @@ const Register = () => {
                 confirmText={modalState.confirmText}
                 cancelText={modalState.cancelText}
             />
+
+            <Footer />
         </div>
     );
 };

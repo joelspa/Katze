@@ -803,6 +803,84 @@
     font-size: 1.2rem;
 }
 
+/* ===== DARK MODE ===== */
+[data-theme="dark"] .statistics-container {
+  background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+}
+
+[data-theme="dark"] .section-title {
+  color: var(--color-white);
+}
+
+[data-theme="dark"] .section-subtitle,
+[data-theme="dark"] .summary-text,
+[data-theme="dark"] .kpi-label,
+[data-theme="dark"] .kpi-status,
+[data-theme="dark"] .health-insight,
+[data-theme="dark"] .stat-row,
+[data-theme="dark"] .progress-stats,
+[data-theme="dark"] .info-tags .tag,
+[data-theme="dark"] .rescuer-info,
+[data-theme="dark"] .days-label,
+[data-theme="dark"] .action-desc,
+[data-theme="dark"] .loading-message {
+  color: rgba(230, 241, 255, 0.85);
+}
+
+[data-theme="dark"] .stats-header {
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+}
+
+[data-theme="dark"] .kpi-card,
+[data-theme="dark"] .health-card,
+[data-theme="dark"] .summary-card,
+[data-theme="dark"] .priority-item,
+[data-theme="dark"] .action-card {
+  background: var(--surface-card);
+  border-color: var(--border-default);
+}
+
+[data-theme="dark"] .kpi-card h3,
+[data-theme="dark"] .kpi-card.featured .kpi-label,
+[data-theme="dark"] .health-header h3,
+[data-theme="dark"] .priority-info h4,
+[data-theme="dark"] .action-header h3,
+[data-theme="dark"] .stat-row strong,
+[data-theme="dark"] .summary-number,
+[data-theme="dark"] .days-waiting {
+  color: var(--color-white);
+}
+
+[data-theme="dark"] .kpi-card:hover,
+[data-theme="dark"] .health-card:hover,
+[data-theme="dark"] .priority-item:hover,
+[data-theme="dark"] .action-card:hover {
+  background: var(--surface-elevated);
+  border-color: var(--color-primary);
+}
+
+[data-theme="dark"] .success-state {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(16, 185, 129, 0.08) 100%);
+  border-color: var(--color-success);
+}
+
+[data-theme="dark"] .success-state h3,
+[data-theme="dark"] .success-state .success-detail {
+  color: var(--color-white);
+}
+
+[data-theme="dark"] .success-state p {
+  color: rgba(230, 241, 255, 0.85);
+}
+
+[data-theme="dark"] .empty-state h3 {
+  color: var(--color-white);
+}
+
+[data-theme="dark"] .empty-state p {
+  color: rgba(230, 241, 255, 0.85);
+}
+
 gap: 16px;
 }
 

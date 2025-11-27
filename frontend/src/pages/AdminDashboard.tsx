@@ -100,7 +100,7 @@ const AdminDashboard = () => {
     const [showPostForm, setShowPostForm] = useState(false);
     const [editingPost, setEditingPost] = useState<EducationalPost | null>(null);
     const [editingPostEventDate, setEditingPostEventDate] = useState<string>('');
-    const [postForm, setPostForm] = useState({ title: '', content: '', eventDate: '', image_url: '' });
+    const [postForm, setPostForm] = useState({ title: '', content: '', eventDate: '', image_url: '', category: 'todos' });
     const [postImageFile, setPostImageFile] = useState<File | null>(null);
     const [editingPostImageFile, setEditingPostImageFile] = useState<File | null>(null);
     
@@ -164,6 +164,7 @@ const AdminDashboard = () => {
                 { 
                     title: postForm.title, 
                     content: postForm.content,
+                    category: postForm.category,
                     event_date: postForm.eventDate || null,
                     image_url: imageUrl || null
                 },
@@ -171,7 +172,7 @@ const AdminDashboard = () => {
             );
 
             alert('Charla creada con éxito');
-            setPostForm({ title: '', content: '', eventDate: '', image_url: '' });
+            setPostForm({ title: '', content: '', eventDate: '', image_url: '', category: 'todos' });
             setPostImageFile(null);
             setShowPostForm(false);
             fetchPosts();
@@ -203,6 +204,7 @@ const AdminDashboard = () => {
                 { 
                     title: editingPost.title, 
                     content: editingPost.content,
+                    category: editingPost.category || 'todos',
                     event_date: editingPostEventDate || null,
                     image_url: imageUrl || null
                 },
@@ -981,6 +983,28 @@ const AdminDashboard = () => {
                                 <small>{postForm.title.length}/200 caracteres</small>
                             </div>
                             <div className="form-group">
+                                <label htmlFor="postCategory">
+                                    <svg viewBox="0 0 20 20" fill="currentColor" style={{width: '16px', height: '16px', marginRight: '6px'}}>
+                                        <path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" />
+                                    </svg>
+                                    Categoría del artículo
+                                </label>
+                                <select
+                                    id="postCategory"
+                                    value={postForm.category}
+                                    onChange={(e) => setPostForm({ ...postForm, category: e.target.value })}
+                                >
+                                    <option value="todos">Todos (General)</option>
+                                    <option value="salud">Salud</option>
+                                    <option value="comportamiento">Comportamiento</option>
+                                    <option value="nutricion">Nutrición</option>
+                                    <option value="adopcion">Adopción</option>
+                                    <option value="recursos">Recursos Útiles</option>
+                                    <option value="esterilizacion">Esterilización</option>
+                                </select>
+                                <small>Selecciona la categoría más relevante para el artículo</small>
+                            </div>
+                            <div className="form-group">
                                 <label htmlFor="postEventDate">
                                     <svg viewBox="0 0 20 20" fill="currentColor" style={{width: '16px', height: '16px', marginRight: '6px'}}>
                                         <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
@@ -1126,6 +1150,26 @@ const AdminDashboard = () => {
                                                 onChange={(e) => setEditingPost({ ...editingPost, title: e.target.value })}
                                                 className="edit-input-title"
                                             />
+                                            
+                                            <div className="edit-category-section" style={{ marginBottom: '16px' }}>
+                                                <label htmlFor={`edit-category-${selectedPost.id}`}>Categoría</label>
+                                                <select
+                                                    id={`edit-category-${selectedPost.id}`}
+                                                    value={editingPost.category || 'todos'}
+                                                    onChange={(e) => setEditingPost({ ...editingPost, category: e.target.value })}
+                                                    className="edit-input"
+                                                    style={{ marginTop: '8px' }}
+                                                >
+                                                    <option value="todos">Todos (General)</option>
+                                                    <option value="salud">Salud</option>
+                                                    <option value="comportamiento">Comportamiento</option>
+                                                    <option value="nutricion">Nutrición</option>
+                                                    <option value="adopcion">Adopción</option>
+                                                    <option value="recursos">Recursos Útiles</option>
+                                                    <option value="esterilizacion">Esterilización</option>
+                                                </select>
+                                            </div>
+                                            
                                             <textarea
                                                 value={editingPost.content}
                                                 onChange={(e) => setEditingPost({ ...editingPost, content: e.target.value })}

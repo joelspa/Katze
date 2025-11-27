@@ -88,6 +88,11 @@
     background: linear-gradient(135deg, var(--color-white) 0%, rgba(254, 242, 242, 1) 100%);
 }
 
+[data-theme="dark"] .task-card.overdue {
+    border-color: rgba(241, 91, 103, 0.4);
+    background: linear-gradient(135deg, var(--surface-card) 0%, rgba(241, 91, 103, 0.08) 100%);
+}
+
 .task-type-badge {
     display: inline-block;
     padding: 6px 14px;
@@ -112,6 +117,24 @@
 .badge-visit {
     background: linear-gradient(135deg, rgba(244, 63, 94, 0.15) 0%, rgba(244, 63, 94, 0.25) 100%);
     color: var(--color-error-dark);
+}
+
+[data-theme="dark"] .badge-sterilization {
+    background: rgba(59, 130, 246, 0.2);
+    color: #93c5fd;
+    border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+[data-theme="dark"] .badge-wellness {
+    background: rgba(16, 185, 129, 0.2);
+    color: #6ee7b7;
+    border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+[data-theme="dark"] .badge-visit {
+    background: rgba(244, 63, 94, 0.2);
+    color: #fca5a5;
+    border: 1px solid rgba(244, 63, 94, 0.3);
 }
 
 .task-card h3 {
@@ -154,6 +177,12 @@
 .due-date.overdue {
     background: #fee2e2;
     color: #dc2626;
+}
+
+[data-theme="dark"] .due-date.overdue {
+    background: rgba(241, 91, 103, 0.15);
+    color: #fca5a5;
+    border: 1px solid rgba(241, 91, 103, 0.3);
 }
 
 .task-description {
@@ -337,4 +366,110 @@
     .tasks-list {
         grid-template-columns: 1fr;
     }
+}
+
+/* ===========================
+   DARK MODE
+   =========================== */
+
+[data-theme="dark"] .dashboard-container {
+    background: var(--bg-primary);
+}
+
+[data-theme="dark"] .dashboard-container h1 {
+    color: var(--color-white);
+}
+
+[data-theme="dark"] .search-input {
+    background: var(--surface-card);
+    border-color: var(--border-default);
+    color: var(--color-white);
+}
+
+[data-theme="dark"] .search-input:focus {
+    border-color: var(--color-primary);
+    background: var(--bg-secondary);
+}
+
+[data-theme="dark"] .no-tasks {
+    background: rgba(16, 185, 129, 0.12);
+    border-color: rgba(16, 185, 129, 0.4);
+    color: #6ee7b7;
+}
+
+[data-theme="dark"] .task-card {
+    background: var(--surface-card);
+    border-color: var(--border-default);
+}
+
+[data-theme="dark"] .task-card:hover {
+    border-color: rgba(59, 130, 246, 0.5);
+}
+
+[data-theme="dark"] .task-card.overdue {
+    background: rgba(241, 91, 103, 0.08);
+    border-color: rgba(241, 91, 103, 0.4);
+    box-shadow: 0 0 15px rgba(241, 91, 103, 0.1);
+}
+
+[data-theme="dark"] .task-card h3 {
+    color: var(--color-white);
+}
+
+[data-theme="dark"] .task-info-item {
+  color: rgba(230, 241, 255, 0.85);
+}[data-theme="dark"] .task-info-label {
+    color: var(--color-white);
+}
+
+[data-theme="dark"] .task-description {
+    background: var(--bg-secondary);
+    border-left-color: var(--color-primary);
+    color: var(--color-gray-700);
+}
+
+[data-theme="dark"] .certificate-label {
+  color: rgba(230, 241, 255, 0.90);
+}[data-theme="dark"] .file-input-label {
+    background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
+    box-shadow: 0 12px 24px rgba(46, 196, 182, 0.3);
+}
+
+[data-theme="dark"] .file-input-label:hover {
+    box-shadow: 0 16px 30px rgba(46, 196, 182, 0.35);
+}
+
+[data-theme="dark"] .upload-progress {
+    background-color: var(--bg-secondary);
+}
+
+[data-theme="dark"] .task-details p {
+  color: rgba(230, 241, 255, 0.85);
+}[data-theme="dark"] .certificate-upload-section {
+    background-color: var(--surface-panel);
+    border-color: var(--border-default);
+}
+
+[data-theme="dark"] .certificate-label {
+    color: var(--color-white);
+}
+
+[data-theme="dark"] .file-hint {
+  color: rgba(230, 241, 255, 0.75);
+}
+
+[data-theme="dark"] .upload-progress {
+    background-color: var(--surface-panel);
+}
+
+[data-theme="dark"] .upload-progress-text {
+    color: var(--color-white);
+}
+
+[data-theme="dark"] .loading-message {
+  color: rgba(230, 241, 255, 0.85);
+}[data-theme="dark"] .error-message {
+    background-color: rgba(239, 68, 68, 0.15);
+    border-color: rgba(239, 68, 68, 0.3);
+    color: #fca5a5;
 }

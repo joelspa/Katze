@@ -1,21 +1,21 @@
 /* frontend/src/pages/Login.css */
 
 .login-page {
-    min-height: calc(100vh - 80px);
+    min-height: 100vh;
     display: flex;
-    align-items: center;
-    justify-content: center;
+    flex-direction: column;
     background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
-    padding: var(--spacing-md);
+    width: 100%;
 }
 
-.container {
+.login-page .container {
     background: var(--surface-card);
     border-radius: var(--border-radius-lg);
     box-shadow: var(--shadow-lg);
     padding: 48px 40px;
     width: 100%;
     max-width: 420px;
+    margin: 40px auto;
     text-align: center;
 }
 
@@ -35,11 +35,11 @@
     margin: 0;
 }
 
-.container h2 {
+.login-page h2 {
     font-size: 24px;
     font-weight: var(--font-weight-semibold);
     color: var(--color-gray-900);
-    margin-bottom: 8px;
+    margin-bottom: 24px;
 }
 
 .formGroup {
@@ -187,4 +187,45 @@
     to {
         transform: rotate(360deg);
     }
+}
+
+/* ===== DARK MODE ===== */
+[data-theme="dark"] .login-page {
+  background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+}
+
+[data-theme="dark"] .login-page .container {
+  background: var(--surface-card);
+  box-shadow: none;
+  border: 1px solid var(--border-default);
+}
+
+[data-theme="dark"] .login-page .logo-text,
+[data-theme="dark"] .login-page h2 {
+  color: var(--color-white);
+}
+
+[data-theme="dark"] .label {
+  color: rgba(230, 241, 255, 0.90);
+}
+
+[data-theme="dark"] .input {
+  background: var(--bg-secondary);
+  border-color: var(--border-default);
+  color: var(--color-white);
+}
+
+[data-theme="dark"] .input:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(46, 196, 182, 0.2);
+}
+
+[data-theme="dark"] .error {
+  background: rgba(241, 91, 103, 0.15);
+  border-color: var(--color-error);
+  color: var(--color-error-light);
+}
+
+[data-theme="dark"] .loading-overlay {
+  background: rgba(1, 22, 39, 0.9);
 }

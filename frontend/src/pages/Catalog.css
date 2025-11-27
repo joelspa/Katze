@@ -2,9 +2,8 @@
 
 .catalog-container {
     min-height: 100vh;
-    padding: 40px 20px 80px;
-    max-width: 1400px;
-    margin: 0 auto;
+    padding: 40px 20px 0;
+    width: 100%;
 }
 
 .catalog-header {
@@ -255,4 +254,82 @@
         grid-template-columns: 1fr;
         gap: 24px;
     }
+}
+
+/* ===========================
+   DARK MODE
+   =========================== */
+
+[data-theme="dark"] .catalog-container {
+    background: var(--bg-primary);
+}
+
+[data-theme="dark"] .catalog-header h1 {
+    color: var(--color-white);
+}
+
+[data-theme="dark"] .catalog-subtitle {
+    color: rgba(230, 241, 255, 0.85);
+}
+
+[data-theme="dark"] .filters-section {
+    background: var(--surface-card);
+    border: 1px solid var(--border-default);
+}
+
+[data-theme="dark"] .filters-header {
+    border-bottom-color: var(--border-default);
+}
+
+[data-theme="dark"] .filters-header h2 {
+    color: var(--color-white);
+}
+
+[data-theme="dark"] .reset-btn {
+    background: var(--bg-secondary);
+    border-color: var(--border-default);
+    color: var(--color-white);
+}
+
+[data-theme="dark"] .reset-btn:hover {
+    background: var(--bg-primary);
+    border-color: var(--color-primary);
+}
+
+[data-theme="dark"] .filter-group label {
+    color: var(--color-white);
+}
+
+[data-theme="dark"] .filter-group input,
+[data-theme="dark"] .filter-group select {
+    background: var(--bg-secondary);
+    border-color: var(--border-default);
+    color: var(--color-white);
+}
+
+[data-theme="dark"] .filter-group input:focus,
+[data-theme="dark"] .filter-group select:focus {
+    border-color: var(--color-primary);
+    background: var(--bg-primary);
+}
+
+[data-theme="dark"] .results-info {
+    background: var(--surface-card);
+    border: 1px solid var(--border-default);
+}
+
+[data-theme="dark"] .results-info p {
+    color: rgba(230, 241, 255, 0.85);
+}
+
+[data-theme="dark"] .results-info strong {
+    color: var(--color-primary);
+}
+
+[data-theme="dark"] .no-results h3 {
+    color: var(--color-white);
+}
+
+[data-theme="dark"] .no-results p {
+    color: rgba(230, 241, 255, 0.85);
 }

@@ -1,115 +1,104 @@
 /**
  * VARIABLES CSS - SISTEMA DE DISEÑO KATZE
- * Nueva paleta con alto contraste para mejor experiencia de usuario
- * Temática: Naranja cálido (gatos) + Verde (naturaleza/cuidado) + Grises oscuros
+ * Paleta: Turquesa Menta + Azul Marino + Naranja Atardecer
+ * Filosofía: Limpio, Aireado, Moderno - Clínica Veterinaria de Lujo
  */
 
 :root {
-  /* ===== PALETA DE COLORES CON ALTO CONTRASTE ===== */
+  /* ===== PALETA DE COLORES PRINCIPAL ===== */
 
-  /* Primary - Naranja cálido (color de gatos atigrados) */
-  --color-primary: #ff6b35;
-  /* Naranja vibrante */
-  --color-primary-light: #ff8c61;
-  /* Naranja claro */
-  --color-primary-dark: #e64a19;
-  /* Naranja oscuro */
-  --color-primary-hover: #ff5722;
-  /* Naranja hover */
+  /* Primary - Turquesa Menta (Identidad) */
+  --color-primary: #2EC4B6;
+  --color-primary-light: #5DD5C8;
+  --color-primary-dark: #24A89D;
+  --color-primary-hover: #28B5A8;
 
-  /* Secondary - Verde naturaleza (cuidado, adopción responsable) */
-  --color-secondary: #00a86b;
-  /* Verde jade */
-  --color-secondary-light: #00c87a;
-  /* Verde claro */
-  --color-secondary-dark: #008552;
-  /* Verde oscuro */
+  /* Secondary - Azul Marino Profundo (Base) */
+  --color-secondary: #011627;
+  --color-secondary-light: #1E3A5F;
+  --color-secondary-dark: #000B14;
 
-  /* Accent - Coral suave (ternura, amor) */
-  --color-accent: #ff7f50;
-  /* Coral */
-  --color-accent-light: #ff9f80;
-  /* Coral claro */
-  --color-accent-dark: #ff5f30;
-  /* Coral oscuro */
+  /* Accent - Naranja Atardecer (Acción) */
+  --color-accent: #FF9F1C;
+  --color-accent-light: #FFB84D;
+  --color-accent-dark: #E68A00;
+  --color-accent-hover: #FF8C00;
 
-  /* Neutrals - Grises con buen contraste */
-  --color-white: #ffffff;
-  --color-black: #1a1a1a;
-  /* Negro suave */
-  --color-gray-50: #fafafa;
-  /* Gris muy claro */
-  --color-gray-100: #f5f5f5;
-  --color-gray-200: #e5e5e5;
-  --color-gray-300: #d4d4d4;
-  --color-gray-400: #a3a3a3;
-  --color-gray-500: #737373;
-  --color-gray-600: #525252;
-  --color-gray-700: #404040;
-  --color-gray-800: #262626;
-  --color-gray-900: #1a1a1a;
+  /* Neutrals - Grises y Blancos */
+  --color-white: #FFFFFF;
+  --color-black: #333333;
+  /* Gris Carbón para texto */
+  --color-gray-50: #F0F3F5;
+  /* Gris Nube / Menta muy pálido */
+  --color-gray-100: #E8EDEF;
+  --color-gray-200: #D1DBE0;
+  --color-gray-300: #B4C2CA;
+  --color-gray-400: #8FA3AD;
+  --color-gray-500: #6B8491;
+  --color-gray-600: #556B77;
+  --color-gray-700: #3E525D;
+  --color-gray-800: #2A3A44;
+  --color-gray-900: #333333;
 
-  /* Estados - Colores claros y definidos */
-  --color-success: #00a86b;
-  /* Verde éxito */
-  --color-success-light: #00c87a;
-  --color-success-dark: #008552;
+  /* Estados con la nueva paleta */
+  --color-success: #2EC4B6;
+  --color-success-light: #5DD5C8;
+  --color-success-dark: #24A89D;
 
-  --color-warning: #ffa500;
-  /* Naranja advertencia */
-  --color-warning-light: #ffb732;
-  --color-warning-dark: #ff8c00;
+  --color-warning: #FF9F1C;
+  --color-warning-light: #FFB84D;
+  --color-warning-dark: #E68A00;
 
-  --color-error: #dc2626;
-  /* Rojo error */
-  --color-error-light: #ef4444;
-  --color-error-dark: #b91c1c;
+  --color-error: #E63946;
+  --color-error-light: #F15B67;
+  --color-error-dark: #C8202E;
 
-  --color-info: #2563eb;
-  /* Azul info */
-  --color-info-light: #3b82f6;
-  --color-info-dark: #1d4ed8;
+  --color-info: #2EC4B6;
+  --color-info-light: #5DD5C8;
+  --color-info-dark: #24A89D;
 
-  /* Backgrounds */
-  --bg-primary: #ffffff;
-  --bg-secondary: #fafafa;
-  --bg-tertiary: #f5f5f5;
+  /* Backgrounds - Limpios y Aireados */
+  --bg-primary: #FFFFFF;
+  --bg-secondary: #F0F3F5;
+  /* Gris Nube */
+  --bg-tertiary: #E8EDEF;
   --bg-glass: rgba(255, 255, 255, 0.95);
-  --bg-glass-dark: rgba(26, 26, 26, 0.95);
+  --bg-glass-dark: rgba(1, 22, 39, 0.95);
 
-  /* Superficies con contraste */
-  --surface-card: #ffffff;
-  --surface-panel: #f5f5f5;
-  --surface-elevated: #ffffff;
+  /* Superficies */
+  --surface-card: #FFFFFF;
+  --surface-panel: #F0F3F5;
+  --surface-elevated: #FFFFFF;
 
   /* Bordes */
-  --border-default: #d4d4d4;
-  --border-muted: #e5e5e5;
-  --border-dark: #a3a3a3;
+  --border-default: #D1DBE0;
+  --border-muted: #E8EDEF;
+  --border-dark: #B4C2CA;
 
-  /* Gradients con colores definidos */
-  --gradient-primary: linear-gradient(135deg, #ff6b35 0%, #ff5722 100%);
-  --gradient-secondary: linear-gradient(135deg, #00a86b 0%, #008552 100%);
-  --gradient-accent: linear-gradient(135deg, #ff7f50 0%, #ff5f30 100%);
-  --gradient-warm: linear-gradient(135deg, #ff6b35 0%, #ff7f50 100%);
-  --gradient-cool: linear-gradient(135deg, #00a86b 0%, #2563eb 100%);
+  /* Gradients con nueva paleta */
+  --gradient-primary: linear-gradient(135deg, #2EC4B6 0%, #24A89D 100%);
+  --gradient-secondary: linear-gradient(135deg, #011627 0%, #1E3A5F 100%);
+  --gradient-accent: linear-gradient(135deg, #FF9F1C 0%, #E68A00 100%);
+  --gradient-warm: linear-gradient(135deg, #2EC4B6 0%, #5DD5C8 100%);
+  --gradient-hero: linear-gradient(135deg, rgba(46, 196, 182, 0.1) 0%, rgba(240, 243, 245, 0.9) 100%);
 
-  /* ===== TYPOGRAPHY ===== */
-  --font-family-primary: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif;
-  --font-family-heading: 'Plus Jakarta Sans', 'Inter', system-ui, sans-serif;
+  /* ===== TYPOGRAPHY - Google Fonts ===== */
+  --font-family-primary: 'Open Sans', 'Lato', system-ui, -apple-system, sans-serif;
+  --font-family-heading: 'Montserrat', 'Poppins', system-ui, sans-serif;
 
-  /* ===== SHADOWS (Soft & Elevated) ===== */
+  /* ===== SHADOWS (Soft & Clean) ===== */
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
   --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
   --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-  --shadow-glow: 0 0 20px rgba(79, 70, 229, 0.3);
+  --shadow-glow: 0 0 20px rgba(46, 196, 182, 0.3);
+  --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.08);
 
-  /* ===== BORDERS & RADIUS ===== */
-  --border-radius-sm: 0.375rem;
-  --border-radius-md: 0.5rem;
-  --border-radius-lg: 1rem;
-  --border-radius-xl: 1.5rem;
+  /* ===== BORDERS & RADIUS (Formas Redondeadas) ===== */
+  --border-radius-sm: 8px;
+  --border-radius-md: 12px;
+  --border-radius-lg: 16px;
+  --border-radius-xl: 20px;
   --border-radius-full: 9999px;
 
   /* ===== TRANSITIONS ===== */
@@ -148,4 +137,96 @@
   --font-weight-bold: 700;
   --font-weight-extrabold: 800;
   --container-2xl: 1536px;
+}
+
+/* ===== MODO OSCURO - NOCHE DE GATOS ===== */
+[data-theme="dark"] {
+  /* ===== PALETA OSCURA ===== */
+  
+  /* Colores primarios se mantienen (brillan en oscuridad) */
+  --color-primary: #2EC4B6;
+  --color-primary-light: #5DD5C8;
+  --color-primary-dark: #24A89D;
+  --color-primary-hover: #28B5A8;
+
+  /* Accent se mantiene (contraste complementario) */
+  --color-accent: #FF9F1C;
+  --color-accent-light: #FFB84D;
+  --color-accent-dark: #E68A00;
+  --color-accent-hover: #FF8C00;
+
+  /* Backgrounds - Azul Marino es ahora el lienzo */
+  --bg-primary: #011627;
+  /* Azul Marino original como fondo */
+  --bg-secondary: #0B253A;
+  /* Azul Marino + 10% Luz para superficies */
+  --bg-tertiary: #0d2538;
+  /* Intermedio para variación */
+  --bg-glass: rgba(1, 22, 39, 0.95);
+  --bg-glass-dark: rgba(11, 37, 58, 0.95);
+
+  /* Superficies - Elevación en lugar de sombras */
+  --surface-card: #0B253A;
+  /* Tarjetas flotan con color más claro */
+  --surface-panel: #0d2538;
+  --surface-elevated: #152d45;
+  /* Más elevado = más claro */
+
+  /* Text - Nunca blanco puro, siempre con tinte */
+  --color-white: #E6F1FF;
+  /* Blanco con tinte azulado para títulos */
+  --color-black: #E6F1FF;
+  /* Invertido */
+  --color-gray-50: #0B253A;
+  --color-gray-100: #152d45;
+  --color-gray-200: #1e3a56;
+  --color-gray-300: #2a4a67;
+  --color-gray-400: #4a6a87;
+  --color-gray-500: #6b8a9f;
+  --color-gray-600: #8FA3AD;
+  --color-gray-700: #AABBCB;
+  /* Gris azulado para párrafos */
+  --color-gray-800: #D1DBE0;
+  --color-gray-900: #E6F1FF;
+
+  /* Bordes - Más sutiles en oscuro */
+  --border-default: #1e3a56;
+  --border-muted: #152d45;
+  --border-dark: #2a4a67;
+
+  /* Shadows - Más sutiles, casi imperceptibles */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.25);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.6), 0 10px 10px -5px rgba(0, 0, 0, 0.3);
+  --shadow-glow: 0 0 20px rgba(46, 196, 182, 0.2);
+  /* Glow más sutil */
+  --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.4);
+
+  /* Gradients ajustados para oscuridad */
+  --gradient-primary: linear-gradient(135deg, #2EC4B6 0%, #24A89D 100%);
+  --gradient-secondary: linear-gradient(135deg, #0B253A 0%, #152d45 100%);
+  --gradient-accent: linear-gradient(135deg, #FF9F1C 0%, #E68A00 100%);
+  --gradient-warm: linear-gradient(135deg, #2EC4B6 0%, #5DD5C8 100%);
+  --gradient-hero: linear-gradient(135deg, rgba(46, 196, 182, 0.05) 0%, rgba(11, 37, 58, 0.9) 100%);
+
+  /* Estados con mejor contraste */
+  --color-success: #2EC4B6;
+  --color-success-light: #5DD5C8;
+  --color-success-dark: #24A89D;
+
+  --color-warning: #FFB84D;
+  /* Más claro para mejor visibilidad */
+  --color-warning-light: #FFD699;
+  --color-warning-dark: #FF9F1C;
+
+  --color-error: #F15B67;
+  /* Más claro */
+  --color-error-light: #FF8A92;
+  --color-error-dark: #E63946;
+
+  --color-info: #5DD5C8;
+  /* Turquesa más claro */
+  --color-info-light: #8DE5DB;
+  --color-info-dark: #2EC4B6;
 }

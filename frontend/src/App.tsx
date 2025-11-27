@@ -3,6 +3,7 @@
 
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
+import { ThemeProvider } from './context/ThemeContext';
 
 // Importación de páginas
 import Home from './pages/Home';
@@ -21,10 +22,11 @@ import Profile from './pages/Profile';
 
 function App() {
   return (
-    <AuthProvider>
-      <BrowserRouter>
-        <Navbar />
-        <main className="page-container">
+    <ThemeProvider>
+      <AuthProvider>
+        <BrowserRouter>
+          <Navbar />
+          <main className="page-container">
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/register" element={<Register />} />
@@ -76,6 +78,7 @@ function App() {
         </main>
       </BrowserRouter>
     </AuthProvider>
+    </ThemeProvider>
   );
 }
 

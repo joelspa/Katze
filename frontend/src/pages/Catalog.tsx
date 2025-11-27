@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import axios, { isAxiosError } from 'axios';
 import CatCard, { type Cat } from '../components/CatCard';
+import Footer from '../components/Footer';
 import './Catalog.css';
 
 const Catalog = () => {
@@ -252,6 +253,8 @@ const Catalog = () => {
                     </button>
                 </div>
             )}
+
+            <Footer />
         </div>
     );
 };

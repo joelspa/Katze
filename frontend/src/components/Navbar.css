@@ -1,14 +1,14 @@
-/* Navbar - Modern & Clean Design */
+/* Navbar - Limpio & Profesional - Header Turquesa Menta */
 .navbar {
   position: sticky;
   top: 0;
   width: 100%;
   z-index: 9999;
-  background-color: rgba(255, 255, 255, 0.98);
+  background: linear-gradient(180deg, var(--color-primary) 0%, rgba(46, 196, 182, 0.98) 100%);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border-bottom: 2px solid #e5e5e5;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border-bottom: 3px solid var(--color-primary-dark);
+  box-shadow: 0 4px 12px rgba(46, 196, 182, 0.2);
 }
 
 .nav-container {
@@ -23,21 +23,24 @@
 }
 
 .nav-logo {
-  font-size: var(--font-size-lg);
-  font-weight: var(--font-weight-bold);
-  letter-spacing: -0.015em;
-  color: var(--color-black);
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-extrabold);
+  font-family: var(--font-family-heading);
+  letter-spacing: -0.02em;
+  color: var(--color-white);
   text-decoration: none;
   display: flex;
   align-items: center;
   gap: var(--spacing-md);
   white-space: nowrap;
-  transition: color var(--transition-base);
+  transition: all var(--transition-base);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .nav-logo:hover {
-  color: var(--color-primary);
+  color: var(--color-secondary);
   text-decoration: none;
+  transform: translateY(-1px);
 }
 
 .nav-menu {
@@ -55,35 +58,53 @@
 
 .nav-link {
   font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-medium);
-  color: var(--color-gray-900);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-white);
   text-decoration: none;
-  transition: color var(--transition-base);
+  transition: all var(--transition-base);
   white-space: nowrap;
+  padding: 8px 12px;
+  border-radius: var(--border-radius-sm);
 }
 
 .nav-link:hover {
-  color: var(--color-primary);
+  color: var(--color-white);
   text-decoration: none;
+  background: rgba(255, 255, 255, 0.15);
 }
 
 .nav-button {
   padding: 0.625rem var(--spacing-lg);
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-bold);
+  font-family: var(--font-family-heading);
   letter-spacing: 0.015em;
   color: var(--color-white);
-  background: var(--color-primary);
-  border: none;
-  border-radius: var(--border-radius-lg);
+  background: var(--color-secondary);
+  border: 2px solid var(--color-white);
+  border-radius: var(--border-radius-md);
   cursor: pointer;
   transition: all var(--transition-base);
   white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 .nav-button:hover {
-  background: var(--color-primary-hover);
-  transform: translateY(-1px);
+  background: var(--color-secondary-light);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.nav-button-cta {
+  background: var(--gradient-accent);
+  border-color: var(--color-accent);
+  color: var(--color-white);
+}
+
+.nav-button-cta:hover {
+  background: var(--color-accent-hover);
+  border-color: var(--color-accent-dark);
+  transform: translateY(-2px) scale(1.02);
 }
 
 /* Responsive */
@@ -113,4 +134,57 @@
     justify-content: center;
     flex-wrap: wrap;
   }
+}
+
+/* ===== DARK MODE - Noche de Gatos ===== */
+[data-theme="dark"] .navbar {
+  background: linear-gradient(180deg, var(--color-secondary) 0%, rgba(11, 37, 58, 0.98) 100%);
+  border-bottom: 3px solid var(--color-primary);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+[data-theme="dark"] .nav-logo {
+  color: var(--color-primary);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .nav-logo:hover {
+  color: var(--color-primary-light);
+}
+
+[data-theme="dark"] .nav-link {
+  color: rgba(230, 241, 255, 0.90);
+  padding: 8px 12px;
+}
+
+[data-theme="dark"] .nav-link:hover {
+  color: var(--color-white);
+  background: rgba(46, 196, 182, 0.15);
+  padding: 8px 12px;
+}
+
+[data-theme="dark"] .nav-button {
+  background: var(--surface-elevated);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .nav-button:hover {
+  background: var(--color-primary);
+  color: var(--color-secondary);
+  border-color: var(--color-primary-light);
+  box-shadow: 0 4px 12px rgba(46, 196, 182, 0.4);
+}
+
+[data-theme="dark"] .nav-button-cta {
+  background: var(--gradient-accent);
+  border-color: var(--color-accent);
+  color: var(--color-white);
+}
+
+[data-theme="dark"] .nav-button-cta:hover {
+  background: var(--color-accent-light);
+  border-color: var(--color-accent);
+  box-shadow: 0 4px 12px rgba(255, 159, 28, 0.4);
 }
