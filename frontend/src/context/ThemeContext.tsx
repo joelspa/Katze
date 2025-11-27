@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo, type ReactNode } from 'react';
 
 type Theme = 'light' | 'dark';
 
@@ -22,12 +22,19 @@ export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         localStorage.setItem('katze-theme', theme);
     }, [theme]);
 
-    const toggleTheme = () => {
+    // Optimizar toggleTheme con useCallback
+    const toggleTheme = useCallback(() => {
         setTheme((prevTheme) => (prevTheme === 'light' ? 'dark' : 'light'));
-    };
+    }, []);
+
+    // Memoizar el valor del contexto
+    const contextValue = useMemo(
+        () => ({ theme, toggleTheme }),
+        [theme, toggleTheme]
+    );
 
     return (
-        <ThemeContext.Provider value={{ theme, toggleTheme }}>
+        <ThemeContext.Provider value={contextValue}>
             {children}
         </ThemeContext.Provider>
     );

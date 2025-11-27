@@ -1,7 +1,7 @@
 // Componente de tarjeta de gato
 // Muestra una vista previa de un gato disponible para adopción
 
-import React, { useState } from 'react';
+import React, { useState, useCallback, useMemo, memo } from 'react';
 import { Link } from 'react-router-dom';
 import './CatCard.css';
 import CatDetailModal from './CatDetailModal';
@@ -40,15 +40,15 @@ const CatCard: React.FC<CatCardProps> = ({ cat }) => {
     // Distancia mínima de swipe (en px)
     const minSwipeDistance = 50;
 
-    const handlePrevPhoto = (e: React.MouseEvent) => {
+    const handlePrevPhoto = useCallback((e: React.MouseEvent) => {
         e.stopPropagation();
         setCurrentPhotoIndex((prev) => (prev === 0 ? photos.length - 1 : prev - 1));
-    };
+    }, [photos.length]);
 
-    const handleNextPhoto = (e: React.MouseEvent) => {
+    const handleNextPhoto = useCallback((e: React.MouseEvent) => {
         e.stopPropagation();
         setCurrentPhotoIndex((prev) => (prev === photos.length - 1 ? 0 : prev + 1));
-    };
+    }, [photos.length]);
 
     // Manejo de touch para swipe
     const onTouchStart = (e: React.TouchEvent) => {
@@ -229,4 +229,8 @@ const CatCard: React.FC<CatCardProps> = ({ cat }) => {
     );
 };
 
-export default CatCard;
+// Memo para evitar re-renders innecesarios
+export default memo(CatCard, (prevProps, nextProps) => {
+    // Solo re-renderizar si el ID del gato cambia
+    return prevProps.cat.id === nextProps.cat.id;
+});

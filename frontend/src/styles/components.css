@@ -725,3 +725,34 @@
   color: var(--color-gray-700);
   border: 1px solid var(--border-default);
 }
+
+/* ===== SVG COLOR RULES ===== */
+/* SVGs oscuros en fondos claros (modo claro) */
+.page-container svg,
+.home-container svg,
+.education-container svg,
+.catalog-container svg,
+.profile-page svg,
+.dashboard-container svg,
+.admin-container svg,
+.statistics-container svg,
+button svg,
+.btn svg,
+.card svg,
+.modal-content svg {
+  color: var(--color-secondary);
+}
+
+/* Excepciones: SVGs que deben mantener su color original */
+.theme-toggle svg,
+[class*="gradient"] svg,
+[class*="badge"] svg,
+.cat-card-photo-nav svg,
+.carousel-btn svg {
+  color: currentColor;
+}
+
+/* En modo oscuro, todos los SVGs usan currentColor */
+[data-theme="dark"] svg {
+  color: currentColor;
+}

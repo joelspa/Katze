@@ -167,7 +167,8 @@
 }
 
 .cat-card-image-container img {
-  transition: transform 0.3s ease;
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform, opacity;
 }
 
 /* Botones de navegación */
@@ -186,7 +187,7 @@
   justify-content: center;
   cursor: pointer;
   z-index: 10;
-  transition: all 0.3s ease;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   opacity: 0;
 }
 
@@ -234,7 +235,7 @@
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.5);
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   border: 1px solid rgba(0, 0, 0, 0.1);
 }
 
@@ -248,6 +249,7 @@
   width: 24px;
   border-radius: 4px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* Contador de fotos */
@@ -356,6 +358,13 @@
   background: rgba(46, 196, 182, 0.15);
   color: var(--color-primary-light);
   border-color: var(--color-primary);
+}
+
+/* Living badge */
+[data-theme="dark"] .cat-card-living-badge {
+  background: rgba(46, 196, 182, 0.12);
+  color: rgba(230, 241, 255, 0.90);
+  border-color: rgba(46, 196, 182, 0.3);
 }
 
 /* Photo counter */

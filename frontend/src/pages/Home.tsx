@@ -1,7 +1,7 @@
 // Página principal - Home
 // Muestra la galería de gatos disponibles para adopción
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import axios, { isAxiosError } from 'axios';
 import { Link } from 'react-router-dom';
 import CatCard, { type Cat } from '../components/CatCard';
@@ -24,7 +24,7 @@ const Home = () => {
     });
 
     // Función para hacer scroll al inicio cuando se cambian los filtros desde categorías
-    const scrollToSection = (sectionId: string, filterUpdate: any) => {
+    const scrollToSection = useCallback((sectionId: string, filterUpdate: any) => {
         setFilters(prev => ({ ...prev, ...filterUpdate }));
         setTimeout(() => {
             const element = document.getElementById(sectionId);
@@ -32,7 +32,7 @@ const Home = () => {
                 element.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
         }, 100);
-    };
+    }, []);
 
     // Scroll al inicio cuando se carga la página
     useEffect(() => {
@@ -40,45 +40,45 @@ const Home = () => {
     }, []);
 
     // Carga la lista de gatos con filtros aplicados
-    useEffect(() => {
-        const fetchCats = async () => {
-            try {
-                setLoading(true);
-                const API_URL = 'http://localhost:5000/api/cats';
+    const fetchCats = useCallback(async () => {
+        try {
+            setLoading(true);
+            const API_URL = 'http://localhost:5000/api/cats';
 
-                // Construir query params si hay filtros activos
-                const params = new URLSearchParams();
-                if (filters.sterilization_status !== 'todos') {
-                    params.append('sterilization_status', filters.sterilization_status);
-                }
-                if (filters.age !== 'todos') {
-                    params.append('age', filters.age);
-                }
-                if (filters.living_space !== 'todos') {
-                    params.append('living_space', filters.living_space);
-                }
-
-                const url = params.toString() ? `${API_URL}?${params.toString()}` : API_URL;
-                const response = await axios.get(url);
-
-                // El backend devuelve { success: true, data: { cats: [...] } }
-                const catsData = response.data.data?.cats || response.data.cats || response.data;
-                setCats(catsData);
-                setError(null);
-            } catch (error: unknown) {
-                let errorMessage = 'Error al cargar los gatos';
-                if (isAxiosError(error)) {
-                    errorMessage = error.response?.data?.message || 'Error del servidor';
-                }
-                setError(errorMessage);
-                console.error(errorMessage);
-            } finally {
-                setLoading(false);
+            // Construir query params si hay filtros activos
+            const params = new URLSearchParams();
+            if (filters.sterilization_status !== 'todos') {
+                params.append('sterilization_status', filters.sterilization_status);
             }
-        };
+            if (filters.age !== 'todos') {
+                params.append('age', filters.age);
+            }
+            if (filters.living_space !== 'todos') {
+                params.append('living_space', filters.living_space);
+            }
 
+            const url = params.toString() ? `${API_URL}?${params.toString()}` : API_URL;
+            const response = await axios.get(url);
+
+            // El backend devuelve { success: true, data: { cats: [...] } }
+            const catsData = response.data.data?.cats || response.data.cats || response.data;
+            setCats(catsData);
+            setError(null);
+        } catch (error: unknown) {
+            let errorMessage = 'Error al cargar los gatos';
+            if (isAxiosError(error)) {
+                errorMessage = error.response?.data?.message || 'Error del servidor';
+            }
+            setError(errorMessage);
+            console.error(errorMessage);
+        } finally {
+            setLoading(false);
+        }
+    }, [filters]);
+
+    useEffect(() => {
         fetchCats();
-    }, [filters]); // Re-ejecutar cuando cambien los filtros
+    }, [fetchCats]); // Re-ejecutar cuando cambien los filtros
 
 
 

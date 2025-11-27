@@ -1,7 +1,7 @@
 // Contexto de autenticación
 // Gestiona el estado de autenticación del usuario y persistencia en localStorage
 
-import { createContext, useState, useContext, type ReactNode } from 'react';
+import { createContext, useState, useContext, useMemo, useCallback, type ReactNode } from 'react';
 
 // Interfaz del usuario autenticado
 interface User {
@@ -69,8 +69,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const [user, setUser] = useState<User | null>(getStoredUser());
     const [token, setToken] = useState<string | null>(getStoredToken());
 
-    // Guarda usuario y token en estado + localStorage
-    const login = (user: User, token: string) => {
+    // Guarda usuario y token en estado + localStorage (optimizado con useCallback)
+    const login = useCallback((user: User, token: string) => {
         if (!user || !token) {
             console.error('Intento de login con datos inválidos:', { user, token });
             return;
@@ -87,23 +87,29 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         // Luego actualiza el estado
         setUser(user);
         setToken(token);
-    };
+    }, []);
 
-    // Limpia sesión del estado y localStorage
-    const logout = () => {
+    // Limpia sesión del estado y localStorage (optimizado con useCallback)
+    const logout = useCallback(() => {
         setUser(null);
         setToken(null);
         localStorage.removeItem('token');
         localStorage.removeItem('user');
-    };
+    }, []);
 
-    // Chequea si hay sesión activa
-    const isAuthenticated = () => {
+    // Chequea si hay sesión activa (optimizado con useCallback)
+    const isAuthenticated = useCallback(() => {
         return !!token || !!getStoredToken();
-    };
+    }, [token]);
+
+    // Memoizar el valor del contexto para evitar re-renders innecesarios
+    const contextValue = useMemo(
+        () => ({ user, token, login, logout, isAuthenticated }),
+        [user, token, login, logout, isAuthenticated]
+    );
 
     return (
-        <AuthContext.Provider value={{ user, token, login, logout, isAuthenticated }}>
+        <AuthContext.Provider value={contextValue}>
             {children}
         </AuthContext.Provider>
     );

@@ -137,6 +137,25 @@
     border: 1px solid rgba(244, 63, 94, 0.3);
 }
 
+/* Status Badges - Dark Mode */
+[data-theme="dark"] .status-badge.esterilizado {
+    background: rgba(16, 185, 129, 0.2);
+    color: #6ee7b7;
+    border: 1px solid rgba(16, 185, 129, 0.4);
+}
+
+[data-theme="dark"] .status-badge.pendiente {
+    background: rgba(245, 158, 11, 0.2);
+    color: #fbbf24;
+    border: 1px solid rgba(245, 158, 11, 0.4);
+}
+
+[data-theme="dark"] .status-badge.no_aplica {
+    background: rgba(148, 163, 184, 0.2);
+    color: #cbd5e1;
+    border: 1px solid rgba(148, 163, 184, 0.3);
+}
+
 .task-card h3 {
     margin: 0 0 12px 0;
     font-size: 20px;

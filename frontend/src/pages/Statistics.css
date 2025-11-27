@@ -840,6 +840,25 @@
   border-color: var(--border-default);
 }
 
+/* Health Badges - Dark Mode */
+[data-theme="dark"] .health-badge.success {
+    background: rgba(16, 185, 129, 0.2);
+    color: #6ee7b7;
+    border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+[data-theme="dark"] .health-badge.info {
+    background: rgba(59, 130, 246, 0.2);
+    color: #93c5fd;
+    border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+[data-theme="dark"] .health-badge.warning {
+    background: rgba(245, 158, 11, 0.2);
+    color: #fbbf24;
+    border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
 [data-theme="dark"] .kpi-card h3,
 [data-theme="dark"] .kpi-card.featured .kpi-label,
 [data-theme="dark"] .health-header h3,

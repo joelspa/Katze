@@ -1,7 +1,7 @@
 // Panel de administración
 // Permite a los administradores gestionar publicaciones de gatos y artículos del blog
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import axios, { isAxiosError } from 'axios';
 import { useAuth } from '../context/AuthContext';
 import { useModal } from '../hooks/useModal';
@@ -36,13 +36,6 @@ interface Summary {
     rechazados: number;
 }
 
-interface TrackingStats {
-    tareas_pendientes: string;
-    tareas_vencidas: string;
-    tareas_completadas: string;
-    esterilizaciones_pendientes: string;
-}
-
 interface EducationalPost {
     id: number;
     title: string;
@@ -52,6 +45,7 @@ interface EducationalPost {
     created_at: string;
     event_date?: string;
     image_url?: string;
+    category?: string;
 }
 
 interface User {
@@ -88,7 +82,6 @@ const AdminDashboard = () => {
     const [activeTab, setActiveTab] = useState<TabType>('cats');
     const [cats, setCats] = useState<AdminCat[]>([]);
     const [summary, setSummary] = useState<Summary | null>(null);
-    const [trackingStats, setTrackingStats] = useState<TrackingStats | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [filter, setFilter] = useState<'all' | 'pendiente' | 'aprobado' | 'rechazado'>('pendiente');
@@ -386,21 +379,8 @@ const AdminDashboard = () => {
                 });
                 const statsData = statsResponse.data.data || statsResponse.data;
                 console.log('Estadísticas recibidas:', statsData);
-                setTrackingStats(statsData.tracking || {
-                    tareas_pendientes: '0',
-                    tareas_vencidas: '0',
-                    tareas_completadas: '0',
-                    esterilizaciones_pendientes: '0'
-                });
             } catch (statsError) {
                 console.error('Error al cargar estadísticas de seguimiento:', statsError);
-                // Establecer valores por defecto si falla
-                setTrackingStats({
-                    tareas_pendientes: '0',
-                    tareas_vencidas: '0',
-                    tareas_completadas: '0',
-                    esterilizaciones_pendientes: '0'
-                });
             }
             
             setError(null);
@@ -416,14 +396,16 @@ const AdminDashboard = () => {
     };
 
     useEffect(() => {
-        fetchCats();
-        fetchPosts();
-        if (activeTab === 'users') {
+        if (activeTab === 'cats') {
+            fetchCats();
+        } else if (activeTab === 'education') {
+            fetchPosts();
+        } else if (activeTab === 'users') {
             fetchUsers();
-        }
-        if (activeTab === 'tracking') {
+        } else if (activeTab === 'tracking') {
             fetchTrackingTasks();
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [token, activeTab]);
 
     // Actualiza el estado de aprobación de un gato
@@ -1179,9 +1161,9 @@ const AdminDashboard = () => {
                                             
                                             {/* Campo para fecha de evento */}
                                             <div className="edit-date-section" style={{ marginBottom: '16px' }}>
-                                                <label htmlFor={`edit-date-${post.id}`}>Fecha de evento (opcional)</label>
+                                                <label htmlFor={`edit-date-${selectedPost.id}`}>Fecha de evento (opcional)</label>
                                                 <input
-                                                    id={`edit-date-${post.id}`}
+                                                    id={`edit-date-${selectedPost.id}`}
                                                     type="date"
                                                     value={editingPostEventDate}
                                                     onChange={(e) => setEditingPostEventDate(e.target.value)}
@@ -1192,7 +1174,7 @@ const AdminDashboard = () => {
                                             
                                             {/* Campo para cambiar imagen */}
                                             <div className="edit-image-section">
-                                                <label htmlFor={`edit-image-${post.id}`}>Cambiar imagen (opcional)</label>
+                                                <label htmlFor={`edit-image-${selectedPost.id}`}>Cambiar imagen (opcional)</label>
                                                 {editingPost.image_url && !editingPostImageFile && (
                                                     <div className="current-image-preview">
                                                         <small>Imagen actual:</small>
@@ -1204,7 +1186,7 @@ const AdminDashboard = () => {
                                                     </div>
                                                 )}
                                                 <input
-                                                    id={`edit-image-${post.id}`}
+                                                    id={`edit-image-${selectedPost.id}`}
                                                     type="file"
                                                     accept="image/*"
                                                     onChange={(e) => {

@@ -1,7 +1,8 @@
 // Página de Blog & Recursos - Charlas, artículos y contenido educativo
 // Muestra contenido sobre cuidado responsable, salud, adopción y recursos útiles
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
+import { useDebounce } from '../hooks/useDebounce';
 import axios, { isAxiosError } from 'axios';
 import Footer from '../components/Footer';
 import './Education.css';
@@ -23,6 +24,9 @@ const Education = () => {
     const [error, setError] = useState<string | null>(null);
     const [selectedCategory, setSelectedCategory] = useState<CategoryType>('todos');
     const [searchTerm, setSearchTerm] = useState('');
+    
+    // Debounce para optimizar búsqueda
+    const debouncedSearchTerm = useDebounce(searchTerm, 300);
 
     // Scroll al inicio cuando se carga la página
     useEffect(() => {
@@ -133,15 +137,17 @@ const Education = () => {
         return 'todos';
     };
 
-    // Filtrar posts por categoría y búsqueda
-    const filteredPosts = posts.filter(post => {
-        const matchesCategory = selectedCategory === 'todos' || categorizePost(post) === selectedCategory;
-        const matchesSearch = searchTerm === '' || 
-            post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            post.content.toLowerCase().includes(searchTerm.toLowerCase());
-        
-        return matchesCategory && matchesSearch;
-    });
+    // Filtrar posts por categoría y búsqueda (optimizado con useMemo)
+    const filteredPosts = useMemo(() => {
+        return posts.filter(post => {
+            const matchesCategory = selectedCategory === 'todos' || categorizePost(post) === selectedCategory;
+            const matchesSearch = debouncedSearchTerm === '' || 
+                post.title.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
+                post.content.toLowerCase().includes(debouncedSearchTerm.toLowerCase());
+            
+            return matchesCategory && matchesSearch;
+        });
+    }, [posts, selectedCategory, debouncedSearchTerm]);
 
     if (loading) {
         return (

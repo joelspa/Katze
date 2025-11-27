@@ -795,8 +795,15 @@
   border-top-color: var(--border-default);
 }
 
+/* Status Badge - Dark Mode */
+[data-theme="dark"] .status-badge.status-pending {
+    background: rgba(245, 158, 11, 0.2);
+    color: #fbbf24;
+    border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
 [data-theme="dark"] .modal-overlay {
-  background: rgba(1, 22, 39, 0.9);
+    background: rgba(1, 22, 39, 0.85);
 }
 
 [data-theme="dark"] .modal-content {
