@@ -119,7 +119,7 @@ class CatService {
                     WHEN 'aprobado' THEN 2
                     WHEN 'rechazado' THEN 3
                 END,
-                c.created_at DESC
+                c.created_at ASC
         `;
         const result = await db.query(query);
         return result.rows;
