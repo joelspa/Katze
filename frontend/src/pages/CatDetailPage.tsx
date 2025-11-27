@@ -19,6 +19,11 @@ const CatDetailPage = () => {
     const { isAuthenticated, user } = useAuth();
     const navigate = useNavigate();
 
+    // Scroll al inicio cuando se carga la página
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, []);
+
     // Carga información del gato al montar el componente
     useEffect(() => {
         const fetchCat = async () => {

@@ -1,7 +1,7 @@
 // Página de registro de usuarios
 // Permite a nuevos usuarios crear una cuenta como adoptante o rescatista
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios, { isAxiosError } from 'axios';
 import { useModal } from '../hooks/useModal';
 import CustomModal from '../components/CustomModal';
@@ -18,6 +18,11 @@ const Register = () => {
     });
     
     const [showPassword, setShowPassword] = useState(false);
+
+    // Scroll al inicio cuando se carga la página
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, []);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         setFormData({

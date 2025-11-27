@@ -39,6 +39,11 @@ const Statistics = () => {
     const [stats, setStats] = useState<StatisticsData | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+
+    // Scroll al inicio cuando se carga la página
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, []);
     const { token } = useAuth();
 
     useEffect(() => {

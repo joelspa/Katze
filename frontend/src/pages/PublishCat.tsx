@@ -26,6 +26,11 @@ const PublishCat = () => {
     const { token } = useAuth();
     const navigate = useNavigate();
 
+    // Scroll al inicio cuando se carga la página
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, []);
+
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         setFormData({
             ...formData,

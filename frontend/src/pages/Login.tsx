@@ -1,7 +1,7 @@
 // Página de inicio de sesión
 // Permite a los usuarios autenticarse en el sistema
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios, { isAxiosError } from 'axios';
 import { useAuth } from '../context/AuthContext';
@@ -18,6 +18,11 @@ const Login = () => {
         email: '',
         password: '',
     });
+
+    // Scroll al inicio cuando se carga la página
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, []);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData({

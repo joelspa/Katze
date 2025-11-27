@@ -757,7 +757,107 @@
     font-weight: var(--font-weight-bold);
 }
 
-/* Lista de posts */
+/* Grid de posts compactos */
+.posts-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+    margin-top: 24px;
+}
+
+@media (max-width: 1400px) {
+    .posts-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 1024px) {
+    .posts-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+.post-card-compact {
+    background: white;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border: 2px solid transparent;
+}
+
+.post-card-compact:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 20px -4px rgba(0, 0, 0, 0.15);
+    border-color: var(--color-primary);
+}
+
+.post-card-image {
+    width: 100%;
+    height: 180px;
+    overflow: hidden;
+    background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+}
+
+.post-card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.post-card-compact:hover .post-card-image img {
+    transform: scale(1.05);
+}
+
+.post-card-content {
+    padding: 20px;
+}
+
+.post-card-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0 0 12px 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    line-height: 1.4;
+}
+
+.post-card-excerpt {
+    font-size: 0.9rem;
+    color: #64748b;
+    margin: 0 0 16px 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    line-height: 1.6;
+}
+
+.post-card-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding-top: 12px;
+    border-top: 1px solid #e2e8f0;
+    flex-wrap: wrap;
+}
+
+.post-card-author,
+.post-card-date {
+    font-size: 0.8rem;
+    color: #64748b;
+    display: flex;
+    align-items: center;
+    font-weight: 500;
+}
+
+/* Lista de posts (modo edición) */
 .posts-list {
     display: grid;
     grid-template-columns: 1fr;
@@ -933,11 +1033,7 @@
    POSTS/CHARLAS GRID
    =========================== */
 
-.posts-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
-    gap: 24px;
-}
+/* Movido arriba - ver línea 761 */
 
 .post-card {
     background: var(--color-white);
@@ -2678,5 +2774,182 @@
         height: 36px;
         top: 16px;
         right: 16px;
+    }
+}
+
+/* ===================== */
+/* POST DETAIL MODAL     */
+/* ===================== */
+
+.post-detail-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+    padding: 20px;
+    animation: fadeIn 0.3s ease;
+}
+
+.post-detail-modal {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    max-width: 900px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    animation: slideUp 0.4s ease;
+}
+
+.post-modal-view {
+    padding: 40px;
+}
+
+.post-modal-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0 0 24px 0;
+    line-height: 1.3;
+}
+
+.post-modal-image {
+    width: 100%;
+    height: 400px;
+    overflow: hidden;
+    border-radius: 16px;
+    margin-bottom: 24px;
+    background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+}
+
+.post-modal-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.post-modal-meta {
+    display: flex;
+    gap: 24px;
+    margin-bottom: 32px;
+    padding-bottom: 24px;
+    border-bottom: 2px solid #e2e8f0;
+    flex-wrap: wrap;
+}
+
+.post-modal-author,
+.post-modal-date {
+    display: flex;
+    align-items: center;
+    font-size: 0.95rem;
+    color: #64748b;
+    font-weight: 600;
+}
+
+.post-modal-content {
+    margin-bottom: 32px;
+}
+
+.post-modal-content p {
+    font-size: 1.05rem;
+    line-height: 1.8;
+    color: #334155;
+    margin: 0;
+    white-space: pre-wrap;
+}
+
+.post-modal-actions {
+    display: flex;
+    gap: 12px;
+    padding-top: 24px;
+    border-top: 2px solid #e2e8f0;
+    flex-wrap: wrap;
+}
+
+.btn-edit-post-modal,
+.btn-delete-post-modal {
+    flex: 1;
+    min-width: 180px;
+    padding: 14px 24px;
+    border: none;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.btn-edit-post-modal {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    color: white;
+}
+
+.btn-edit-post-modal:hover {
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px -2px rgba(37, 99, 235, 0.3);
+}
+
+.btn-delete-post-modal {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    color: white;
+}
+
+.btn-delete-post-modal:hover {
+    background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px -2px rgba(239, 68, 68, 0.3);
+}
+
+/* Responsive para modal de post */
+@media (max-width: 768px) {
+    .post-detail-modal {
+        max-width: 100%;
+        max-height: 100vh;
+        border-radius: 0;
+    }
+
+    .post-modal-view {
+        padding: 24px;
+    }
+
+    .post-modal-title {
+        font-size: 1.5rem;
+    }
+
+    .post-modal-image {
+        height: 250px;
+    }
+
+    .post-modal-meta {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .post-modal-actions {
+        flex-direction: column;
+    }
+
+    .btn-edit-post-modal,
+    .btn-delete-post-modal {
+        min-width: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    .posts-grid {
+        grid-template-columns: 1fr;
     }
 }

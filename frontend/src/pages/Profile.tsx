@@ -24,6 +24,11 @@ const Profile = () => {
         phone: '',
     });
 
+    // Scroll al inicio cuando se carga la página
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, []);
+
     // Cargar perfil al montar el componente
     useEffect(() => {
         fetchProfile();

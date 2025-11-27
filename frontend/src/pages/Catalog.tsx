@@ -11,6 +11,11 @@ const Catalog = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
+    // Scroll al inicio cuando se carga la página
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, []);
+
     // Estados para los filtros
     const [filters, setFilters] = useState({
         sterilization_status: searchParams.get('sterilization_status') || 'todos',

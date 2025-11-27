@@ -11,28 +11,61 @@ const Navbar = () => {
         navigate('/'); // Envía al usuario al inicio
     };
 
+    const handleHomeClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+        e.preventDefault();
+        if (window.location.pathname === '/') {
+            // Si ya estamos en home, hacer scroll al inicio
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        } else {
+            // Si estamos en otra página, navegar a home
+            navigate('/');
+        }
+    };
+
+    const handleCatalogClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+        e.preventDefault();
+        if (window.location.pathname === '/catalogo') {
+            // Si ya estamos en catálogo, hacer scroll al inicio
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        } else {
+            // Si estamos en otra página, navegar a catálogo
+            navigate('/catalogo');
+        }
+    };
+
+    const handleBlogClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+        e.preventDefault();
+        if (window.location.pathname === '/education') {
+            // Si ya estamos en blog, hacer scroll al inicio
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        } else {
+            // Si estamos en otra página, navegar a blog
+            navigate('/education');
+        }
+    };
+
     const isLoggedIn = isAuthenticated();
 
     return (
         <nav className="navbar">
             <div className="nav-container">
-                <Link to="/" className="nav-logo">
+                <Link to="/" className="nav-logo" onClick={handleHomeClick}>
                     Katze
                 </Link>
 
                 <ul className="nav-menu">
                     <li className="nav-item">
-                        <Link to="/" className="nav-link">
+                        <Link to="/" className="nav-link" onClick={handleHomeClick}>
                             Inicio
                         </Link>
                     </li>
                     <li className="nav-item">
-                        <Link to="/catalogo" className="nav-link">
+                        <Link to="/catalogo" className="nav-link" onClick={handleCatalogClick}>
                             Catálogo
                         </Link>
                     </li>
                     <li className="nav-item">
-                        <Link to="/education" className="nav-link">
+                        <Link to="/education" className="nav-link" onClick={handleBlogClick}>
                             Blog
                         </Link>
                     </li>

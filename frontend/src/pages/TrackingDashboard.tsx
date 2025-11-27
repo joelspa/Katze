@@ -35,6 +35,11 @@ const TrackingDashboard = () => {
     const [uploadProgress, setUploadProgress] = useState(0);
     const { token } = useAuth();
 
+    // Scroll al inicio cuando se carga la página
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, []);
+
     // Carga las tareas de seguimiento pendientes
     const fetchTasks = async () => {
         if (!token) {

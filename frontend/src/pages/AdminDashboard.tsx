@@ -1,5 +1,5 @@
 // Panel de administración
-// Permite a los administradores gestionar publicaciones de gatos y charlas educativas
+// Permite a los administradores gestionar publicaciones de gatos y artículos del blog
 
 import { useState, useEffect } from 'react';
 import axios, { isAxiosError } from 'axios';
@@ -80,6 +80,11 @@ type TabType = 'cats' | 'education' | 'users' | 'tracking';
 
 const AdminDashboard = () => {
     const { modalState, showAlert, showConfirm, showPrompt, closeModal } = useModal();
+
+    // Scroll al inicio cuando se carga la página
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, []);
     const [activeTab, setActiveTab] = useState<TabType>('cats');
     const [cats, setCats] = useState<AdminCat[]>([]);
     const [summary, setSummary] = useState<Summary | null>(null);
@@ -90,7 +95,7 @@ const AdminDashboard = () => {
     const [editingCat, setEditingCat] = useState<AdminCat | null>(null);
     const [photoIndexes, setPhotoIndexes] = useState<{[key: number]: number}>({});
     
-    // Estados para charlas educativas
+    // Estados para blog
     const [posts, setPosts] = useState<EducationalPost[]>([]);
     const [showPostForm, setShowPostForm] = useState(false);
     const [editingPost, setEditingPost] = useState<EducationalPost | null>(null);
@@ -116,9 +121,12 @@ const AdminDashboard = () => {
     const [loadingTasks, setLoadingTasks] = useState(false);
     const [selectedTask, setSelectedTask] = useState<TrackingTask | null>(null);
     
+    // Estado para modal de detalle de post
+    const [selectedPost, setSelectedPost] = useState<EducationalPost | null>(null);
+    
     const { token } = useAuth();
 
-    // Carga todas las charlas educativas
+    // Carga todos los artículos del blog
     const fetchPosts = async () => {
         if (!token) return;
 
@@ -600,9 +608,9 @@ const AdminDashboard = () => {
                     onClick={() => setActiveTab('education')}
                 >
                     <svg viewBox="0 0 20 20" fill="currentColor" style={{width: '20px', height: '20px', marginRight: '8px'}}>
-                        <path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3zM3.31 9.397L5 10.12v4.102a8.969 8.969 0 00-1.05-.174 1 1 0 01-.89-.89 11.115 11.115 0 01.25-3.762zM9.3 16.573A9.026 9.026 0 007 14.935v-3.957l1.818.78a3 3 0 002.364 0l5.508-2.361a11.026 11.026 0 01.25 3.762 1 1 0 01-.89.89 8.968 8.968 0 00-5.35 2.524 1 1 0 01-1.4 0zM6 18a1 1 0 001-1v-2.065a8.935 8.935 0 00-2-.712V17a1 1 0 001 1z" />
+                        <path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z" />
                     </svg>
-                    Charlas Educativas
+                    Blog Educativo
                 </button>
                 <button 
                     className={`tab-button ${activeTab === 'users' ? 'active' : ''}`}
@@ -925,25 +933,43 @@ const AdminDashboard = () => {
                 </>
             )}
 
-            {/* Tab de Charlas Educativas */}
+            {/* Tab de Blog Educativo */}
             {activeTab === 'education' && (
                 <div className="education-section">
                     <div className="section-header">
-                        <h2>Gestión de Charlas Educativas</h2>
+                        <h2>
+                            <svg viewBox="0 0 20 20" fill="currentColor" style={{width: '28px', height: '28px', marginRight: '12px'}}>
+                                <path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z" />
+                            </svg>
+                            Gestión del Blog Educativo
+                        </h2>
                         <button 
                             className="btn-create-post"
                             onClick={() => setShowPostForm(!showPostForm)}
                         >
-                            {showPostForm ? 'Cancelar' : 'Nueva Charla'}
+                            <svg viewBox="0 0 20 20" fill="currentColor" style={{width: '18px', height: '18px', marginRight: '8px'}}>
+                                <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
+                            </svg>
+                            {showPostForm ? 'Cancelar' : 'Nuevo Artículo'}
                         </button>
                     </div>
 
-                    {/* Formulario para crear charla */}
+                    {/* Formulario para crear artículo */}
                     {showPostForm && (
                         <div className="post-form-card">
-                            <h3>Nueva Charla Educativa</h3>
+                            <h3>
+                                <svg viewBox="0 0 20 20" fill="currentColor" style={{width: '24px', height: '24px', marginRight: '10px'}}>
+                                    <path fillRule="evenodd" d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414A2 2 0 0015.414 6L12 2.586A2 2 0 0010.586 2H6zm5 6a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V8z" clipRule="evenodd" />
+                                </svg>
+                                Nuevo Artículo del Blog
+                            </h3>
                             <div className="form-group">
-                                <label htmlFor="postTitle">Título de la charla</label>
+                                <label htmlFor="postTitle">
+                                    <svg viewBox="0 0 20 20" fill="currentColor" style={{width: '16px', height: '16px', marginRight: '6px'}}>
+                                        <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clipRule="evenodd" />
+                                    </svg>
+                                    Título del artículo
+                                </label>
                                 <input
                                     id="postTitle"
                                     type="text"
@@ -955,7 +981,12 @@ const AdminDashboard = () => {
                                 <small>{postForm.title.length}/200 caracteres</small>
                             </div>
                             <div className="form-group">
-                                <label htmlFor="postEventDate">Fecha del evento (opcional)</label>
+                                <label htmlFor="postEventDate">
+                                    <svg viewBox="0 0 20 20" fill="currentColor" style={{width: '16px', height: '16px', marginRight: '6px'}}>
+                                        <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
+                                    </svg>
+                                    Fecha del evento (opcional)
+                                </label>
                                 <input
                                     id="postEventDate"
                                     type="datetime-local"
@@ -965,7 +996,12 @@ const AdminDashboard = () => {
                                 <small>Si no especificas fecha, se usará la fecha actual</small>
                             </div>
                             <div className="form-group">
-                                <label htmlFor="postImage">Imagen promocional (opcional)</label>
+                                <label htmlFor="postImage">
+                                    <svg viewBox="0 0 20 20" fill="currentColor" style={{width: '16px', height: '16px', marginRight: '6px'}}>
+                                        <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd" />
+                                    </svg>
+                                    Imagen destacada (opcional)
+                                </label>
                                 <input
                                     id="postImage"
                                     type="file"
@@ -980,15 +1016,20 @@ const AdminDashboard = () => {
                                 {postImageFile && (
                                     <small>Archivo seleccionado: {postImageFile.name}</small>
                                 )}
-                                <small>Imagen que se mostrará en la tarjeta de la charla</small>
+                                <small>Imagen que se mostrará en el artículo</small>
                             </div>
                             <div className="form-group">
-                                <label htmlFor="postContent">Contenido</label>
+                                <label htmlFor="postContent">
+                                    <svg viewBox="0 0 20 20" fill="currentColor" style={{width: '16px', height: '16px', marginRight: '6px'}}>
+                                        <path fillRule="evenodd" d="M3 5a2 2 0 012-2h10a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V5zm11 1H6v8l4-2 4 2V6z" clipRule="evenodd" />
+                                    </svg>
+                                    Contenido del artículo
+                                </label>
                                 <textarea
                                     id="postContent"
                                     value={postForm.content}
                                     onChange={(e) => setPostForm({ ...postForm, content: e.target.value })}
-                                    placeholder="Describe el contenido de la charla..."
+                                    placeholder="Escribe el contenido del artículo aquí..."
                                     rows={8}
                                     maxLength={2000}
                                 />
@@ -999,18 +1040,85 @@ const AdminDashboard = () => {
                                 onClick={handleCreatePost}
                                 disabled={!postForm.title.trim() || !postForm.content.trim()}
                             >
-                                Publicar Charla
+                                <svg viewBox="0 0 20 20" fill="currentColor" style={{width: '18px', height: '18px', marginRight: '8px'}}>
+                                    <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
+                                </svg>
+                                Publicar Artículo
                             </button>
                         </div>
                     )}
 
-                    {/* Lista de charlas */}
-                    <div className="posts-list">
+                    {/* Lista de artículos */}
+                    <div className="posts-grid">
                         {posts.length > 0 ? (
                             posts.map((post) => (
-                                <div key={post.id} className="post-card">
-                                    {editingPost?.id === post.id ? (
-                                        // Modo edición
+                                <div 
+                                    key={post.id} 
+                                    className="post-card-compact"
+                                    onClick={() => setSelectedPost(post)}
+                                >
+                                    {post.image_url && (
+                                        <div className="post-card-image">
+                                            <img src={post.image_url} alt={post.title} />
+                                        </div>
+                                    )}
+                                    <div className="post-card-content">
+                                        <h3 className="post-card-title">{post.title}</h3>
+                                        <p className="post-card-excerpt">
+                                            {post.content.substring(0, 100)}...
+                                        </p>
+                                        <div className="post-card-meta">
+                                            <span className="post-card-author">
+                                                <svg viewBox="0 0 20 20" fill="currentColor" style={{width: '14px', height: '14px', marginRight: '4px'}}>
+                                                    <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+                                                </svg>
+                                                {post.author_name}
+                                            </span>
+                                            <span className="post-card-date">
+                                                <svg viewBox="0 0 20 20" fill="currentColor" style={{width: '14px', height: '14px', marginRight: '4px'}}>
+                                                    <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
+                                                </svg>
+                                                {new Date(post.created_at).toLocaleDateString('es-ES')}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))
+                        ) : (
+                            <div className="empty-posts">
+                                <svg viewBox="0 0 20 20" fill="currentColor" style={{width: '64px', height: '64px', opacity: 0.2, marginBottom: '16px'}}>
+                                    <path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z" />
+                                </svg>
+                                <p>No hay artículos del blog publicados aún.</p>
+                                <p className="empty-subtitle">Haz clic en "Nuevo Artículo" para comenzar a escribir.</p>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            )}
+
+            {/* Modal de detalle de post */}
+            {selectedPost && (
+                <div className="post-detail-modal-overlay" onClick={() => {
+                    setSelectedPost(null);
+                    setEditingPost(null);
+                    setEditingPostImageFile(null);
+                    setEditingPostEventDate('');
+                }}>
+                    <div className="post-detail-modal" onClick={(e) => e.stopPropagation()}>
+                        <button className="modal-close-btn" onClick={() => {
+                            setSelectedPost(null);
+                            setEditingPost(null);
+                            setEditingPostImageFile(null);
+                            setEditingPostEventDate('');
+                        }}>
+                            <svg viewBox="0 0 20 20" fill="currentColor" style={{width: '24px', height: '24px'}}>
+                                <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                            </svg>
+                        </button>
+
+                        {editingPost?.id === selectedPost.id ? (
+                            // Modo edición
                                         <div className="post-edit-form">
                                             <input
                                                 type="text"
@@ -1091,65 +1199,67 @@ const AdminDashboard = () => {
                                         </div>
                                     ) : (
                                         // Modo vista
-                                        <>
-                                            <div className="post-header">
-                                                <h3>{post.title}</h3>
-                                                <span className="post-date">
-                                                    {new Date(post.created_at).toLocaleDateString('es-ES')}
-                                                </span>
-                                            </div>
+                                        <div className="post-modal-view">
+                                            <h2 className="post-modal-title">{selectedPost.title}</h2>
                                             
-                                            {/* Mostrar imagen si existe */}
-                                            {post.image_url && (
-                                                <div className="post-image-preview">
-                                                    <img 
-                                                        src={post.image_url} 
-                                                        alt={post.title}
-                                                        style={{ 
-                                                            maxWidth: '100%', 
-                                                            maxHeight: '300px', 
-                                                            objectFit: 'cover',
-                                                            borderRadius: '12px',
-                                                            marginBottom: '16px'
-                                                        }}
-                                                    />
+                                            {selectedPost.image_url && (
+                                                <div className="post-modal-image">
+                                                    <img src={selectedPost.image_url} alt={selectedPost.title} />
                                                 </div>
                                             )}
                                             
-                                            <p className="post-content">{post.content}</p>
-                                            <div className="post-meta">
-                                                <span className="post-author">Autor: {post.author_name}</span>
+                                            <div className="post-modal-meta">
+                                                <span className="post-modal-author">
+                                                    <svg viewBox="0 0 20 20" fill="currentColor" style={{width: '18px', height: '18px', marginRight: '6px'}}>
+                                                        <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+                                                    </svg>
+                                                    Autor: {selectedPost.author_name}
+                                                </span>
+                                                <span className="post-modal-date">
+                                                    <svg viewBox="0 0 20 20" fill="currentColor" style={{width: '18px', height: '18px', marginRight: '6px'}}>
+                                                        <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
+                                                    </svg>
+                                                    {new Date(selectedPost.created_at).toLocaleDateString('es-ES', {
+                                                        weekday: 'long',
+                                                        year: 'numeric',
+                                                        month: 'long',
+                                                        day: 'numeric'
+                                                    })}
+                                                </span>
                                             </div>
-                                            <div className="post-actions">
+                                            
+                                            <div className="post-modal-content">
+                                                <p>{selectedPost.content}</p>
+                                            </div>
+                                            
+                                            <div className="post-modal-actions">
                                                 <button 
-                                                    className="btn-edit-post"
+                                                    className="btn-edit-post-modal"
                                                     onClick={() => {
-                                                        setEditingPost(post);
-                                                        setEditingPostEventDate(post.event_date ? post.event_date.split('T')[0] : '');
+                                                        setEditingPost(selectedPost);
+                                                        setEditingPostEventDate(selectedPost.event_date ? selectedPost.event_date.split('T')[0] : '');
                                                     }}
                                                 >
-                                                    Editar
+                                                    <svg viewBox="0 0 20 20" fill="currentColor" style={{width: '18px', height: '18px', marginRight: '8px'}}>
+                                                        <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                                                    </svg>
+                                                    Editar Artículo
                                                 </button>
                                                 <button 
-                                                    className="btn-delete-post"
-                                                    onClick={() => handleDeletePost(post.id)}
+                                                    className="btn-delete-post-modal"
+                                                    onClick={() => handleDeletePost(selectedPost.id)}
                                                 >
-                                                    Eliminar
+                                                    <svg viewBox="0 0 20 20" fill="currentColor" style={{width: '18px', height: '18px', marginRight: '8px'}}>
+                                                        <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
+                                                    </svg>
+                                                    Eliminar Artículo
                                                 </button>
                                             </div>
-                                        </>
+                                        </div>
                                     )}
+                                    </div>
                                 </div>
-                            ))
-                        ) : (
-                            <div className="empty-posts">
-                                <p>No hay charlas educativas publicadas aún.</p>
-                                <p className="empty-subtitle">Haz clic en "Nueva Charla" para agregar una.</p>
-                            </div>
-                        )}
-                    </div>
-                </div>
-            )}
+                            )}
 
             {/* Tab de Gestión de Usuarios */}
             {activeTab === 'users' && (

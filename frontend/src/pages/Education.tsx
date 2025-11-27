@@ -23,6 +23,11 @@ const Education = () => {
     const [selectedCategory, setSelectedCategory] = useState<CategoryType>('todos');
     const [searchTerm, setSearchTerm] = useState('');
 
+    // Scroll al inicio cuando se carga la página
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, []);
+
     const categories = [
         { id: 'todos', name: 'Todos', icon: '📚' },
         { id: 'salud', name: 'Salud', icon: '🏥' },

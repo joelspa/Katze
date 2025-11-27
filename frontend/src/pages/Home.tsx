@@ -23,6 +23,22 @@ const Home = () => {
         living_space: 'todos'
     });
 
+    // Función para hacer scroll al inicio cuando se cambian los filtros desde categorías
+    const scrollToSection = (sectionId: string, filterUpdate: any) => {
+        setFilters(prev => ({ ...prev, ...filterUpdate }));
+        setTimeout(() => {
+            const element = document.getElementById(sectionId);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }, 100);
+    };
+
+    // Scroll al inicio cuando se carga la página
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, []);
+
     // Carga la lista de gatos con filtros aplicados
     useEffect(() => {
         const fetchCats = async () => {
@@ -91,10 +107,7 @@ const Home = () => {
                     <div className="banner-categories">
                         <div 
                             className={`category-banner ${filters.living_space === 'casa_grande' ? 'active' : ''}`}
-                            onClick={() => {
-                                setFilters(prev => ({ ...prev, living_space: 'casa_grande' }));
-                                setTimeout(() => document.getElementById('adopt')?.scrollIntoView({ behavior: 'smooth' }), 100);
-                            }}
+                            onClick={() => scrollToSection('adopt', { living_space: 'casa_grande' })}
                         >
                             <div className="category-icon-wrapper">
                                 <svg className="category-icon" viewBox="0 0 24 24" fill="currentColor">
@@ -115,10 +128,7 @@ const Home = () => {
 
                         <div 
                             className={`category-banner ${filters.living_space === 'departamento' ? 'active' : ''}`}
-                            onClick={() => {
-                                setFilters(prev => ({ ...prev, living_space: 'departamento' }));
-                                setTimeout(() => document.getElementById('adopt')?.scrollIntoView({ behavior: 'smooth' }), 100);
-                            }}
+                            onClick={() => scrollToSection('adopt', { living_space: 'departamento' })}
                         >
                             <div className="category-icon-wrapper">
                                 <svg className="category-icon" viewBox="0 0 24 24" fill="currentColor">
@@ -139,10 +149,7 @@ const Home = () => {
 
                         <div 
                             className={`category-banner ${filters.living_space === 'cualquiera' ? 'active' : ''}`}
-                            onClick={() => {
-                                setFilters(prev => ({ ...prev, living_space: 'cualquiera' }));
-                                setTimeout(() => document.getElementById('adopt')?.scrollIntoView({ behavior: 'smooth' }), 100);
-                            }}
+                            onClick={() => scrollToSection('adopt', { living_space: 'cualquiera' })}
                         >
                             <div className="category-icon-wrapper">
                                 <svg className="category-icon" viewBox="0 0 24 24" fill="currentColor">

@@ -25,6 +25,11 @@ const RescuerDashboard = () => {
     const [selectedApplication, setSelectedApplication] = useState<Application | null>(null);
     const { token } = useAuth();
 
+    // Scroll al inicio cuando se carga la página
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, []);
+
     // Carga las solicitudes de adopción recibidas
     const fetchApplications = async () => {
         if (!token) {
