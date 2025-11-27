@@ -134,6 +134,21 @@
     font-size: 1.2rem;
 }
 
+.category-icon-svg {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+}
+
+.category-btn.active .category-icon-svg {
+    color: white;
+}
+
+.card-category-badge .category-icon-svg {
+    width: 16px;
+    height: 16px;
+}
+
 /* Section Header */
 .section-header {
     text-align: center;

@@ -29,12 +29,36 @@ const Education = () => {
     }, []);
 
     const categories = [
-        { id: 'todos', name: 'Todos', icon: '📚' },
-        { id: 'salud', name: 'Salud', icon: '🏥' },
-        { id: 'comportamiento', name: 'Comportamiento', icon: '🐾' },
-        { id: 'nutricion', name: 'Nutrición', icon: '🍽️' },
-        { id: 'adopcion', name: 'Adopción', icon: '❤️' },
-        { id: 'recursos', name: 'Recursos Útiles', icon: '📍' },
+        { id: 'todos', name: 'Todos', icon: (
+            <svg viewBox="0 0 20 20" fill="currentColor" className="category-icon-svg">
+                <path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z" />
+            </svg>
+        ) },
+        { id: 'salud', name: 'Salud', icon: (
+            <svg viewBox="0 0 20 20" fill="currentColor" className="category-icon-svg">
+                <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
+            </svg>
+        ) },
+        { id: 'comportamiento', name: 'Comportamiento', icon: (
+            <svg viewBox="0 0 20 20" fill="currentColor" className="category-icon-svg">
+                <path d="M10 3.5a1.5 1.5 0 013 0V4a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-.5a1.5 1.5 0 000 3h.5a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-.5a1.5 1.5 0 00-3 0v.5a1 1 0 01-1 1H6a1 1 0 01-1-1v-3a1 1 0 00-1-1h-.5a1.5 1.5 0 010-3H4a1 1 0 001-1V6a1 1 0 011-1h3a1 1 0 001-1v-.5z" />
+            </svg>
+        ) },
+        { id: 'nutricion', name: 'Nutrición', icon: (
+            <svg viewBox="0 0 20 20" fill="currentColor" className="category-icon-svg">
+                <path fillRule="evenodd" d="M6 3a1 1 0 011-1h.01a1 1 0 010 2H7a1 1 0 01-1-1zm2 3a1 1 0 00-2 0v1a2 2 0 00-2 2v1a2 2 0 00-2 2v.683a3.7 3.7 0 011.055.485 1.704 1.704 0 001.89 0 3.704 3.704 0 014.11 0 1.704 1.704 0 001.89 0 3.704 3.704 0 014.11 0 1.704 1.704 0 001.89 0A3.7 3.7 0 0118 12.683V12a2 2 0 00-2-2V9a2 2 0 00-2-2V6a1 1 0 10-2 0v1h-1V6a1 1 0 10-2 0v1H8V6zm10 8.868a3.704 3.704 0 01-4.055-.036 1.704 1.704 0 00-1.89 0 3.704 3.704 0 01-4.11 0 1.704 1.704 0 00-1.89 0A3.704 3.704 0 012 14.868V17a1 1 0 001 1h14a1 1 0 001-1v-2.132zM9 3a1 1 0 011-1h.01a1 1 0 110 2H10a1 1 0 01-1-1zm3 0a1 1 0 011-1h.01a1 1 0 110 2H13a1 1 0 01-1-1z" clipRule="evenodd" />
+            </svg>
+        ) },
+        { id: 'adopcion', name: 'Adopción', icon: (
+            <svg viewBox="0 0 20 20" fill="currentColor" className="category-icon-svg">
+                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+            </svg>
+        ) },
+        { id: 'recursos', name: 'Recursos Útiles', icon: (
+            <svg viewBox="0 0 20 20" fill="currentColor" className="category-icon-svg">
+                <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+            </svg>
+        ) },
     ];
 
     useEffect(() => {
@@ -170,7 +194,7 @@ const Education = () => {
                             className={`category-btn ${selectedCategory === cat.id ? 'active' : ''}`}
                             onClick={() => setSelectedCategory(cat.id as CategoryType)}
                         >
-                            <span className="category-icon">{cat.icon}</span>
+                            {cat.icon}
                             {cat.name}
                         </button>
                     ))}
@@ -201,7 +225,7 @@ const Education = () => {
                                 {/* Badge de categoría */}
                                 {categoryInfo && (
                                     <div className="card-category-badge">
-                                        <span>{categoryInfo.icon}</span>
+                                        {categoryInfo.icon}
                                         {categoryInfo.name}
                                     </div>
                                 )}
