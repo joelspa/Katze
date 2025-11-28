@@ -191,10 +191,10 @@ const Catalog = () => {
                             onChange={(e) => handleFilterChange('age', e.target.value)}
                         >
                             <option value="todos">Todas las edades</option>
-                            <option value="cachorro">Cachorro (0-1 año)</option>
-                            <option value="joven">Joven (1-3 años)</option>
-                            <option value="adulto">Adulto (3-7 años)</option>
-                            <option value="senior">Senior (7+ años)</option>
+                            <option value="cachorro">Cachorro (0-11 meses)</option>
+                            <option value="joven">Joven (1 año)</option>
+                            <option value="adulto">Adulto (2-7 años)</option>
+                            <option value="senior">Senior (8+ años)</option>
                         </select>
                     </div>
 

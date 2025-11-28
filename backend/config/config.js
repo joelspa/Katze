@@ -49,6 +49,9 @@ module.exports = {
         PENDIENTE: 'pendiente',
         APROBADA: 'aprobada',
         RECHAZADA: 'rechazada'
-    }
+    },
+    
+    // Configuración de Make.com Webhook
+    MAKE_WEBHOOK_URL: process.env.MAKE_WEBHOOK_URL || 'https://hook.us2.make.com/xmldtachada9xritidmmf6nl6gdgmefa'
 };
 

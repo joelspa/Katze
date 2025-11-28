@@ -38,22 +38,11 @@ class CatService {
             paramIndex++;
         }
 
-        // Filtro por edad (rango aproximado basado en categorías)
+        // Filtro por edad (categorías: cachorro, joven, adulto, senior)
         if (filters.age && filters.age !== 'todos') {
-            switch (filters.age) {
-                case 'cachorro': // 0-6 meses
-                    query += ` AND (age ILIKE '%mes%' OR age ILIKE '%semana%' OR age ILIKE '%cachorro%')`;
-                    break;
-                case 'joven': // 6 meses - 2 años
-                    query += ` AND (age ILIKE '%año%' OR age ILIKE '%joven%') AND age NOT ILIKE '%años%'`;
-                    break;
-                case 'adulto': // 2-7 años
-                    query += ` AND (age ILIKE '%años%' OR age ILIKE '%adulto%')`;
-                    break;
-                case 'senior': // 7+ años
-                    query += ` AND (age ILIKE '%senior%' OR age ILIKE '7%' OR age ILIKE '8%' OR age ILIKE '9%' OR age ILIKE '1_%')`;
-                    break;
-            }
+            query += ` AND LOWER(age) = $${paramIndex}`;
+            params.push(filters.age.toLowerCase());
+            paramIndex++;
         }
 
         // Filtro por tipo de vivienda requerida

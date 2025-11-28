@@ -1,7 +1,7 @@
 // Componente de tarjeta de gato
 // Muestra una vista previa de un gato disponible para adopción
 
-import React, { useState, useCallback, useMemo, memo } from 'react';
+import React, { useState, useCallback, memo } from 'react';
 import { Link } from 'react-router-dom';
 import './CatCard.css';
 import CatDetailModal from './CatDetailModal';
@@ -60,7 +60,7 @@ const CatCard: React.FC<CatCardProps> = ({ cat }) => {
         setTouchEnd(e.targetTouches[0].clientX);
     };
 
-    const onTouchEnd = (e: React.TouchEvent) => {
+    const onTouchEnd = () => {
         if (!touchStart || !touchEnd) return;
         
         const distance = touchStart - touchEnd;
@@ -99,6 +99,25 @@ const CatCard: React.FC<CatCardProps> = ({ cat }) => {
                 return { icon: <svg viewBox="0 0 24 24" fill="currentColor" style={{width: '16px', height: '16px', display: 'inline', marginRight: '4px', verticalAlign: 'middle'}}><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>, text: 'Cualquier espacio' };
         }
     };
+
+    // Función para formatear la edad del gato con emoji
+    const getAgeDisplay = () => {
+        const ageStr = cat.age?.toLowerCase() || '';
+        
+        if (ageStr.includes('cachorro') || ageStr === 'cachorro') {
+            return { text: 'Cachorro', subtitle: '0-11 meses' };
+        } else if (ageStr.includes('joven') || ageStr === 'joven') {
+            return { text: 'Joven', subtitle: '1 año' };
+        } else if (ageStr.includes('adulto') || ageStr === 'adulto') {
+            return { text: 'Adulto', subtitle: '2-7 años' };
+        } else if (ageStr.includes('senior') || ageStr === 'senior') {
+            return { text: 'Senior', subtitle: '8+ años' };
+        }
+        
+        return { text: cat.age || 'Edad desconocida', subtitle: '' };
+    };
+
+    const ageDisplay = getAgeDisplay();
 
     const handleCardClick = () => {
         setIsModalOpen(true);
@@ -184,7 +203,14 @@ const CatCard: React.FC<CatCardProps> = ({ cat }) => {
                 <div className="cat-card-body">
                     <div className="cat-card-header">
                         <h3 className="cat-card-title">{cat.name}</h3>
-                        <span className="cat-card-age">{cat.age}</span>
+                        <div className="cat-card-age-container">
+                            <div className="cat-card-age-text">
+                                <span className="cat-card-age-main">{ageDisplay.text}</span>
+                                {ageDisplay.subtitle && (
+                                    <span className="cat-card-age-subtitle">{ageDisplay.subtitle}</span>
+                                )}
+                            </div>
+                        </div>
                     </div>
 
                     {/* Badges de Raza y Tipo de Vivienda */}

@@ -95,6 +95,14 @@
     padding-right: 40px;
 }
 
+.field-help {
+    margin-top: 6px;
+    font-size: 13px;
+    color: var(--color-gray-500);
+    line-height: 1.4;
+    display: block;
+}
+
 .file-upload {
     position: relative;
 }
@@ -374,4 +382,8 @@
   background: rgba(241, 91, 103, 0.15);
   border-color: var(--color-error);
   color: var(--color-error-light);
+}
+
+[data-theme="dark"] .field-help {
+  color: rgba(230, 241, 255, 0.60);
 }

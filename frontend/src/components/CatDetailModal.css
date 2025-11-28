@@ -30,10 +30,12 @@
     max-width: 900px;
     width: 100%;
     max-height: 90vh;
-    overflow-y: auto;
+    overflow: hidden;
     position: relative;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
     animation: slideUp 0.3s ease-out;
+    display: flex;
+    flex-direction: column;
 }
 
 @keyframes slideUp {
@@ -51,23 +53,28 @@
     position: absolute;
     top: 16px;
     right: 16px;
-    background: rgba(0, 0, 0, 0.6);
-    border: none;
+    background: rgba(255, 255, 255, 0.95);
+    border: 2px solid rgba(0, 0, 0, 0.1);
     border-radius: 50%;
-    width: 40px;
-    height: 40px;
+    width: 44px;
+    height: 44px;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    z-index: 10;
+    z-index: 10000;
     transition: all 0.2s ease;
-    color: white;
+    color: #333;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    backdrop-filter: blur(8px);
 }
 
 .cat-modal-close:hover {
-    background: rgba(0, 0, 0, 0.8);
-    transform: scale(1.1);
+    background: rgba(239, 68, 68, 0.95);
+    color: white;
+    border-color: rgba(239, 68, 68, 0.5);
+    transform: scale(1.1) rotate(90deg);
+    box-shadow: 0 6px 16px rgba(239, 68, 68, 0.3);
 }
 
 .cat-modal-body {
@@ -75,6 +82,8 @@
     grid-template-columns: 1fr 1fr;
     gap: 0;
     min-height: 600px;
+    flex: 1;
+    overflow: hidden;
 }
 
 .cat-modal-image-section {
@@ -205,10 +214,30 @@
 }
 
 .cat-modal-info-section {
-    padding: 32px;
+    padding: 80px 32px 32px 32px;
     display: flex;
     flex-direction: column;
     gap: 24px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+/* Scroll personalizado para la sección de info */
+.cat-modal-info-section::-webkit-scrollbar {
+    width: 6px;
+}
+
+.cat-modal-info-section::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.cat-modal-info-section::-webkit-scrollbar-thumb {
+    background: rgba(46, 196, 182, 0.3);
+    border-radius: 3px;
+}
+
+.cat-modal-info-section::-webkit-scrollbar-thumb:hover {
+    background: rgba(46, 196, 182, 0.6);
 }
 
 .cat-modal-header {
@@ -225,14 +254,31 @@
     font-weight: 700;
 }
 
-.cat-modal-age {
-    background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
-    color: white;
-    padding: 8px 16px;
-    border-radius: 20px;
-    font-weight: 600;
-    font-size: 0.9rem;
-    white-space: nowrap;
+.cat-modal-age-container {
+  display: flex;
+  align-items: center;
+  padding: 10px 18px;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(46, 196, 182, 0.12));
+  border-radius: 24px;
+  border: 2px solid var(--color-primary);
+}
+
+.cat-modal-age-text {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}.cat-modal-age-main {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--color-primary);
+    line-height: 1;
+}
+
+.cat-modal-age-subtitle {
+    font-size: 13px;
+    color: var(--color-gray-600);
+    line-height: 1;
+    font-weight: 500;
 }
 
 .cat-modal-status-badges {
@@ -355,6 +401,13 @@
         height: 100vh;
     }
 
+    .cat-modal-close {
+        top: 16px;
+        right: 16px;
+        width: 40px;
+        height: 40px;
+    }
+
     .cat-modal-body {
         grid-template-columns: 1fr;
     }
@@ -430,23 +483,7 @@
     }
 }
 
-/* Scroll personalizado para el modal */
-.cat-modal-content::-webkit-scrollbar {
-    width: 8px;
-}
 
-.cat-modal-content::-webkit-scrollbar-track {
-    background: var(--color-gray-light);
-}
-
-.cat-modal-content::-webkit-scrollbar-thumb {
-    background: var(--color-primary);
-    border-radius: 4px;
-}
-
-.cat-modal-content::-webkit-scrollbar-thumb:hover {
-    background: var(--color-accent);
-}
 
 /* ===== DARK MODE ===== */
 [data-theme="dark"] .cat-modal-overlay {
@@ -459,15 +496,15 @@
 }
 
 [data-theme="dark"] .cat-modal-close {
-  background: var(--surface-elevated);
-  color: var(--color-gray-600);
+  background: rgba(30, 41, 59, 0.95);
+  color: rgba(230, 241, 255, 0.9);
   border-color: var(--border-default);
 }
 
 [data-theme="dark"] .cat-modal-close:hover {
-  background: var(--color-primary);
-  color: var(--color-secondary);
-  border-color: var(--color-primary);
+  background: rgba(239, 68, 68, 0.95);
+  color: white;
+  border-color: rgba(239, 68, 68, 0.5);
 }
 
 [data-theme="dark"] .cat-modal-body h2 {
@@ -517,16 +554,12 @@
   background: var(--color-primary);
 }
 
-[data-theme="dark"] .cat-modal-content::-webkit-scrollbar-track {
-  background: var(--bg-secondary);
+[data-theme="dark"] .cat-modal-info-section::-webkit-scrollbar-thumb {
+  background: rgba(46, 196, 182, 0.4);
 }
 
-[data-theme="dark"] .cat-modal-content::-webkit-scrollbar-thumb {
-  background: var(--color-primary);
-}
-
-[data-theme="dark"] .cat-modal-content::-webkit-scrollbar-thumb:hover {
-  background: var(--color-primary-light);
+[data-theme="dark"] .cat-modal-info-section::-webkit-scrollbar-thumb:hover {
+  background: rgba(46, 196, 182, 0.7);
 }
 
 /* Badges con mejor contraste */
@@ -535,4 +568,57 @@
   color: var(--color-primary-light);
   border: 1px solid var(--color-primary);
   font-weight: var(--font-weight-bold);
+}
+
+[data-theme="dark"] .cat-modal-image-section {
+  background: var(--bg-secondary);
+}
+
+[data-theme="dark"] .cat-modal-info-section {
+  background: var(--surface-card);
+}
+
+[data-theme="dark"] .cat-modal-header h2 {
+  color: var(--color-white);
+}
+
+[data-theme="dark"] .cat-modal-age-container {
+  background: linear-gradient(135deg, rgba(46, 196, 182, 0.15), rgba(46, 196, 182, 0.18));
+  border-color: var(--color-primary);
+}
+
+[data-theme="dark"] .cat-modal-age-main {
+  color: var(--color-primary-light);
+}
+
+[data-theme="dark"] .cat-modal-age-subtitle {
+  color: rgba(230, 241, 255, 0.65);
+}
+
+[data-theme="dark"] .cat-modal-section {
+  border-top-color: var(--border-default);
+}
+
+[data-theme="dark"] .cat-modal-section h3 {
+  color: var(--color-white);
+}
+
+[data-theme="dark"] .cat-modal-section p {
+  color: rgba(230, 241, 255, 0.85);
+}
+
+[data-theme="dark"] .cat-modal-btn.secondary {
+  background: var(--surface-elevated);
+  color: var(--color-white);
+  border: 1px solid var(--border-default);
+}
+
+[data-theme="dark"] .cat-modal-btn.secondary:hover {
+  background: var(--surface-panel);
+  border-color: var(--color-primary);
+}
+
+[data-theme="dark"] .cat-modal-gallery-indicator {
+  background: rgba(1, 22, 39, 0.9);
+  backdrop-filter: blur(8px);
 }

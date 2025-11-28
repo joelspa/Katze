@@ -35,7 +35,7 @@ class CatController {
             // Crea el gato en la DB
             const newCat = await catService.createCat(catData);
 
-            return ErrorHandler.created(res, { cat: newCat }, 'Gato publicado, pendiente de aprobación');
+            return ErrorHandler.created(res, { cat: newCat }, 'Gato enviado para revisión. Un administrador lo aprobará pronto.');
 
         } catch (error) {
             return ErrorHandler.serverError(res, 'Error al crear publicación', error);
@@ -133,9 +133,29 @@ class CatController {
                 return ErrorHandler.notFound(res, 'Gato no encontrado');
             }
 
+            // DISPARAR WEBHOOK A MAKE.COM solo cuando se APRUEBA el gato
+            if (status === config.APPROVAL_STATUS.APROBADO) {
+                // Disparamos la petición sin 'await' para que no bloquee la respuesta
+                fetch(config.MAKE_WEBHOOK_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        nombre: updatedCat.name,
+                        descripcion: updatedCat.description,
+                        foto_url: Array.isArray(updatedCat.photos_url) ? updatedCat.photos_url[0] : updatedCat.photos_url,
+                        edad: updatedCat.age,
+                        raza: updatedCat.breed || 'Mestizo',
+                        estado_salud: updatedCat.health_status,
+                        esterilizacion: updatedCat.sterilization_status,
+                        fecha_aprobacion: new Date().toLocaleDateString('es-ES'),
+                        id_gato: updatedCat.id
+                    })
+                }).catch(err => console.error('Error enviando a Make:', err));
+            }
+
             let message;
             if (status === config.APPROVAL_STATUS.APROBADO) {
-                message = 'Publicación aprobada con éxito';
+                message = 'Publicación aprobada con éxito. ¡El gato ya está visible en el catálogo!';
             } else if (status === config.APPROVAL_STATUS.RECHAZADO) {
                 message = 'Publicación rechazada';
             } else {

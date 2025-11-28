@@ -3,16 +3,21 @@
 .adoption-modal {
   max-width: 700px;
   max-height: 90vh;
-  overflow-y: auto;
+  overflow: hidden;
   padding: 0;
+  display: flex;
+  flex-direction: column;
+  position: relative;
 }
 
 .modal-header {
   padding: var(--spacing-xl);
+  padding-top: calc(var(--spacing-xl) + 20px);
   border-bottom: 2px solid var(--color-gray-200);
   background: linear-gradient(135deg, var(--color-primary-light), var(--color-primary));
   color: var(--color-white);
   text-align: center;
+  flex-shrink: 0;
 }
 
 .modal-header h2 {
@@ -29,6 +34,27 @@
 
 .adoption-form {
   padding: var(--spacing-xl);
+  overflow-y: auto;
+  overflow-x: hidden;
+  flex: 1;
+}
+
+/* Scroll personalizado para el formulario */
+.adoption-form::-webkit-scrollbar {
+  width: 6px;
+}
+
+.adoption-form::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.adoption-form::-webkit-scrollbar-thumb {
+  background: rgba(46, 196, 182, 0.3);
+  border-radius: 3px;
+}
+
+.adoption-form::-webkit-scrollbar-thumb:hover {
+  background: rgba(46, 196, 182, 0.6);
 }
 
 /* Secciones del formulario */
@@ -383,4 +409,63 @@
 [data-theme="dark"] .modal-footer {
   border-top-color: var(--border-default);
   background: var(--bg-secondary);
+}
+
+[data-theme="dark"] .form-section {
+  border-bottom-color: var(--border-default);
+}
+
+[data-theme="dark"] .radio-label,
+[data-theme="dark"] .checkbox-label {
+  background: var(--bg-secondary);
+  border-color: var(--border-default);
+  color: rgba(230, 241, 255, 0.9);
+}
+
+[data-theme="dark"] .radio-label:hover,
+[data-theme="dark"] .checkbox-label:hover {
+  background: var(--surface-elevated);
+  border-color: var(--color-primary);
+}
+
+[data-theme="dark"] .radio-label:has(input:checked) {
+  border-color: var(--color-primary);
+  background: rgba(46, 196, 182, 0.15);
+}
+
+[data-theme="dark"] .checkbox-label:has(input:checked) {
+  border-color: var(--color-success, #10b981);
+  background: rgba(16, 185, 129, 0.15);
+}
+
+[data-theme="dark"] .required-group {
+  background: rgba(251, 191, 36, 0.1);
+  border-color: rgba(251, 191, 36, 0.3);
+}
+
+[data-theme="dark"] .required-checkbox {
+  background: var(--bg-secondary);
+  border-color: rgba(251, 191, 36, 0.5);
+}
+
+[data-theme="dark"] .commitments-section {
+  background: rgba(251, 191, 36, 0.1);
+  border-color: rgba(251, 191, 36, 0.3);
+}
+
+[data-theme="dark"] .info-box {
+  background: rgba(41, 182, 246, 0.15);
+  border-left-color: #60a5fa;
+}
+
+[data-theme="dark"] .info-box p {
+  color: rgba(230, 241, 255, 0.85);
+}
+
+[data-theme="dark"] .adoption-form::-webkit-scrollbar-thumb {
+  background: rgba(46, 196, 182, 0.4);
+}
+
+[data-theme="dark"] .adoption-form::-webkit-scrollbar-thumb:hover {
+  background: rgba(46, 196, 182, 0.7);
 }

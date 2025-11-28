@@ -31,10 +31,12 @@
     max-width: 900px;
     width: 100%;
     max-height: 90vh;
-    overflow-y: auto;
+    overflow: hidden;
     position: relative;
     animation: slideUp 0.3s ease;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    display: flex;
+    flex-direction: column;
 }
 
 @keyframes slideUp {
@@ -52,7 +54,7 @@
     position: absolute;
     top: 20px;
     right: 20px;
-    background: rgba(0, 0, 0, 0.1);
+    background: rgba(255, 255, 255, 0.95);
     border: none;
     border-radius: 50%;
     width: 40px;
@@ -62,7 +64,8 @@
     justify-content: center;
     cursor: pointer;
     transition: all 0.3s ease;
-    z-index: 10;
+    z-index: 10000;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 .modal-close-btn svg {
@@ -72,8 +75,12 @@
 }
 
 .modal-close-btn:hover {
-    background: rgba(0, 0, 0, 0.2);
-    transform: rotate(90deg);
+    background: #dc2626;
+    transform: rotate(90deg) scale(1.05);
+}
+
+.modal-close-btn:hover svg {
+    stroke: white;
 }
 
 .modal-header {
@@ -82,6 +89,7 @@
     padding: 60px 40px 40px;
     text-align: center;
     border-radius: 16px 16px 0 0;
+    flex-shrink: 0;
 }
 
 .modal-header h2 {
@@ -105,6 +113,9 @@
 
 .modal-body {
     padding: 40px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    flex: 1;
 }
 
 .process-section {
@@ -449,6 +460,7 @@
     display: flex;
     gap: 16px;
     justify-content: flex-end;
+    flex-shrink: 0;
 }
 
 .btn-primary,
@@ -540,21 +552,21 @@
 }
 
 /* Scroll styling */
-.adoption-modal-content::-webkit-scrollbar {
-    width: 8px;
+.modal-body::-webkit-scrollbar {
+    width: 6px;
 }
 
-.adoption-modal-content::-webkit-scrollbar-track {
-    background: #f1f1f1;
+.modal-body::-webkit-scrollbar-track {
+    background: transparent;
 }
 
-.adoption-modal-content::-webkit-scrollbar-thumb {
-    background: #F2B137;
-    border-radius: 4px;
+.modal-body::-webkit-scrollbar-thumb {
+    background: rgba(242, 177, 55, 0.4);
+    border-radius: 3px;
 }
 
-.adoption-modal-content::-webkit-scrollbar-thumb:hover {
-    background: #d99a2a;
+.modal-body::-webkit-scrollbar-thumb:hover {
+    background: rgba(242, 177, 55, 0.7);
 }
 
 /* ===== DARK MODE ===== */
@@ -568,7 +580,8 @@
 }
 
 [data-theme="dark"] .modal-close-btn {
-    background: var(--surface-elevated);
+    background: rgba(30, 41, 59, 0.95);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 [data-theme="dark"] .modal-close-btn svg {
@@ -576,7 +589,7 @@
 }
 
 [data-theme="dark"] .modal-close-btn:hover {
-    background: var(--bg-secondary);
+    background: #dc2626;
 }
 
 [data-theme="dark"] .modal-header {
@@ -753,14 +766,10 @@
     border-color: var(--color-accent);
 }
 
-[data-theme="dark"] .adoption-modal-content::-webkit-scrollbar-track {
-    background: var(--bg-secondary);
+[data-theme="dark"] .modal-body::-webkit-scrollbar-thumb {
+    background: rgba(242, 177, 55, 0.5);
 }
 
-[data-theme="dark"] .adoption-modal-content::-webkit-scrollbar-thumb {
-    background: var(--color-accent);
-}
-
-[data-theme="dark"] .adoption-modal-content::-webkit-scrollbar-thumb:hover {
-    background: var(--color-accent-light);
+[data-theme="dark"] .modal-body::-webkit-scrollbar-thumb:hover {
+    background: rgba(242, 177, 55, 0.8);
 }

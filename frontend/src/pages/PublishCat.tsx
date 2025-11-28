@@ -12,7 +12,7 @@ const PublishCat = () => {
     const [formData, setFormData] = useState({
         name: '',
         description: '',
-        age: '',
+        age: 'adulto',
         health_status: '',
         sterilization_status: 'pendiente',
         breed: 'Mestizo',
@@ -73,22 +73,32 @@ const PublishCat = () => {
         setImagePreviews(newPreviews);
     };
 
-    // 1. FUNCIÓN PARA SUBIR MÚLTIPLES IMÁGENES A FIREBASE
+    // 1. FUNCIÓN PARA SUBIR UNA IMAGEN A FIREBASE (PATRÓN SIMPLIFICADO)
+    const handleUpload = async (file: File): Promise<string> => {
+        // 1. Subir la imagen
+        const storageRef = ref(storage, `gatos/${uuidv4()}_${file.name}`);
+        await uploadBytes(storageRef, file);
+        
+        // 2. Obtener la URL PÚBLICA (Esta es la que vale oro)
+        const urlPublica = await getDownloadURL(storageRef);
+        
+        return urlPublica; // Esta string la guardaremos para enviarla al backend
+    };
+
+    // 2. FUNCIÓN PARA SUBIR MÚLTIPLES IMÁGENES
     const uploadImages = async (): Promise<string[]> => {
         if (imageFiles.length === 0) {
             throw new Error("No se han seleccionado imágenes.");
         }
 
         const uploadPromises = imageFiles.map(async (file) => {
-            const imageRef = ref(storage, `cat_images/${uuidv4()}_${file.name}`);
-            await uploadBytes(imageRef, file);
-            return await getDownloadURL(imageRef);
+            return await handleUpload(file);
         });
 
         return await Promise.all(uploadPromises);
     };
 
-    // 2. FUNCIÓN PARA ENVIAR EL FORMULARIO
+    // 3. FUNCIÓN PARA ENVIAR EL FORMULARIO
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
@@ -156,33 +166,58 @@ const PublishCat = () => {
                         </div>
 
                         <div className="formGroup">
-                            <label htmlFor="age" className="label">Edad</label>
-                            <input 
-                                type="text" 
+                            <label htmlFor="age" className="label">
+                                <svg viewBox="0 0 24 24" fill="currentColor" style={{width: '18px', height: '18px', marginRight: '6px', display: 'inline-block', verticalAlign: 'middle'}}>
+                                    <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/>
+                                </svg>
+                                Categoría de Edad
+                            </label>
+                            <select 
                                 id="age" 
                                 name="age" 
-                                className="input" 
-                                placeholder="Ej: 2 años"
+                                className="select" 
                                 onChange={handleChange} 
-                                required 
-                            />
+                                value={formData.age}
+                                required
+                            >
+                                <option value="cachorro"> Cachorro (0-11 meses)</option>
+                                <option value="joven"> Joven (1 año)</option>
+                                <option value="adulto"> Adulto (2-7 años)</option>
+                                <option value="senior"> Senior (8+ años)</option>
+                            </select>
+                            <small className="field-help">
+                                Selecciona la categoría que mejor describe la edad del gato
+                            </small>
                         </div>
 
                         <div className="formGroup">
-                            <label htmlFor="health_status" className="label">Estado de Salud</label>
+                            <label htmlFor="health_status" className="label">
+                                <svg viewBox="0 0 24 24" fill="currentColor" style={{width: '18px', height: '18px', marginRight: '6px', display: 'inline-block', verticalAlign: 'middle'}}>
+                                    <path d="M19 3H5c-1.1 0-1.99.9-1.99 2L3 19c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.93 0 3.5 1.57 3.5 3.5 0 1.93-1.57 3.5-3.5 3.5s-3.5-1.57-3.5-3.5c0-1.93 1.57-3.5 3.5-3.5zm7 13H5v-.23c0-.62.28-1.2.76-1.58C7.47 15.82 9.64 15 12 15s4.53.82 6.24 2.19c.48.38.76.97.76 1.58V19z"/>
+                                </svg>
+                                Estado de Salud
+                            </label>
                             <input 
                                 type="text" 
                                 id="health_status" 
                                 name="health_status" 
                                 className="input" 
-                                placeholder="Ej: Vacunado, desparasitado"
+                                placeholder="Ej: Vacunado, desparasitado, sin problemas de salud"
                                 onChange={handleChange} 
                                 required 
                             />
+                            <small className="field-help">
+                                Describe el estado de salud actual del gato
+                            </small>
                         </div>
 
                         <div className="formGroup">
-                            <label htmlFor="sterilization_status" className="label">Estado de Esterilización</label>
+                            <label htmlFor="sterilization_status" className="label">
+                                <svg viewBox="0 0 24 24" fill="currentColor" style={{width: '18px', height: '18px', marginRight: '6px', display: 'inline-block', verticalAlign: 'middle'}}>
+                                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                                </svg>
+                                Estado de Esterilización
+                            </label>
                             <select 
                                 id="sterilization_status" 
                                 name="sterilization_status" 
@@ -190,10 +225,13 @@ const PublishCat = () => {
                                 onChange={handleChange} 
                                 value={formData.sterilization_status}
                             >
-                                <option value="pendiente">Pendiente</option>
-                                <option value="esterilizado">Esterilizado</option>
-                                <option value="no_aplica">No aplica</option>
+                                <option value="pendiente">⏳ Pendiente</option>
+                                <option value="esterilizado">✅ Esterilizado</option>
+                                <option value="no_aplica">➖ No aplica</option>
                             </select>
+                            <small className="field-help">
+                                Indica si el gato está esterilizado o está programado para hacerlo
+                            </small>
                         </div>
 
                         <div className="formGroup">

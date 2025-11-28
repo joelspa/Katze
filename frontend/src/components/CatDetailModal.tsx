@@ -21,6 +21,25 @@ const CatDetailModal: React.FC<CatDetailModalProps> = ({ cat, isOpen, onClose })
 
     const minSwipeDistance = 50;
 
+    // Función para formatear la edad del gato
+    const getAgeDisplay = () => {
+        const ageStr = cat.age?.toLowerCase() || '';
+        
+        if (ageStr.includes('cachorro') || ageStr === 'cachorro') {
+            return { text: 'Cachorro', subtitle: '0-11 meses' };
+        } else if (ageStr.includes('joven') || ageStr === 'joven') {
+            return { text: 'Joven', subtitle: '1 año' };
+        } else if (ageStr.includes('adulto') || ageStr === 'adulto') {
+            return { text: 'Adulto', subtitle: '2-7 años' };
+        } else if (ageStr.includes('senior') || ageStr === 'senior') {
+            return { text: 'Senior', subtitle: '8+ años' };
+        }
+        
+        return { text: cat.age || 'Edad desconocida', subtitle: '' };
+    };
+
+    const ageDisplay = getAgeDisplay();
+
     // Cierra el modal si se hace clic en el overlay
     const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
         if (e.target === e.currentTarget) {
@@ -164,7 +183,14 @@ const CatDetailModal: React.FC<CatDetailModalProps> = ({ cat, isOpen, onClose })
                     <div className="cat-modal-info-section">
                         <div className="cat-modal-header">
                             <h2>{cat.name}</h2>
-                            <span className="cat-modal-age">{cat.age}</span>
+                            <div className="cat-modal-age-container">
+                                <div className="cat-modal-age-text">
+                                    <span className="cat-modal-age-main">{ageDisplay.text}</span>
+                                    {ageDisplay.subtitle && (
+                                        <span className="cat-modal-age-subtitle">{ageDisplay.subtitle}</span>
+                                    )}
+                                </div>
+                            </div>
                         </div>
 
                         <div className="cat-modal-status-badges">

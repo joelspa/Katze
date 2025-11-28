@@ -92,7 +92,7 @@ INSERT INTO cats (name, description, age, health_status, sterilization_status, p
 -- 🟢 CUARTO MÁS ANTIGUO (90 días = 3 meses)
 ('Nala', 
  'Gatita tricolor de 1 año. Energética y cariñosa, se lleva bien con otros gatos.', 
- 'adulto', 
+ 'joven', 
  'Saludable, todas las vacunas', 
  'esterilizado', 
  '["https://images.unsplash.com/photo-1513360371669-4adf3dd7dff8", "https://images.unsplash.com/photo-1548247416-ec66f4900b2e"]', 
@@ -107,7 +107,7 @@ INSERT INTO cats (name, description, age, health_status, sterilization_status, p
 -- 🔵 QUINTO MÁS ANTIGUO (60 días = 2 meses)
 ('Canela', 
  'Gatita café claro de 1 año. Muy juguetona, le encantan las cajas y las plumas.', 
- 'adulto', 
+ 'joven', 
  'Saludable, vacunas al día', 
  'esterilizado', 
  '["https://images.unsplash.com/photo-1606214174585-fe31582dc6ee", "https://images.unsplash.com/photo-1478098711619-5ab0b478d6e6", "https://images.unsplash.com/photo-1511044568932-338cba0ad803"]', 
@@ -122,7 +122,7 @@ INSERT INTO cats (name, description, age, health_status, sterilization_status, p
 -- 🟣 SEXTO MÁS ANTIGUO (45 días = 1.5 meses)
 ('Princesa', 
  'Gatita siamesa de 1 año. Muy vocal y cariñosa, le gusta seguir a sus humanos.', 
- 'adulto', 
+ 'joven', 
  'Saludable, esterilizada recientemente', 
  'esterilizado', 
  '["https://images.unsplash.com/photo-1589883661923-6476cb0ae9f2", "https://images.unsplash.com/photo-1495360010541-f48722b34f7d", "https://images.unsplash.com/photo-1583795128727-6ec3642408f8"]', 
@@ -295,7 +295,7 @@ INSERT INTO cats (name, description, age, health_status, sterilization_status, p
 
 ('Kira', 
  'Gatita carey de 1 año, muy enérgica y juguetona. Le encanta trepar y explorar.',
- 'adulto', 
+ 'joven', 
  'Saludable, vacunas al día', 
  'esterilizado', 
  '["https://images.unsplash.com/photo-1529778873920-4da4926a72c2"]', 
@@ -323,7 +323,7 @@ INSERT INTO cats (name, description, age, health_status, sterilization_status, p
 
 ('Cleo', 
  'Gatita egipcia de 1 año, ojos verdes impresionantes. Muy vocal y comunicativa.',
- 'adulto', 
+ 'joven', 
  'Saludable, todas las vacunas', 
  'esterilizado', 
  '["https://images.unsplash.com/photo-1573865526739-10c1d3a1f0cc"]', 
@@ -379,7 +379,7 @@ INSERT INTO cats (name, description, age, health_status, sterilization_status, p
 
 ('Estrella', 
  'Gatita blanca con ojos azules de 1 año, muy fotogénica y cariñosa.',
- 'adulto', 
+ 'joven', 
  'Saludable, todas las vacunas', 
  'esterilizado', 
  '["https://images.unsplash.com/photo-1526336024174-e58f5cdd8e13"]', 
@@ -443,7 +443,7 @@ INSERT INTO cats (name, description, age, health_status, sterilization_status, p
  4, 
  'pendiente', 
  'en_adopcion',
- 'Bigotes fue encontrado vagando por mi colonia. Es un gato adulto que se adaptó rápidamente a estar en casa.',
+ 'Bigotes fue encontrado vagando por mi colonia. Es un gato Adulto que se adaptó rápidamente a estar en casa.',
  'Mestizo',
  'departamento',
  NOW() - INTERVAL '3 days'),
@@ -464,7 +464,7 @@ INSERT INTO cats (name, description, age, health_status, sterilization_status, p
 
 ('Chocolate', 
  'Gato café oscuro de 1 año, muy social. Le gusta recibir visitas y jugar con todos.', 
- 'adulto', 
+ 'joven', 
  'Saludable, vacunas al día', 
  'esterilizado', 
  '["https://images.unsplash.com/photo-1548247416-ec66f4900b2e"]', 
@@ -493,7 +493,7 @@ INSERT INTO cats (name, description, age, health_status, sterilization_status, p
 
 ('Bella', 
  'Gatita carey de 1 año, muy juguetona y cariñosa. Le encanta dormir con sus humanos.', 
- 'adulto', 
+ 'joven', 
  'Saludable, todas las vacunas', 
  'esterilizado', 
  '["https://images.unsplash.com/photo-1517331156700-3c241d2b4d83"]', 
@@ -549,7 +549,7 @@ INSERT INTO cats (name, description, age, health_status, sterilization_status, p
 
 ('Luna Azul', 
  'Gatita gris azulada de 1 año, pelaje sedoso y ojos dorados.',
- 'adulto', 
+ 'joven', 
  'Saludable, adoptada', 
  'esterilizado', 
  '["https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba"]', 
@@ -971,7 +971,7 @@ INSERT INTO educational_posts (author_id, title, content, content_type, category
 -- ARTÍCULOS DE NUTRICIÓN (2 publicaciones)
 (2, 
  'Alimentación Adecuada para Gatos Adultos',
- 'Los gatos son carnívoros obligados y necesitan proteína animal de alta calidad. NUTRIENTES ESENCIALES: Proteína (mínimo 26% en alimento seco, 40% en húmedo), taurina (aminoácido vital para corazón y vista), ácidos grasos omega-3 y omega-6, vitaminas A, D y E. FRECUENCIA: 2-3 comidas diarias para adultos. Agua fresca siempre disponible. ALIMENTOS PROHIBIDOS: Chocolate, cebolla, ajo, uvas, alcohol, cafeína, leche de vaca (causa diarrea), huesos cocidos, pescado crudo en exceso. SEÑALES DE BUENA NUTRICIÓN: Pelaje brillante, energía adecuada, peso saludable (costillas palpables pero no visibles), deposiciones firmes. TIPOS DE ALIMENTO: Seco (bueno para dientes), húmedo (más hidratación), mixto (ideal). Consulta con tu veterinario para necesidades específicas.',
+ 'Los gatos son carnívoros obligados y necesitan proteína animal de alta calidad. NUTRIENTES ESENCIALES: Proteína (mínimo 26% en alimento seco, 40% en húmedo), taurina (aminoácido vital para corazón y vista), ácidos grasos omega-3 y omega-6, vitaminas A, D y E. FRECUENCIA: 2-3 comidas diarias para Adultos. Agua fresca siempre disponible. ALIMENTOS PROHIBIDOS: Chocolate, cebolla, ajo, uvas, alcohol, cafeína, leche de vaca (causa diarrea), huesos cocidos, pescado crudo en exceso. SEÑALES DE BUENA NUTRICIÓN: Pelaje brillante, energía adecuada, peso saludable (costillas palpables pero no visibles), deposiciones firmes. TIPOS DE ALIMENTO: Seco (bueno para dientes), húmedo (más hidratación), mixto (ideal). Consulta con tu veterinario para necesidades específicas.',
  'guia',
  'nutricion',
  'https://images.unsplash.com/photo-1548247416-ec66f4900b2e',
@@ -979,7 +979,7 @@ INSERT INTO educational_posts (author_id, title, content, content_type, category
 
 (4, 
  'Guía de Snacks y Premios Saludables para Gatos',
- 'No todos los premios son iguales. OPCIONES SALUDABLES: Pollo cocido sin piel ni huesos, atún en agua (ocasional, no diario), premios comerciales con alto contenido de carne, snacks dentales para limpieza. FRECUENCIA: Los premios no deben superar el 10% de calorías diarias. PREMIOS A EVITAR: Comida humana procesada, lácteos, snacks con colorantes artificiales, golosinas con azúcar. PREMIOS FUNCIONALES: Con probióticos para digestión, con omega-3 para pelaje, dentales para higiene oral, naturales liofilizados sin aditivos. CANTIDADES: Gato adulto promedio (4-5kg) puede recibir 20-25 calorías en premios diarios. OBSERVA: Si hay cambios en deposiciones o alergias, suspende. Los premios son herramientas de entrenamiento y vínculo, úsalos con inteligencia.',
+ 'No todos los premios son iguales. OPCIONES SALUDABLES: Pollo cocido sin piel ni huesos, atún en agua (ocasional, no diario), premios comerciales con alto contenido de carne, snacks dentales para limpieza. FRECUENCIA: Los premios no deben superar el 10% de calorías diarias. PREMIOS A EVITAR: Comida humana procesada, lácteos, snacks con colorantes artificiales, golosinas con azúcar. PREMIOS FUNCIONALES: Con probióticos para digestión, con omega-3 para pelaje, dentales para higiene oral, naturales liofilizados sin aditivos. CANTIDADES: Gato Adulto promedio (4-5kg) puede recibir 20-25 calorías en premios diarios. OBSERVA: Si hay cambios en deposiciones o alergias, suspende. Los premios son herramientas de entrenamiento y vínculo, úsalos con inteligencia.',
  'articulo',
  'nutricion',
  'https://images.unsplash.com/photo-1583795128727-6ec3642408f8',
@@ -1004,7 +1004,7 @@ INSERT INTO educational_posts (author_id, title, content, content_type, category
 
 (1, 
  'Parásitos Comunes en Gatos: Prevención y Tratamiento',
- 'Protege a tu gato de parásitos internos y externos. INTERNOS: Lombrices redondas (vómito, diarrea, abdomen hinchado), tenias (segmentos en heces), giardias (diarrea crónica), coccidios (común en cachorros). EXTERNOS: Pulgas (rascado, pérdida de pelo), garrapatas (bultos en piel), ácaros del oído (sacude cabeza), sarna (costras, rascado). PREVENCIÓN: Desparasitación interna cada 3-6 meses, pipetas o collares antipulgas mensuales, higiene de caja de arena diaria, revisión post-paseos. TRATAMIENTO: Consulta veterinario para diagnóstico correcto, sigue tratamiento completo, desinfecta el hogar, trata a todas las mascotas. SÍNTOMAS DE ALERTA: Diarrea persistente, vómito con gusanos, pérdida de peso, barriga hinchada en cachorros, rascado excesivo. La prevención es más económica que el tratamiento.',
+ 'Protege a tu gato de parásitos internos y externos. INTERNOS: Lombrices redondas (vómito, diarrea, abdomen hinchado), tenias (segmentos en heces), giardias (diarrea crónica), coccidios (común en Cachorros). EXTERNOS: Pulgas (rascado, pérdida de pelo), garrapatas (bultos en piel), ácaros del oído (sacude cabeza), sarna (costras, rascado). PREVENCIÓN: Desparasitación interna cada 3-6 meses, pipetas o collares antipulgas mensuales, higiene de caja de arena diaria, revisión post-paseos. TRATAMIENTO: Consulta veterinario para diagnóstico correcto, sigue tratamiento completo, desinfecta el hogar, trata a todas las mascotas. SÍNTOMAS DE ALERTA: Diarrea persistente, vómito con gusanos, pérdida de peso, barriga hinchada en Cachorros, rascado excesivo. La prevención es más económica que el tratamiento.',
  'guia',
  'salud',
  'https://images.unsplash.com/photo-1518791841217-8f162f1e1131',
@@ -1112,7 +1112,7 @@ ORDER BY content_type, category;
    - 10 Aprobados y disponibles para adopción
      * 6 Esterilizados
      * 4 Pendientes de esterilización
-     * Edades variadas (cachorro a adulto)
+     * Edades variadas (Cachorro a Adulto)
      * Publicados en diferentes fechas (120 días a 12 días atrás)
    - 3 Pendientes de aprobación (recientes)
    - 5 Ya adoptados exitosamente (para estadísticas)
@@ -1221,7 +1221,7 @@ ORDER BY content_type, category;
 ✅ Solicitudes rechazadas (con razones válidas)
 ✅ Gatos con diferentes estados de esterilización
 ✅ Contenido educativo variado
-✅ Casos de edad variada (cachorro, adulto, senior)
+✅ Casos de edad variada (Cachorro, Adulto, Senior)
 ✅ Diferentes antigüedades de publicación (120 días a 1 día)
 
 📈 PARA VERIFICAR EL SEED:
