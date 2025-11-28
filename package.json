@@ -1,0 +1,26 @@
+{
+  "name": "katze",
+  "version": "1.0.0",
+  "description": "Sistema web completo para gestionar adopciones de gatos, con seguimiento post-adopción y contenido educativo.",
+  "main": "index.js",
+  "scripts": {
+    "dev:back": "npm run dev --prefix backend",
+    "dev:front": "npm run dev --prefix frontend",
+    "dev": "concurrently \"npm run dev:back\" \"npm run dev:front\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/joelspa/Katze.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/joelspa/Katze/issues"
+  },
+  "homepage": "https://github.com/joelspa/Katze#readme",
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+}
