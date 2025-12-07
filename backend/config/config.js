@@ -33,7 +33,7 @@ module.exports = {
     
     // Estados de adopción
     ADOPTION_STATUS: {
-        EN_ADOPCION: 'en_adopcion',
+        EN_ADOPCION: 'disponible',
         ADOPTADO: 'adoptado'
     },
     
