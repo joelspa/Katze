@@ -49,13 +49,11 @@ async function initDatabase() {
 
         // 3. Ejecutar seed
         console.log('\n🌱 Ejecutando seed de datos...');
-        // Intentar seed simplificado primero, luego el completo
-        const seedSimplePath = path.join(__dirname, 'seed-simple.sql');
+        // Usar seed.sql principal (ya corregido)
         const seedPath = path.join(__dirname, 'seed.sql');
         
-        const sqlFile = fs.existsSync(seedSimplePath) ? seedSimplePath : seedPath;
-        console.log(`  → Usando: ${path.basename(sqlFile)}`);
-        const seedSQL = fs.readFileSync(sqlFile, 'utf8');
+        console.log(`  → Usando: ${path.basename(seedPath)}`);
+        const seedSQL = fs.readFileSync(seedPath, 'utf8');
         await client.query(seedSQL);
 
         console.log('\n✅ Base de datos inicializada correctamente');
