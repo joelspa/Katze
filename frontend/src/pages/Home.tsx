@@ -4,6 +4,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import axios, { isAxiosError } from 'axios';
 import { Link } from 'react-router-dom';
+import API_BASE_URL from '../config/api';
 import CatCard, { type Cat } from '../components/CatCard';
 import AdoptionProcessModal from '../components/AdoptionProcessModal';
 import Footer from '../components/Footer';
@@ -42,7 +43,7 @@ const Home = () => {
     const fetchCats = useCallback(async () => {
         try {
             setLoading(true);
-            const API_URL = 'http://localhost:5000/api/cats';
+            const API_URL = `${API_BASE_URL}/api/cats`;
 
             // Construir query params si hay filtros activos
             const params = new URLSearchParams();

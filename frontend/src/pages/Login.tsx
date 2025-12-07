@@ -4,6 +4,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios, { isAxiosError } from 'axios';
+import API_BASE_URL from '../config/api';
 import { useAuth } from '../context/AuthContext';
 import { useModal } from '../hooks/useModal';
 import CustomModal from '../components/CustomModal';
@@ -37,7 +38,7 @@ const Login = () => {
         setLoading(true);
         
         try {
-            const API_URL = 'http://localhost:5000/api/auth/login';
+            const API_URL = `${API_BASE_URL}/api/auth/login`;
             const response = await axios.post(API_URL, formData);
 
             const responseData = response.data.data || response.data;

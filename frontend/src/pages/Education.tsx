@@ -6,6 +6,7 @@ import { useDebounce } from '../hooks/useDebounce';
 import axios, { isAxiosError } from 'axios';
 import Footer from '../components/Footer';
 import NewsModal from '../components/NewsModal';
+import { API_BASE_URL } from '../config/api';
 import './Education.css';
 
 interface EducationalPost {
@@ -83,7 +84,7 @@ const Education = () => {
         const fetchPosts = async () => {
             try {
                 setLoading(true);
-                const API_URL = 'http://localhost:5000/api/education';
+                const API_URL = `${API_BASE_URL}/api/education`;
                 const response = await axios.get(API_URL);
 
                 const postsData = response.data.data?.posts || response.data.posts || response.data;

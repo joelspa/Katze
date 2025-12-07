@@ -7,6 +7,7 @@ import { storage } from '../firebase'; // Importa el storage de Firebase
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { v4 as uuidv4 } from 'uuid'; // Para nombres de archivo únicos
 import './PublishCat.css'; // Crearemos este CSS
+import { API_BASE_URL } from '../config/api';
 
 const PublishCat = () => {
     const [formData, setFormData] = useState({
@@ -118,7 +119,7 @@ const PublishCat = () => {
             };
 
             // Paso C: Llamar a tu API para crear el gato
-            const API_URL = 'http://localhost:5000/api/cats';
+            const API_URL = `${API_BASE_URL}/api/cats`;
             await axios.post(API_URL, catData, {
                 headers: {
                     'Authorization': `Bearer ${token}`

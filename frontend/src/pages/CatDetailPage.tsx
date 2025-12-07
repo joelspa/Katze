@@ -4,6 +4,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios, { isAxiosError } from 'axios';
+import { API_BASE_URL } from '../config/api';
 import { type Cat } from '../components/CatCard';
 import { useAuth } from '../context/AuthContext';
 import AdoptionFormModal from '../components/AdoptionFormModal';
@@ -29,7 +30,7 @@ const CatDetailPage = () => {
         const fetchCat = async () => {
             try {
                 setLoading(true);
-                const API_URL = `http://localhost:5000/api/cats/${id}`;
+                const API_URL = `${API_BASE_URL}/api/cats/${id}`;
                 const response = await axios.get(API_URL);
                 
                 // El backend devuelve { success: true, data: { cat: {...} } }

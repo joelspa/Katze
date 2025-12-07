@@ -3,6 +3,7 @@
 
 import React, { useState, useEffect } from 'react';
 import axios, { isAxiosError } from 'axios';
+import API_BASE_URL from '../config/api';
 import { useModal } from '../hooks/useModal';
 import CustomModal from '../components/CustomModal';
 import Footer from '../components/Footer';
@@ -35,7 +36,7 @@ const Register = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            const API_URL = 'http://localhost:5000/api/auth/register';
+            const API_URL = `${API_BASE_URL}/api/auth/register`;
             await axios.post(API_URL, formData);
             await showAlert('¡Registro exitoso! Ya puedes iniciar sesión con tu cuenta.', 'Registro Completado');
 

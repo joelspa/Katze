@@ -3,6 +3,7 @@
 
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { API_BASE_URL } from '../config/api';
 import './Profile.css';
 
 interface UserProfile {
@@ -44,7 +45,7 @@ const Profile = () => {
                 return;
             }
             
-            const response = await axios.get('http://localhost:5000/api/users/profile', {
+            const response = await axios.get(`${API_BASE_URL}/api/users/profile`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -83,7 +84,7 @@ const Profile = () => {
         try {
             const token = localStorage.getItem('token');
             const response = await axios.put(
-                'http://localhost:5000/api/users/profile',
+                `${API_BASE_URL}/api/users/profile`,
                 formData,
                 {
                     headers: {

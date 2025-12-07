@@ -3,6 +3,7 @@
 
 import React, { useState } from 'react';
 import axios, { isAxiosError } from 'axios';
+import API_BASE_URL from '../config/api';
 import { useAuth } from '../context/AuthContext';
 import './AdoptionFormModal.css';
 
@@ -65,7 +66,7 @@ const AdoptionFormModal: React.FC<AdoptionFormModalProps> = ({ catId, catName, o
         };
 
         try {
-            const API_URL = `http://localhost:5000/api/cats/${catId}/apply`;
+            const API_URL = `${API_BASE_URL}/api/cats/${catId}/apply`;
 
             // Envía la solicitud con el token de autenticación
             await axios.post(
@@ -81,7 +82,7 @@ const AdoptionFormModal: React.FC<AdoptionFormModalProps> = ({ catId, catName, o
             // Obtiene información de contacto del rescatista
             try {
                 const contactResponse = await axios.get(
-                    `http://localhost:5000/api/cats/${catId}/owner-contact`,
+                    `${API_BASE_URL}/api/cats/${catId}/owner-contact`,
                     {
                         headers: { 'Authorization': `Bearer ${token}` }
                     }

@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react';
 import axios, { isAxiosError } from 'axios';
 import { useAuth } from '../context/AuthContext';
 import './RescuerDashboard.css';
+import { API_BASE_URL } from '../config/api';
 
 // Interfaz que define la estructura de una solicitud de adopción
 interface Application {
@@ -89,7 +90,7 @@ const RescuerDashboard = () => {
         try {
             setLoading(true);
             console.log('Cargando solicitudes con token:', token?.substring(0, 20) + '...');
-            const API_URL = 'http://localhost:5000/api/applications/received';
+            const API_URL = `${API_BASE_URL}/api/applications/received`;
             const response = await axios.get(API_URL, {
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -134,7 +135,7 @@ const RescuerDashboard = () => {
         }
 
         try {
-            const API_URL = `http://localhost:5000/api/applications/${appId}/status`;
+            const API_URL = `${API_BASE_URL}/api/applications/${appId}/status`;
             const response = await axios.put(API_URL,
                 { status: newStatus },
                 {

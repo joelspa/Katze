@@ -10,6 +10,7 @@ import { storage } from '../firebase';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { v4 as uuidv4 } from 'uuid';
 import './TrackingDashboard.css';
+import { API_BASE_URL } from '../config/api';
 
 // Interfaz que define la estructura de una tarea de seguimiento
 interface TrackingTask {
@@ -50,7 +51,7 @@ const TrackingDashboard = () => {
 
         try {
             setLoading(true);
-            const API_URL = 'http://localhost:5000/api/tracking';
+            const API_URL = `${API_BASE_URL}/api/tracking`;
             const response = await axios.get(API_URL, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
@@ -107,16 +108,13 @@ const TrackingDashboard = () => {
         }
 
         try {
-            const API_URL = `http://localhost:5000/api/tracking/${taskId}/complete`;
-            await axios.put(API_URL,
-                {
-                    notes: notes,
-                    certificate_url: certificateUrl
-                },
-                {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                }
-            );
+            const API_URL = `${API_BASE_URL}/api/tracking/${taskId}/complete`;
+            await axios.put(API_URL, {
+                notes: notes,
+                certificate_url: certificateUrl
+            }, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
 
             await showAlert('¡Tarea completada con éxito!', 'Operación Exitosa');
             setUploadingCertificate(null);

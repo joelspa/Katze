@@ -6,6 +6,7 @@ import axios, { isAxiosError } from 'axios';
 import { useAuth } from '../context/AuthContext';
 import { Link } from 'react-router-dom';
 import './Statistics.css';
+import { API_BASE_URL } from '../config/api';
 
 interface GeneralStats {
     total_adopciones: number;
@@ -56,7 +57,7 @@ const Statistics = () => {
 
             try {
                 setLoading(true);
-                const API_URL = 'http://localhost:5000/api/statistics';
+                const API_URL = `${API_BASE_URL}/api/statistics`;
                 const response = await axios.get(API_URL, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });

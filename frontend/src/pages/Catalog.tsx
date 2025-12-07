@@ -4,6 +4,7 @@ import { useSearchParams } from 'react-router-dom';
 import axios, { isAxiosError } from 'axios';
 import CatCard, { type Cat } from '../components/CatCard';
 import Footer from '../components/Footer';
+import { API_BASE_URL } from '../config/api';
 import './Catalog.css';
 
 const Catalog = () => {
@@ -32,7 +33,7 @@ const Catalog = () => {
         const fetchCats = async () => {
             try {
                 setLoading(true);
-                const API_URL = 'http://localhost:5000/api/cats';
+                const API_URL = `${API_BASE_URL}/api/cats`;
 
                 // Construir query params si hay filtros activos
                 const params = new URLSearchParams();

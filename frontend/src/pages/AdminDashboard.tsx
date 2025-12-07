@@ -4,6 +4,7 @@
 import { useState, useEffect } from 'react';
 import axios, { isAxiosError } from 'axios';
 import { useAuth } from '../context/AuthContext';
+import { API_BASE_URL } from '../config/api';
 import { useModal } from '../hooks/useModal';
 import CustomModal from '../components/CustomModal';
 import { storage } from '../firebase';
@@ -124,7 +125,7 @@ const AdminDashboard = () => {
         if (!token) return;
 
         try {
-            const API_URL = 'http://localhost:5000/api/education';
+            const API_URL = `${API_BASE_URL}/api/education`;
             const response = await axios.get(API_URL);
             const postsData = response.data.data?.posts || response.data.posts || response.data;
             setPosts(postsData);
@@ -151,7 +152,7 @@ const AdminDashboard = () => {
                 imageUrl = await getDownloadURL(imageRef);
             }
 
-            const API_URL = 'http://localhost:5000/api/education';
+            const API_URL = `${API_BASE_URL}/api/education`;
             await axios.post(
                 API_URL,
                 { 
@@ -191,7 +192,7 @@ const AdminDashboard = () => {
                 imageUrl = await getDownloadURL(imageRef);
             }
 
-            const API_URL = `http://localhost:5000/api/education/${editingPost.id}`;
+            const API_URL = `${API_BASE_URL}/api/education/${editingPost.id}`;
             await axios.put(
                 API_URL,
                 { 
@@ -223,7 +224,7 @@ const AdminDashboard = () => {
         }
 
         try {
-            const API_URL = `http://localhost:5000/api/education/${postId}`;
+            const API_URL = `${API_BASE_URL}/api/education/${postId}`;
             await axios.delete(API_URL, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
@@ -243,7 +244,7 @@ const AdminDashboard = () => {
 
         try {
             setLoadingUsers(true);
-            const API_URL = 'http://localhost:5000/api/admin/users';
+            const API_URL = `${API_BASE_URL}/api/admin/users`;
             const response = await axios.get(API_URL, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
@@ -263,7 +264,7 @@ const AdminDashboard = () => {
 
         try {
             setLoadingTasks(true);
-            const API_URL = 'http://localhost:5000/api/tracking';
+            const API_URL = `${API_BASE_URL}/api/tracking`;
             const response = await axios.get(API_URL, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
@@ -297,7 +298,7 @@ const AdminDashboard = () => {
         }
 
         try {
-            const API_URL = `http://localhost:5000/api/admin/users/${userId}/role`;
+            const API_URL = `${API_BASE_URL}/api/admin/users/${userId}/role`;
             await axios.put(
                 API_URL,
                 { role: newRole },
@@ -326,7 +327,7 @@ const AdminDashboard = () => {
         }
 
         try {
-            const API_URL = 'http://localhost:5000/api/admin/users';
+            const API_URL = `${API_BASE_URL}/api/admin/users`;
             await axios.post(
                 API_URL,
                 newUserForm,
@@ -364,7 +365,7 @@ const AdminDashboard = () => {
             setLoading(true);
             
             // Obtener gatos
-            const catsResponse = await axios.get('http://localhost:5000/api/admin/cats', {
+            const catsResponse = await axios.get(`${API_BASE_URL}/api/admin/cats`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
 
@@ -374,7 +375,7 @@ const AdminDashboard = () => {
             
             // Obtener estadísticas del dashboard (incluyendo tracking)
             try {
-                const statsResponse = await axios.get('http://localhost:5000/api/admin/dashboard/stats', {
+                const statsResponse = await axios.get(`${API_BASE_URL}/api/admin/dashboard/stats`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 const statsData = statsResponse.data.data || statsResponse.data;
@@ -421,7 +422,7 @@ const AdminDashboard = () => {
 
         try {
             setLoading(true);
-            const API_URL = `http://localhost:5000/api/admin/cats/${catId}/approval`;
+            const API_URL = `${API_BASE_URL}/api/admin/cats/${catId}/approval`;
             await axios.put(
                 API_URL,
                 { status },
@@ -477,7 +478,7 @@ const AdminDashboard = () => {
 
         try {
             setLoading(true);
-            const API_URL = `http://localhost:5000/api/admin/cats/${catId}`;
+            const API_URL = `${API_BASE_URL}/api/admin/cats/${catId}`;
             await axios.delete(API_URL, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
@@ -513,7 +514,7 @@ const AdminDashboard = () => {
         if (!editingCat) return;
 
         try {
-            const API_URL = `http://localhost:5000/api/admin/cats/${editingCat.id}/edit`;
+            const API_URL = `${API_BASE_URL}/api/admin/cats/${editingCat.id}/edit`;
             await axios.put(
                 API_URL,
                 {
