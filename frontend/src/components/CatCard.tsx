@@ -9,7 +9,7 @@ import CatDetailModal from './CatDetailModal';
 export interface Cat {
     id: number;
     name: string;
-    age: string;
+    age: string | number;
     description: string;
     photos_url: string[];
     sterilization_status: 'esterilizado' | 'pendiente' | 'no_aplica';
@@ -89,7 +89,8 @@ const CatCard: React.FC<CatCardProps> = ({ cat }) => {
 
     // Función para formatear la edad del gato con emoji
     const getAgeDisplay = () => {
-        const ageStr = cat.age?.toLowerCase() || '';
+        // Convertir a string de forma segura para evitar crash si viene como número
+        const ageStr = String(cat.age || '').toLowerCase();
         
         if (ageStr.includes('cachorro') || ageStr === 'cachorro') {
             return { text: 'Cachorro', subtitle: '0-11 meses' };
@@ -98,10 +99,19 @@ const CatCard: React.FC<CatCardProps> = ({ cat }) => {
         } else if (ageStr.includes('adulto') || ageStr === 'adulto') {
             return { text: 'Adulto', subtitle: '2-7 años' };
         } else if (ageStr.includes('senior') || ageStr === 'senior') {
-            return { text: 'Senior', subtitle: '8+ años' };
+            return { text: 'Senior', subtitle: '7+ años' };
         }
         
-        return { text: cat.age || 'Edad desconocida', subtitle: '' };
+        // Si es un número, intentar categorizarlo
+        const ageNum = parseInt(ageStr);
+        if (!isNaN(ageNum)) {
+            if (ageNum < 1) return { text: 'Cachorro', subtitle: 'Meses' };
+            if (ageNum <= 2) return { text: 'Joven', subtitle: `${ageNum} años` };
+            if (ageNum <= 7) return { text: 'Adulto', subtitle: `${ageNum} años` };
+            return { text: 'Senior', subtitle: `${ageNum} años` };
+        }
+        
+        return { text: cat.age, subtitle: 'Edad' };
     };
 
     const ageDisplay = getAgeDisplay();

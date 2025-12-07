@@ -23,7 +23,7 @@ const CatDetailModal: React.FC<CatDetailModalProps> = ({ cat, isOpen, onClose })
 
     // Función para formatear la edad del gato
     const getAgeDisplay = () => {
-        const ageStr = cat.age?.toLowerCase() || '';
+        const ageStr = String(cat.age || '').toLowerCase();
         
         if (ageStr.includes('cachorro') || ageStr === 'cachorro') {
             return { text: 'Cachorro', subtitle: '0-11 meses' };
@@ -35,7 +35,16 @@ const CatDetailModal: React.FC<CatDetailModalProps> = ({ cat, isOpen, onClose })
             return { text: 'Senior', subtitle: '8+ años' };
         }
         
-        return { text: cat.age || 'Edad desconocida', subtitle: '' };
+        // Si es un número, intentar categorizarlo
+        const ageNum = parseInt(ageStr);
+        if (!isNaN(ageNum)) {
+            if (ageNum < 1) return { text: 'Cachorro', subtitle: 'Meses' };
+            if (ageNum <= 2) return { text: 'Joven', subtitle: `${ageNum} años` };
+            if (ageNum <= 7) return { text: 'Adulto', subtitle: `${ageNum} años` };
+            return { text: 'Senior', subtitle: `${ageNum} años` };
+        }
+
+        return { text: String(cat.age || 'Edad desconocida'), subtitle: '' };
     };
 
     const ageDisplay = getAgeDisplay();
