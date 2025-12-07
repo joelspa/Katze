@@ -56,10 +56,18 @@ class AIService {
             // Parsear respuesta JSON
             const evaluation = JSON.parse(text);
             
-            // Validar estructura
-            this._validateEvaluation(evaluation);
+            // Normalizar a estructura interna en español
+            const normalized = {
+                action: evaluation.accion || evaluation.action,
+                score: evaluation.puntaje || evaluation.score,
+                short_reason: evaluation.razon_corta || evaluation.short_reason,
+                flags: evaluation.banderas || evaluation.flags
+            };
             
-            return evaluation;
+            // Validar estructura
+            this._validateEvaluation(normalized);
+            
+            return normalized;
 
         } catch (error) {
             console.error('❌ Error en evaluación IA:', error.message);
@@ -77,12 +85,12 @@ class AIService {
 Tu misión es FILTRAR solicitudes peligrosas o no viables, protegiendo el bienestar de los gatos.
 
 IMPORTANTE: NUNCA apruebas solicitudes. Solo puedes:
-1. AUTO_REJECT: Rechazar automáticamente si hay peligro claro
-2. MANUAL_REVIEW: Marcar para revisión humana si es viable
+1. RECHAZAR_AUTO: Rechazar automáticamente si hay peligro claro
+2. REVISION_MANUAL: Marcar para revisión humana si es viable
 
 CRITERIOS ESTRICTOS DE EVALUACIÓN:
 
-🚫 AUTO_REJECT (Rechazo Automático):
+🚫 RECHAZAR_AUTO (Rechazo Automático):
 
 1. ESTERILIZACIÓN OBLIGATORIA:
    - Si el adoptante está "en contra" de esterilizar
@@ -103,7 +111,7 @@ CRITERIOS ESTRICTOS DE EVALUACIÓN:
    - No tiene forma de asegurar espacios peligrosos
    → Razón: "Riesgo de caída o escape - falta de protección"
 
-✅ MANUAL_REVIEW (Revisión Humana):
+✅ REVISION_MANUAL (Revisión Humana):
    - Tiene mallas de seguridad o casa segura
    - Acepta esterilización
    - Tiene acceso a veterinario
@@ -120,16 +128,16 @@ FLAGS (Etiquetas) que debes asignar:
 - "Sin Veterinario": Si no tiene acceso a atención veterinaria
 
 SCORING (0-100):
-- 0-40: Candidato inadecuado (AUTO_REJECT)
-- 41-69: Candidato cuestionable (MANUAL_REVIEW con flags de alerta)
-- 70-100: Candidato prometedor (MANUAL_REVIEW con flags positivos)
+- 0-40: Candidato inadecuado (RECHAZAR_AUTO)
+- 41-69: Candidato cuestionable (REVISION_MANUAL con flags de alerta)
+- 70-100: Candidato prometedor (REVISION_MANUAL con flags positivos)
 
 FORMATO DE RESPUESTA (JSON estricto):
 {
-  "action": "AUTO_REJECT" o "MANUAL_REVIEW",
-  "score": número 0-100,
-  "short_reason": "string de 1-2 oraciones explicando la decisión",
-  "flags": ["array", "de", "strings"]
+  "accion": "RECHAZAR_AUTO" o "REVISION_MANUAL",
+  "puntaje": número 0-100,
+  "razon_corta": "string de 1-2 oraciones explicando la decisión",
+  "banderas": ["array", "de", "strings en español"]
 }
 
 Sé objetivo, protector del gato y profesional.`;
@@ -151,7 +159,7 @@ Analiza cuidadosamente y responde SOLO con el JSON solicitado.`;
      * Valida que la evaluación tenga la estructura correcta
      */
     _validateEvaluation(evaluation) {
-        if (!evaluation.action || !['AUTO_REJECT', 'MANUAL_REVIEW'].includes(evaluation.action)) {
+        if (!evaluation.action || !['RECHAZAR_AUTO', 'REVISION_MANUAL', 'AUTO_REJECT', 'MANUAL_REVIEW'].includes(evaluation.action)) {
             throw new Error('Action inválida en evaluación');
         }
 
@@ -173,7 +181,7 @@ Analiza cuidadosamente y responde SOLO con el JSON solicitado.`;
      */
     _getFallbackEvaluation() {
         return {
-            action: 'MANUAL_REVIEW',
+            action: 'REVISION_MANUAL',
             score: 50,
             short_reason: 'Evaluación automática no disponible. Requiere revisión manual completa.',
             flags: ['Sistema en Mantenimiento']

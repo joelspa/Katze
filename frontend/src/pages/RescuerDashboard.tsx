@@ -18,7 +18,7 @@ interface Application {
     applicant_name: string;
     applicant_email: string;
     applicant_phone?: string;
-    status: string; // 'processing', 'pending_review', 'auto_rejected', 'pendiente', 'aprobada', 'rechazada'
+    status: string; // 'procesando', 'revision_pendiente', 'rechazada_automaticamente', 'pendiente', 'aprobada', 'rechazada'
     form_responses: any;
     ai_score?: number; // 0-100
     ai_feedback?: string; // Explicación corta de la IA
@@ -326,7 +326,7 @@ const RescuerDashboard = () => {
                                                     <p className="applicant-email-small">{app.applicant_email}</p>
                                                     
                                                     {/* Status Badge */}
-                                                    {app.status === 'processing' && (
+                                                    {app.status === 'procesando' && (
                                                         <span className="status-processing">Evaluando...</span>
                                                     )}
                                                 </div>

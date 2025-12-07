@@ -84,7 +84,7 @@ class ApplicationQueueWorker {
                 form_responses,
                 created_at
             FROM adoption_applications
-            WHERE status = 'processing'
+            WHERE status = 'procesando'
             ORDER BY created_at ASC
             LIMIT $1
         `;
@@ -103,10 +103,10 @@ class ApplicationQueueWorker {
             // Llamar al servicio de IA
             const evaluation = await aiService.analyzeApplication(app.form_responses);
 
-            // Determinar el nuevo estado
-            const newStatus = evaluation.action === 'AUTO_REJECT' 
-                ? 'auto_rejected' 
-                : 'pending_review';
+            // Determinar el nuevo estado (mapear a español)
+            const newStatus = (evaluation.action === 'AUTO_REJECT' || evaluation.action === 'RECHAZAR_AUTO')
+                ? 'rechazada_automaticamente' 
+                : 'revision_pendiente';
 
             // Actualizar en la base de datos
             await this.updateApplicationStatus(app.id, {
@@ -118,7 +118,7 @@ class ApplicationQueueWorker {
                 ai_error: null
             });
 
-            const emoji = newStatus === 'auto_rejected' ? '❌' : '✅';
+            const emoji = newStatus === 'rechazada_automaticamente' ? '❌' : '✅';
             console.log(`${emoji} Solicitud #${app.id} -> ${newStatus} (Score: ${evaluation.score})`);
 
             this.processedCount++;

@@ -42,13 +42,13 @@ CREATE TABLE adoption_applications (
     id SERIAL PRIMARY KEY,
     cat_id INTEGER REFERENCES cats(id) ON DELETE CASCADE,
     applicant_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
-    status VARCHAR(50) DEFAULT 'pendiente' CHECK (status IN ('pendiente', 'aprobada', 'rechazada', 'completada')),
+    status VARCHAR(50) DEFAULT 'procesando' CHECK (status IN ('procesando', 'revision_pendiente', 'rechazada_automaticamente', 'pendiente', 'aprobada', 'rechazada')),
     form_responses JSONB,
-    ai_decision VARCHAR(50),
-    ai_score INTEGER,
-    ai_auto_reject_reason TEXT,
-    ai_risk_analysis JSONB,
+    ai_score INTEGER CHECK (ai_score >= 0 AND ai_score <= 100),
+    ai_feedback TEXT,
+    ai_flags TEXT[],
     ai_evaluated_at TIMESTAMP,
+    ai_error TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 

@@ -43,9 +43,9 @@ class ApplicationService {
             JOIN cats cat ON app.cat_id = cat.id
             JOIN users u ON app.applicant_id = u.id
             WHERE cat.owner_id = $1 
-              AND app.status IN ('pending_review', 'pendiente')
+              AND app.status IN ('revision_pendiente', 'pendiente')
             ORDER BY 
-              CASE WHEN app.status = 'pending_review' THEN app.ai_score ELSE 0 END DESC,
+              CASE WHEN app.status = 'revision_pendiente' THEN app.ai_score ELSE 0 END DESC,
               app.created_at ASC
         `;
         
@@ -79,11 +79,11 @@ class ApplicationService {
             JOIN cats cat ON app.cat_id = cat.id
             JOIN users u ON app.applicant_id = u.id
             LEFT JOIN users owner ON cat.owner_id = owner.id
-            WHERE app.status IN ('pending_review', 'pendiente', 'processing')
+            WHERE app.status IN ('revision_pendiente', 'pendiente', 'procesando')
             ORDER BY 
               CASE 
-                WHEN app.status = 'pending_review' THEN 1
-                WHEN app.status = 'processing' THEN 2
+                WHEN app.status = 'revision_pendiente' THEN 1
+                WHEN app.status = 'procesando' THEN 2
                 ELSE 3
               END,
               app.ai_score DESC NULLS LAST,
