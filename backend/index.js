@@ -24,8 +24,7 @@ const app = express();
 
 // Configuración de middlewares globales
 app.use(cors({
-    origin: 'https://katze-liard.vercel.app', // Solo permite a tu frontend de Vercel
-    credentials: true
+    origin: ['https://katze-liard.vercel.app'] // Solo permite a tu frontend de Vercel
 }));
 app.use(express.json());
 
