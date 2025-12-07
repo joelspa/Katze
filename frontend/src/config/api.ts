@@ -4,7 +4,9 @@
  */
 
 // URL base de la API desde variable de entorno
-export const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+// Aseguramos que no tenga slash final ni termine en /api para evitar duplicados
+const rawUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+export const API_BASE_URL = rawUrl.replace(/\/$/, '').replace(/\/api$/, '');
 
 // Helper para construir URLs de la API
 export const getApiUrl = (endpoint: string): string => {
