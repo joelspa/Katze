@@ -24,7 +24,7 @@ class CatService {
     async getAllAvailableCats(filters = {}) {
         let query = `
             SELECT * FROM cats 
-            WHERE adoption_status = 'en_adopcion' 
+            WHERE adoption_status = 'disponible' 
             AND approval_status = 'aprobado'
         `;
         

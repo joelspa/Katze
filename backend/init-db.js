@@ -11,15 +11,24 @@ async function initDatabase() {
     // Configuración de base de datos
     const client = new Client({
         connectionString: process.env.DATABASE_URL,
-        ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
+        ssl: { rejectUnauthorized: false }
     });
 
     try {
         await client.connect();
         console.log('✅ Conectado a la base de datos');
 
-        // 1. Leer y ejecutar migraciones
-        console.log('\n📋 Ejecutando migraciones...');
+        // 1. Crear schema (tablas)
+        console.log('\n📐 Creando schema de base de datos...');
+        const schemaPath = path.join(__dirname, 'schema.sql');
+        if (fs.existsSync(schemaPath)) {
+            const schemaSQL = fs.readFileSync(schemaPath, 'utf8');
+            await client.query(schemaSQL);
+            console.log('  ✅ Tablas creadas');
+        }
+
+        // 2. Leer y ejecutar migraciones (si existen)
+        console.log('\n📋 Ejecutando migraciones adicionales...');
         const migrationFiles = [
             'migrations/add_living_space_and_breed.sql',
             'migrations/add_ai_evaluation_columns.sql'
@@ -28,16 +37,25 @@ async function initDatabase() {
         for (const file of migrationFiles) {
             const filePath = path.join(__dirname, file);
             if (fs.existsSync(filePath)) {
-                console.log(`  → ${file}`);
-                const sql = fs.readFileSync(filePath, 'utf8');
-                await client.query(sql);
+                try {
+                    console.log(`  → ${file}`);
+                    const sql = fs.readFileSync(filePath, 'utf8');
+                    await client.query(sql);
+                } catch (err) {
+                    console.log(`  ⚠️  ${file}: ${err.message} (puede ser que ya esté aplicada)`);
+                }
             }
         }
 
-        // 2. Ejecutar seed
+        // 3. Ejecutar seed
         console.log('\n🌱 Ejecutando seed de datos...');
+        // Intentar seed simplificado primero, luego el completo
+        const seedSimplePath = path.join(__dirname, 'seed-simple.sql');
         const seedPath = path.join(__dirname, 'seed.sql');
-        const seedSQL = fs.readFileSync(seedPath, 'utf8');
+        
+        const sqlFile = fs.existsSync(seedSimplePath) ? seedSimplePath : seedPath;
+        console.log(`  → Usando: ${path.basename(sqlFile)}`);
+        const seedSQL = fs.readFileSync(sqlFile, 'utf8');
         await client.query(seedSQL);
 
         console.log('\n✅ Base de datos inicializada correctamente');
