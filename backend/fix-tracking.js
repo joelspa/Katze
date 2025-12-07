@@ -1,10 +1,22 @@
+require('dotenv').config();
 const fs = require('fs');
 const path = require('path');
+const config = require('./config/config');
+
+// Forzar el uso de la configuración explícita si DATABASE_URL es interna
+if (process.env.DATABASE_URL && process.env.DATABASE_URL.includes('dpg-') && !process.env.DATABASE_URL.includes('.render.com')) {
+    console.log('⚠️  Detectada DATABASE_URL interna. Ignorando para usar configuración explícita...');
+    delete process.env.DATABASE_URL;
+}
+
 const pool = require('./db');
 
 async function fixTracking() {
   try {
     console.log('🔧 Aplicando corrección para el sistema de seguimiento...\n');
+    console.log('🔌 Conectando a:', config.DB_CONFIG.host);
+    console.log('   DB:', config.DB_CONFIG.database);
+    console.log('   User:', config.DB_CONFIG.user);
     
     const migrationPath = path.join(__dirname, 'migrations', 'add_tracking_view_and_functions.sql');
     

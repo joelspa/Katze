@@ -1,3 +1,11 @@
+require('dotenv').config();
+const config = require('./config/config');
+
+// Forzar el uso de la configuración explícita si DATABASE_URL es interna
+if (process.env.DATABASE_URL && process.env.DATABASE_URL.includes('dpg-') && !process.env.DATABASE_URL.includes('.render.com')) {
+    delete process.env.DATABASE_URL;
+}
+
 const pool = require('./db');
 
 async function testTracking() {

@@ -6,7 +6,11 @@
 -- PASO 0: Eliminar vistas existentes que puedan causar conflictos
 DROP VIEW IF EXISTS v_tracking_tasks_details CASCADE;
 
--- PASO 1: Actualizar datos existentes antes de cambiar constraints
+-- PASO 1: Eliminar constraint antiguo ANTES de actualizar datos
+ALTER TABLE tracking_tasks 
+DROP CONSTRAINT IF EXISTS tracking_tasks_task_type_check;
+
+-- PASO 2: Actualizar datos existentes
 -- Convertir valores antiguos a los nuevos formatos
 UPDATE tracking_tasks 
 SET task_type = 'Seguimiento de Bienestar' 
@@ -16,13 +20,10 @@ UPDATE tracking_tasks
 SET task_type = 'Seguimiento de Esterilización' 
 WHERE task_type IN ('esterilizacion', 'Verificación de Esterilización');
 
--- PASO 2: Actualizar los valores de task_type para que coincidan con el código
-ALTER TABLE tracking_tasks 
-DROP CONSTRAINT IF EXISTS tracking_tasks_task_type_check;
-
-ALTER TABLE tracking_tasks 
-ADD CONSTRAINT tracking_tasks_task_type_check 
-CHECK (task_type IN ('Seguimiento de Bienestar', 'Seguimiento de Esterilización'));
+-- PASO 3: Agregar nuevo constraint (opcional, comentado por seguridad)
+-- ALTER TABLE tracking_tasks 
+-- ADD CONSTRAINT tracking_tasks_task_type_check 
+-- CHECK (task_type IN ('Seguimiento de Bienestar', 'Seguimiento de Esterilización', 'bienestar', 'esterilizacion'));
 
 -- PASO 3: Actualizar el constraint de status para incluir 'atrasada' (ya existe, no es necesario)
 -- El status ya tiene los valores correctos según el diagnóstico
