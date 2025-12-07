@@ -15,7 +15,7 @@ async function testTracking() {
     // Probar la vista
     console.log('1️⃣ Consultando vista v_tracking_tasks_details...');
     const result = await pool.query(`
-      SELECT id, task_type, status, cat_name, adoptante_name, rescatista_name
+      SELECT id, task_type, status, cat_name, applicant_name, owner_name
       FROM v_tracking_tasks_details
       WHERE status IN ('pendiente', 'atrasada')
       ORDER BY due_date ASC
@@ -28,7 +28,7 @@ async function testTracking() {
       console.log('\n   📋 Primeras tareas pendientes:');
       result.rows.forEach((task, i) => {
         console.log(`   ${i+1}. [${task.status}] ${task.task_type} - Gato: ${task.cat_name}`);
-        console.log(`      Adoptante: ${task.adoptante_name} | Rescatista: ${task.rescatista_name || 'N/A'}`);
+        console.log(`      Adoptante: ${task.applicant_name} | Rescatista: ${task.owner_name || 'N/A'}`);
       });
     }
     

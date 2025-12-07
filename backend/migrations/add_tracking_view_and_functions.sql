@@ -71,15 +71,15 @@ SELECT
     c.name as cat_name,
     c.photos_url as cat_photos,
     c.sterilization_status,
-    -- Información del adoptante
-    u_adoptante.id as adoptante_id,
-    u_adoptante.full_name as adoptante_name,
-    u_adoptante.email as adoptante_email,
-    u_adoptante.phone as adoptante_phone,
+    -- Información del adoptante (Alias para coincidir con frontend)
+    u_adoptante.id as applicant_id,
+    u_adoptante.full_name as applicant_name,
+    u_adoptante.email as applicant_email,
+    u_adoptante.phone as applicant_phone,
     -- Información del rescatista (owner del gato)
     c.owner_id,
-    u_rescatista.full_name as rescatista_name,
-    u_rescatista.email as rescatista_email,
+    u_rescatista.full_name as owner_name,
+    u_rescatista.email as owner_email,
     -- Información de la solicitud
     aa.status as application_status,
     aa.created_at as application_date
