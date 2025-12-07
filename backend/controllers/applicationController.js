@@ -107,14 +107,16 @@ class ApplicationController {
                 return ErrorHandler.badRequest(res, 'Este gato ya no está en adopción');
             }
 
-            // Crear la solicitud de adopción en la base de datos
+            // Crear la solicitud con estado 'processing' (será evaluada por el worker)
             const newApplication = await applicationService.createApplication(
                 applicantId,
                 catId,
                 form_responses
             );
 
-            // Guardar en Firestore para análisis
+            console.log(`📨 Nueva solicitud #${newApplication.id} recibida (estado: processing)`);
+
+            // Guardar en Firestore para análisis (no bloqueante)
             try {
                 const firestoreData = {
                     application_id: newApplication.id,
@@ -127,7 +129,7 @@ class ApplicationController {
                     applicant_name: req.user.name,
                     applicant_email: req.user.email,
                     ...form_responses,
-                    status: 'pending',
+                    status: 'processing',
                     rescuer_id: cat.owner_id
                 };
                 
@@ -137,9 +139,14 @@ class ApplicationController {
                 console.error('Error guardando en Firestore:', firestoreError);
             }
 
+            // Respuesta inmediata (no esperamos a la IA)
             return ErrorHandler.created(res, { 
-                application: newApplication
-            }, 'Solicitud enviada con éxito. Será revisada por el rescatista.')
+                application: {
+                    id: newApplication.id,
+                    status: 'processing',
+                    created_at: newApplication.created_at
+                }
+            }, '¡Solicitud recibida! Estamos evaluándola y el rescatista la revisará pronto.')
 
         } catch (error) {
             return ErrorHandler.serverError(res, 'Error al enviar solicitud', error);

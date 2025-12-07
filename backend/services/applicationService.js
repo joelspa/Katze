@@ -20,7 +20,7 @@ class ApplicationService {
 
 
 
-    // Obtiene las solicitudes recibidas por un rescatista
+    // Obtiene las solicitudes recibidas por un rescatista (solo pending_review, ordenadas por score)
     async getApplicationsByRescuer(rescuerId) {
         const query = `
             SELECT 
@@ -30,6 +30,10 @@ class ApplicationService {
                 app.form_responses,
                 app.status,
                 app.created_at,
+                app.ai_score,
+                app.ai_feedback,
+                app.ai_flags,
+                app.ai_evaluated_at,
                 cat.name as cat_name,
                 cat.photos_url as cat_photos,
                 u.full_name as applicant_name,
@@ -38,15 +42,18 @@ class ApplicationService {
             FROM adoption_applications app
             JOIN cats cat ON app.cat_id = cat.id
             JOIN users u ON app.applicant_id = u.id
-            WHERE cat.owner_id = $1 AND app.status = 'pendiente'
-            ORDER BY app.created_at ASC
+            WHERE cat.owner_id = $1 
+              AND app.status IN ('pending_review', 'pendiente')
+            ORDER BY 
+              CASE WHEN app.status = 'pending_review' THEN app.ai_score ELSE 0 END DESC,
+              app.created_at ASC
         `;
         
         const result = await db.query(query, [rescuerId]);
         return result.rows;
     }
 
-    // Obtiene todas las solicitudes (para admin)
+    // Obtiene todas las solicitudes (para admin) - prioriza pending_review ordenadas por score
     async getAllApplications() {
         const query = `
             SELECT 
@@ -56,6 +63,10 @@ class ApplicationService {
                 app.form_responses,
                 app.status,
                 app.created_at,
+                app.ai_score,
+                app.ai_feedback,
+                app.ai_flags,
+                app.ai_evaluated_at,
                 cat.name as cat_name,
                 cat.photos_url as cat_photos,
                 u.full_name as applicant_name,
@@ -68,8 +79,15 @@ class ApplicationService {
             JOIN cats cat ON app.cat_id = cat.id
             JOIN users u ON app.applicant_id = u.id
             LEFT JOIN users owner ON cat.owner_id = owner.id
-            WHERE app.status = 'pendiente'
-            ORDER BY app.created_at ASC
+            WHERE app.status IN ('pending_review', 'pendiente', 'processing')
+            ORDER BY 
+              CASE 
+                WHEN app.status = 'pending_review' THEN 1
+                WHEN app.status = 'processing' THEN 2
+                ELSE 3
+              END,
+              app.ai_score DESC NULLS LAST,
+              app.created_at ASC
         `;
         
         const result = await db.query(query);

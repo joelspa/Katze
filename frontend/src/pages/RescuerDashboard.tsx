@@ -4,7 +4,9 @@
 import { useState, useEffect } from 'react';
 import axios, { isAxiosError } from 'axios';
 import { useAuth } from '../context/AuthContext';
+import { AIBadge, AIScoreBadge } from '../components/AIBadge';
 import './RescuerDashboard.css';
+import '../components/AIBadge.css';
 import { API_BASE_URL } from '../config/api';
 
 // Interfaz que define la estructura de una solicitud de adopción
@@ -16,18 +18,12 @@ interface Application {
     applicant_name: string;
     applicant_email: string;
     applicant_phone?: string;
-    status: string;
+    status: string; // 'processing', 'pending_review', 'auto_rejected', 'pendiente', 'aprobada', 'rechazada'
     form_responses: any;
-    ai_decision?: string;
-    ai_score?: number;
-    ai_risk_analysis?: {
-        verificacion_esterilizacion?: string;
-        seguridad_hogar?: string;
-        señales_peligro?: string;
-        compatibilidad_espacio?: string;
-        patrones_sospechosos?: string;
-        evaluacion_general?: string;
-    };
+    ai_score?: number; // 0-100
+    ai_feedback?: string; // Explicación corta de la IA
+    ai_flags?: string[]; // Etiquetas: Casa Segura, Pro-Esterilización, etc.
+    ai_evaluated_at?: string;
 }
 
 // Interfaz para agrupar solicitudes por gato
@@ -316,7 +312,7 @@ const RescuerDashboard = () => {
                                     .map((app) => (
                                     <div 
                                         key={app.id}
-                                        className={`application-item ${app.ai_decision === 'APPROVE' ? 'high-match' : ''}`}
+                                        className={`application-item ${app.ai_score && app.ai_score >= 70 ? 'high-match' : ''}`}
                                     >
                                         <div className="application-item-header">
                                             <div className="applicant-info">
@@ -328,64 +324,41 @@ const RescuerDashboard = () => {
                                                 <div>
                                                     <p className="applicant-name-bold">{app.applicant_name}</p>
                                                     <p className="applicant-email-small">{app.applicant_email}</p>
+                                                    
+                                                    {/* Status Badge */}
+                                                    {app.status === 'processing' && (
+                                                        <span className="status-processing">Evaluando...</span>
+                                                    )}
                                                 </div>
                                             </div>
                                             
                                             <div className="ai-badges">
-                                                {app.ai_decision === 'APPROVE' && (
-                                                    <span className="badge-high-match">
-                                                        <svg viewBox="0 0 20 20" fill="currentColor">
-                                                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                                        </svg>
-                                                        Candidato destacado
-                                                    </span>
-                                                )}
-                                                {(app.ai_score !== null && app.ai_score !== undefined) && (
-                                                    <span className={`badge-score score-${Math.floor(Number(app.ai_score) / 20)}`}>
-                                                        {app.ai_score}/100
-                                                    </span>
+                                                {/* AI Score Badge */}
+                                                {app.ai_score !== null && app.ai_score !== undefined && (
+                                                    <AIScoreBadge score={app.ai_score} />
                                                 )}
                                             </div>
                                         </div>
 
-                                        {app.ai_risk_analysis && (
-                                            <div className="ai-analysis">
-                                                <button 
-                                                    className="ai-analysis-toggle"
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        setIsAnalysisExpanded(prev => ({...prev, [app.id]: !prev[app.id]}));
-                                                    }}
-                                                >
-                                                    <svg viewBox="0 0 20 20" fill="currentColor">
+                                        {/* AI Flags - Badges de Características */}
+                                        {app.ai_flags && app.ai_flags.length > 0 && (
+                                            <div style={{ marginTop: '8px', display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
+                                                {app.ai_flags.map((flag, idx) => (
+                                                    <AIBadge key={idx} flag={flag} />
+                                                ))}
+                                            </div>
+                                        )}
+
+                                        {/* AI Feedback */}
+                                        {app.ai_feedback && (
+                                            <div className="ai-feedback-section">
+                                                <div className="ai-feedback-title">
+                                                    <svg viewBox="0 0 20 20" fill="currentColor" style={{ width: '16px', height: '16px' }}>
                                                         <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
                                                     </svg>
-                                                    <div className="ai-analysis-summary">
-                                                        {(typeof app.ai_risk_analysis === 'object' ? app.ai_risk_analysis.evaluacion_general : app.ai_risk_analysis) && (
-                                                            <span>{typeof app.ai_risk_analysis === 'object' ? app.ai_risk_analysis.evaluacion_general : app.ai_risk_analysis}</span>
-                                                        )}
-                                                    </div>
-                                                    <svg 
-                                                        viewBox="0 0 20 20" 
-                                                        fill="currentColor"
-                                                        className={`chevron ${isAnalysisExpanded[app.id] ? 'expanded' : ''}`}
-                                                    >
-                                                        <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
-                                                    </svg>
-                                                </button>
-                                                {isAnalysisExpanded[app.id] && typeof app.ai_risk_analysis === 'object' && (
-                                                    <div className="risk-analysis-details">
-                                                        {app.ai_risk_analysis.verificacion_esterilizacion && (
-                                                            <p><strong>Esterilización:</strong> {app.ai_risk_analysis.verificacion_esterilizacion}</p>
-                                                        )}
-                                                        {app.ai_risk_analysis.seguridad_hogar && (
-                                                            <p><strong>Seguridad del hogar:</strong> {app.ai_risk_analysis.seguridad_hogar}</p>
-                                                        )}
-                                                        {app.ai_risk_analysis.compatibilidad_espacio && (
-                                                            <p><strong>Espacio:</strong> {app.ai_risk_analysis.compatibilidad_espacio}</p>
-                                                        )}
-                                                    </div>
-                                                )}
+                                                    Análisis IA
+                                                </div>
+                                                <p className="ai-feedback-text">{app.ai_feedback}</p>
                                             </div>
                                         )}
 
@@ -444,17 +417,29 @@ const RescuerDashboard = () => {
                                 </div>
                             </div>
                             <div className="applicant-header-right">
-                                {selectedApplication.ai_score && (
-                                    <div className={`score-badge score-${Math.floor(selectedApplication.ai_score / 20)}`}>
-                                        <svg viewBox="0 0 20 20" fill="currentColor">
-                                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                        </svg>
-                                        <span className="score-number">{selectedApplication.ai_score}/100</span>
-                                        <span className="score-label">
-                                            {selectedApplication.ai_score >= 85 ? 'Excelente' : 
-                                             selectedApplication.ai_score >= 70 ? 'Bueno' : 
-                                             selectedApplication.ai_score >= 50 ? 'Regular' : 'Bajo'}
-                                        </span>
+                                {selectedApplication.ai_score !== null && selectedApplication.ai_score !== undefined && (
+                                    <AIScoreBadge score={selectedApplication.ai_score} />
+                                )}
+                                
+                                {/* AI Flags en modal */}
+                                {selectedApplication.ai_flags && selectedApplication.ai_flags.length > 0 && (
+                                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginTop: '10px' }}>
+                                        {selectedApplication.ai_flags.map((flag, idx) => (
+                                            <AIBadge key={idx} flag={flag} />
+                                        ))}
+                                    </div>
+                                )}
+                                
+                                {/* AI Feedback en modal */}
+                                {selectedApplication.ai_feedback && (
+                                    <div className="ai-feedback-section" style={{ marginTop: '12px' }}>
+                                        <div className="ai-feedback-title">
+                                            <svg viewBox="0 0 20 20" fill="currentColor" style={{ width: '18px', height: '18px' }}>
+                                                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                                            </svg>
+                                            Análisis de IA
+                                        </div>
+                                        <p className="ai-feedback-text">{selectedApplication.ai_feedback}</p>
                                     </div>
                                 )}
                                 <div className="action-buttons-compact">
