@@ -24,7 +24,12 @@ const app = express();
 
 // Configuración de middlewares globales
 app.use(cors({
-    origin: ['https://katze-liard.vercel.app'] // Solo permite a tu frontend de Vercel
+    origin: [
+        'https://katze-liard.vercel.app',
+        'http://localhost:5173',  // Desarrollo local
+        'http://localhost:5174'   // Desarrollo local alternativo
+    ],
+    credentials: true
 }));
 app.use(express.json());
 
