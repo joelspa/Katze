@@ -46,6 +46,7 @@ app.use('/api/users', userRoutes);                   // Rutas de usuarios y perf
 app.use('/api/admin', adminRoutes);                  // Rutas de administración (protegidas)
 
 // Inicialización del servidor Express
+// Versión: 1.2.0 - Sistema de evaluación AI asíncrona en español
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
     console.log(`Servidor corriendo en puerto ${PORT}`);
