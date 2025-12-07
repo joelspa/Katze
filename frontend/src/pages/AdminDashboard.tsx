@@ -81,6 +81,7 @@ const AdminDashboard = () => {
         window.scrollTo(0, 0);
     }, []);
     const [activeTab, setActiveTab] = useState<TabType>('cats');
+    const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
     const [cats, setCats] = useState<AdminCat[]>([]);
     const [summary, setSummary] = useState<Summary | null>(null);
     const [loading, setLoading] = useState(true);
@@ -569,54 +570,59 @@ const AdminDashboard = () => {
     }
 
     return (
-        <div className="admin-container">
-            <h1>
-                <svg viewBox="0 0 20 20" fill="currentColor" style={{width: '28px', height: '28px', marginRight: '10px', verticalAlign: 'middle'}}>
-                    <path fillRule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                </svg>
-                Panel de Administración
-            </h1>
+        <div className="admin-layout">
+            {/* Sidebar de navegación */}
+            <aside className="admin-sidebar">
+                <div className="admin-sidebar-header">
+                    <h1>
+                        <svg viewBox="0 0 20 20" fill="currentColor" style={{width: '28px', height: '28px', color: '#3b82f6'}}>
+                            <path fillRule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                        </svg>
+                        <span>Panel Admin</span>
+                    </h1>
+                </div>
 
-            {/* Pestañas de navegación */}
-            <div className="admin-tabs">
-                <button 
-                    className={`tab-button ${activeTab === 'cats' ? 'active' : ''}`}
-                    onClick={() => setActiveTab('cats')}
-                >
-                    <svg viewBox="0 0 20 20" fill="currentColor" style={{width: '20px', height: '20px', marginRight: '8px'}}>
-                        <path d="M10 3.5a1.5 1.5 0 013 0V4a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-.5a1.5 1.5 0 000 3h.5a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-.5a1.5 1.5 0 00-3 0v.5a1 1 0 01-1 1H6a1 1 0 01-1-1v-3a1 1 0 00-1-1h-.5a1.5 1.5 0 010-3H4a1 1 0 001-1V6a1 1 0 011-1h3a1 1 0 001-1v-.5z" />
-                    </svg>
-                    Gestión de Gatos
-                </button>
-                <button 
-                    className={`tab-button ${activeTab === 'education' ? 'active' : ''}`}
-                    onClick={() => setActiveTab('education')}
-                >
-                    <svg viewBox="0 0 20 20" fill="currentColor" style={{width: '20px', height: '20px', marginRight: '8px'}}>
-                        <path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z" />
-                    </svg>
-                    Blog Educativo
-                </button>
-                <button 
-                    className={`tab-button ${activeTab === 'users' ? 'active' : ''}`}
-                    onClick={() => setActiveTab('users')}
-                >
-                    <svg viewBox="0 0 20 20" fill="currentColor" style={{width: '20px', height: '20px', marginRight: '8px'}}>
-                        <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" />
-                    </svg>
-                    Gestión de Usuarios
-                </button>
-                <button 
-                    className={`tab-button ${activeTab === 'tracking' ? 'active' : ''}`}
-                    onClick={() => setActiveTab('tracking')}
-                >
-                    <svg viewBox="0 0 20 20" fill="currentColor" style={{width: '20px', height: '20px', marginRight: '8px'}}>
-                        <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
-                    </svg>
-                    Panel de Seguimiento
-                </button>
-            </div>
+                <nav className="admin-nav">
+                    <button 
+                        className={`nav-item ${activeTab === 'cats' ? 'active' : ''}`}
+                        onClick={() => setActiveTab('cats')}
+                    >
+                        <svg viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M10 3.5a1.5 1.5 0 013 0V4a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-.5a1.5 1.5 0 000 3h.5a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-.5a1.5 1.5 0 00-3 0v.5a1 1 0 01-1 1H6a1 1 0 01-1-1v-3a1 1 0 00-1-1h-.5a1.5 1.5 0 010-3H4a1 1 0 001-1V6a1 1 0 011-1h3a1 1 0 001-1v-.5z" />
+                        </svg>
+                        <span>Gestión de Gatos</span>
+                    </button>
+                    <button 
+                        className={`nav-item ${activeTab === 'education' ? 'active' : ''}`}
+                        onClick={() => setActiveTab('education')}
+                    >
+                        <svg viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z" />
+                        </svg>
+                        <span>Blog Educativo</span>
+                    </button>
+                    <button 
+                        className={`nav-item ${activeTab === 'users' ? 'active' : ''}`}
+                        onClick={() => setActiveTab('users')}
+                    >
+                        <svg viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" />
+                        </svg>
+                        <span>Gestión de Usuarios</span>
+                    </button>
+                    <button 
+                        className={`nav-item ${activeTab === 'tracking' ? 'active' : ''}`}
+                        onClick={() => setActiveTab('tracking')}
+                    >
+                        <svg viewBox="0 0 20 20" fill="currentColor">
+                            <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
+                        </svg>
+                        <span>Panel de Seguimiento</span>
+                    </button>
+                </nav>
+            </aside>
 
+            <main className="admin-main-content">
             {/* Tab de Gestión de Gatos */}
             {activeTab === 'cats' && (
                 <>
@@ -642,38 +648,61 @@ const AdminDashboard = () => {
                         </div>
                     )}
 
-            {/* Filtros */}
-            <div className="admin-filters">
-                <button 
-                    className={filter === 'pendiente' ? 'filter-active' : ''}
-                    onClick={() => setFilter('pendiente')}
-                >
-                    Pendientes ({summary?.pendientes || 0})
-                </button>
-                <button 
-                    className={filter === 'aprobado' ? 'filter-active' : ''}
-                    onClick={() => setFilter('aprobado')}
-                >
-                    Aprobados ({summary?.aprobados || 0})
-                </button>
-                <button 
-                    className={filter === 'rechazado' ? 'filter-active' : ''}
-                    onClick={() => setFilter('rechazado')}
-                >
-                    Rechazados ({summary?.rechazados || 0})
-                </button>
-                <button 
-                    className={filter === 'all' ? 'filter-active' : ''}
-                    onClick={() => setFilter('all')}
-                >
-                    Todos ({summary?.total || 0})
-                </button>
+            {/* Filtros y Toggle */}
+            <div className="admin-filters-bar" style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '16px'}}>
+                <div className="admin-filters">
+                    <button 
+                        className={filter === 'pendiente' ? 'filter-active' : ''}
+                        onClick={() => setFilter('pendiente')}
+                    >
+                        Pendientes ({summary?.pendientes || 0})
+                    </button>
+                    <button 
+                        className={filter === 'aprobado' ? 'filter-active' : ''}
+                        onClick={() => setFilter('aprobado')}
+                    >
+                        Aprobados ({summary?.aprobados || 0})
+                    </button>
+                    <button 
+                        className={filter === 'rechazado' ? 'filter-active' : ''}
+                        onClick={() => setFilter('rechazado')}
+                    >
+                        Rechazados ({summary?.rechazados || 0})
+                    </button>
+                    <button 
+                        className={filter === 'all' ? 'filter-active' : ''}
+                        onClick={() => setFilter('all')}
+                    >
+                        Todos ({summary?.total || 0})
+                    </button>
+                </div>
+                
+                <div className="view-toggle">
+                    <button 
+                        className={`view-toggle-btn ${viewMode === 'grid' ? 'active' : ''}`}
+                        onClick={() => setViewMode('grid')}
+                        title="Vista Cuadrícula"
+                    >
+                        <svg viewBox="0 0 20 20" fill="currentColor" style={{width: '20px', height: '20px'}}>
+                            <path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                        </svg>
+                    </button>
+                    <button 
+                        className={`view-toggle-btn ${viewMode === 'list' ? 'active' : ''}`}
+                        onClick={() => setViewMode('list')}
+                        title="Vista Lista"
+                    >
+                        <svg viewBox="0 0 20 20" fill="currentColor" style={{width: '20px', height: '20px'}}>
+                            <path fillRule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd" />
+                        </svg>
+                    </button>
+                </div>
             </div>
 
             {/* Lista de gatos */}
             {filteredCats.length === 0 ? (
                 <p className="no-results">No hay publicaciones {filter === 'all' ? '' : filter + 's'}.</p>
-            ) : (
+            ) : viewMode === 'grid' ? (
                 <div className="admin-cats-grid">
                     {filteredCats.map((cat) => {
                         const currentPhotoIndex = photoIndexes[cat.id] || 0;
@@ -834,6 +863,65 @@ const AdminDashboard = () => {
                             </div>
                         );
                     })}
+                </div>
+            ) : (
+                <div className="admin-cats-list">
+                    {filteredCats.map((cat) => (
+                        <div key={cat.id} className="cat-list-item">
+                            <img 
+                                src={cat.photos_url && cat.photos_url.length > 0 ? cat.photos_url[0] : 'https://placehold.co/300x300/e0e0e0/666?text=Sin+Foto'} 
+                                alt={cat.name}
+                                className="cat-list-image"
+                            />
+                            <div className="cat-list-info">
+                                <h3>{cat.name}</h3>
+                                <p>{cat.description}</p>
+                            </div>
+                            <div className="cat-list-meta">
+                                <span>{cat.age}</span>
+                                <span>{cat.sterilization_status}</span>
+                            </div>
+                            <div className="cat-list-meta-secondary">
+                                <div className="meta-text">
+                                    <svg viewBox="0 0 20 20" fill="currentColor" style={{width: '14px', height: '14px', display: 'inline', marginRight: '4px'}}>
+                                        <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+                                    </svg>
+                                    {cat.owner_name}
+                                </div>
+                                <div className="meta-text">
+                                    <svg viewBox="0 0 20 20" fill="currentColor" style={{width: '14px', height: '14px', display: 'inline', marginRight: '4px'}}>
+                                        <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
+                                    </svg>
+                                    {new Date(cat.created_at).toLocaleDateString('es-ES')}
+                                </div>
+                            </div>
+                            <div className="cat-list-status">
+                                <span className={`status-badge-overlay ${getStatusColor(cat.approval_status)}`} style={{position: 'static', display: 'inline-block'}}>
+                                    {cat.approval_status}
+                                </span>
+                            </div>
+                            <div className="cat-list-actions">
+                                <button 
+                                    className="btn-compact btn-edit"
+                                    onClick={() => setEditingCat(cat)}
+                                    title="Editar"
+                                >
+                                    <svg viewBox="0 0 20 20" fill="currentColor">
+                                        <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                                    </svg>
+                                </button>
+                                <button 
+                                    className="btn-compact btn-delete"
+                                    onClick={() => handleDelete(cat.id)}
+                                    title="Eliminar"
+                                >
+                                    <svg viewBox="0 0 20 20" fill="currentColor">
+                                        <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    ))}
                 </div>
             )}
 
@@ -1087,6 +1175,40 @@ const AdminDashboard = () => {
                                                 </svg>
                                                 {new Date(post.created_at).toLocaleDateString('es-ES')}
                                             </span>
+                                        </div>
+                                        
+                                        {/* Botones de acción explícitos */}
+                                        <div className="post-actions" style={{marginTop: '12px', paddingTop: '12px', borderTop: '1px solid #e2e8f0', display: 'flex', gap: '8px'}}>
+                                            <button 
+                                                className="btn-compact btn-edit"
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    setSelectedPost(post);
+                                                    setEditingPost(post);
+                                                    setEditingPostEventDate(post.event_date ? post.event_date.split('T')[0] : '');
+                                                }}
+                                                title="Editar Artículo"
+                                                style={{flex: 1, justifyContent: 'center'}}
+                                            >
+                                                <svg viewBox="0 0 20 20" fill="currentColor" style={{width: '16px', height: '16px', marginRight: '4px'}}>
+                                                    <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                                                </svg>
+                                                Editar
+                                            </button>
+                                            <button 
+                                                className="btn-compact btn-delete"
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    handleDeletePost(post.id);
+                                                }}
+                                                title="Eliminar Artículo"
+                                                style={{flex: 1, justifyContent: 'center'}}
+                                            >
+                                                <svg viewBox="0 0 20 20" fill="currentColor" style={{width: '16px', height: '16px', marginRight: '4px'}}>
+                                                    <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
+                                                </svg>
+                                                Eliminar
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
@@ -1397,7 +1519,6 @@ const AdminDashboard = () => {
                             <table className="users-table">
                                 <thead>
                                     <tr>
-                                        <th>ID</th>
                                         <th>Nombre</th>
                                         <th>Email</th>
                                         <th>Teléfono</th>
@@ -1409,7 +1530,6 @@ const AdminDashboard = () => {
                                 <tbody>
                                     {users.map((user) => (
                                         <tr key={user.id}>
-                                            <td>{user.id}</td>
                                             <td>{user.full_name}</td>
                                             <td>{user.email}</td>
                                             <td>{user.phone || 'N/A'}</td>
@@ -1425,8 +1545,11 @@ const AdminDashboard = () => {
                                                 <button 
                                                     className="btn-change-role"
                                                     onClick={() => handleChangeUserRole(user.id, user.role)}
+                                                    title="Cambiar Rol"
                                                 >
-                                                    Cambiar Rol
+                                                    <svg viewBox="0 0 20 20" fill="currentColor" style={{width: '16px', height: '16px'}}>
+                                                        <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                                                    </svg>
                                                 </button>
                                             </td>
                                         </tr>
@@ -1653,6 +1776,8 @@ const AdminDashboard = () => {
                     </div>
                 </div>
             )}
+
+            </main>
 
             <CustomModal
                 isOpen={modalState.isOpen}
