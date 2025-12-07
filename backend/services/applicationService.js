@@ -18,41 +18,7 @@ class ApplicationService {
         return result.rows[0];
     }
 
-    // Guarda los resultados de la evaluación automática de IA
-    async saveAIEvaluation(applicationId, evaluation) {
-        const result = await db.query(
-            `UPDATE adoption_applications 
-             SET ai_decision = $1, 
-                 ai_score = $2, 
-                 ai_auto_reject_reason = $3, 
-                 ai_risk_analysis = $4, 
-                 ai_evaluated_at = NOW()
-             WHERE id = $5
-             RETURNING *`,
-            [
-                evaluation.decision,
-                evaluation.score,
-                evaluation.auto_reject_reason || null,
-                evaluation.risk_analysis,
-                applicationId
-            ]
-        );
-        
-        return result.rows[0];
-    }
 
-    // Rechaza automáticamente una solicitud basado en evaluación de IA
-    async autoRejectApplication(applicationId, reason) {
-        const result = await db.query(
-            `UPDATE adoption_applications 
-             SET status = 'rechazada'
-             WHERE id = $1
-             RETURNING *`,
-            [applicationId]
-        );
-        
-        return result.rows[0];
-    }
 
     // Obtiene las solicitudes recibidas por un rescatista
     async getApplicationsByRescuer(rescuerId) {
@@ -64,11 +30,6 @@ class ApplicationService {
                 app.form_responses,
                 app.status,
                 app.created_at,
-                app.ai_decision,
-                app.ai_score,
-                app.ai_risk_analysis,
-                app.ai_auto_reject_reason,
-                app.ai_evaluated_at,
                 cat.name as cat_name,
                 cat.photos_url as cat_photos,
                 u.full_name as applicant_name,
@@ -95,11 +56,6 @@ class ApplicationService {
                 app.form_responses,
                 app.status,
                 app.created_at,
-                app.ai_decision,
-                app.ai_score,
-                app.ai_risk_analysis,
-                app.ai_auto_reject_reason,
-                app.ai_evaluated_at,
                 cat.name as cat_name,
                 cat.photos_url as cat_photos,
                 u.full_name as applicant_name,
@@ -147,27 +103,7 @@ class ApplicationService {
         return result.rows[0]?.cat_id;
     }
 
-    // Guarda la evaluación de IA
-    async saveAIEvaluation(applicationId, evaluation) {
-        const { decision, score, auto_reject_reason, risk_analysis } = evaluation;
-        
-        await db.query(
-            `UPDATE adoption_applications 
-             SET ai_decision = $1, ai_score = $2, ai_auto_reject_reason = $3, ai_risk_analysis = $4
-             WHERE id = $5`,
-            [decision, score, auto_reject_reason, risk_analysis, applicationId]
-        );
-    }
 
-    // Rechaza automáticamente una solicitud
-    async autoRejectApplication(applicationId, reason) {
-        await db.query(
-            `UPDATE adoption_applications 
-             SET status = 'rechazada', ai_auto_reject_reason = $1
-             WHERE id = $2`,
-            [reason, applicationId]
-        );
-    }
 }
 
 module.exports = new ApplicationService();

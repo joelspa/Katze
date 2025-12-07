@@ -16,7 +16,4 @@ router.get('/received', authMiddleware, applicationController.getReceivedApplica
 // Actualizar estado de una solicitud (aprobar/rechazar)
 router.put('/:id/status', authMiddleware, applicationController.updateApplicationStatus);
 
-// Endpoint de mantenimiento para corregir evaluaciones faltantes (Solo Admin)
-router.post('/fix-evaluations', authMiddleware, (req, res) => applicationController.fixMissingEvaluations(req, res));
-
 module.exports = router;

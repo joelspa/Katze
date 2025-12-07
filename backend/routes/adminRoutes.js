@@ -51,41 +51,4 @@ router.put('/users/:id/role', userController.updateUserRole);
 // Obtiene estadísticas de usuarios por rol
 router.get('/users/stats/by-role', userController.getUserStatsByRole);
 
-// Endpoint de emergencia para ejecutar migraciones
-router.post('/run-migrations', async (req, res) => {
-    const fs = require('fs');
-    const path = require('path');
-    const db = require('../db');
-
-    try {
-        console.log('🔄 Ejecutando migraciones vía endpoint...');
-        const migrationsDir = path.join(__dirname, '../migrations');
-        const migrationFiles = fs.readdirSync(migrationsDir)
-            .filter(file => file.endsWith('.sql'))
-            .sort();
-        
-        const results = [];
-
-        for (const file of migrationFiles) {
-            const migrationPath = path.join(migrationsDir, file);
-            const migrationSQL = fs.readFileSync(migrationPath, 'utf8');
-            
-            try {
-                await db.query(migrationSQL);
-                results.push({ file, status: 'success' });
-            } catch (error) {
-                if (error.code === '42701' || error.code === '42P07') {
-                    results.push({ file, status: 'skipped (already exists)' });
-                } else {
-                    results.push({ file, status: 'error', message: error.message });
-                }
-            }
-        }
-
-        res.json({ success: true, results });
-    } catch (error) {
-        res.status(500).json({ success: false, error: error.message });
-    }
-});
-
 module.exports = router;

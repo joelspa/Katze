@@ -12,7 +12,6 @@
 const applicationService = require('../services/applicationService');
 const catService = require('../services/catService');
 const trackingService = require('../services/trackingService');
-const geminiService = require('../services/geminiService');
 const firebaseService = require('../services/firebaseService');
 const datasetService = require('../services/datasetService');
 const Validator = require('../utils/validator');
@@ -78,9 +77,6 @@ class ApplicationController {
      * Crea una nueva solicitud de adopción para un gato específico.
      * Solo usuarios con rol de adoptante pueden enviar solicitudes.
      * 
-     * IMPORTANTE: Implementa evaluación automática con IA para filtrar masivamente
-     * solicitudes (500+) y rechazar automáticamente candidatos inapropiados.
-     * 
      * @param {Request} req - Objeto request de Express con datos del usuario y formulario
      * @param {Response} res - Objeto response de Express para enviar la respuesta
      * @returns {Promise<Response>} Respuesta JSON con la solicitud creada o error
@@ -118,169 +114,39 @@ class ApplicationController {
                 form_responses
             );
 
-            // 🤖 EVALUACIÓN AUTOMÁTICA CON IA (FILTRADO MASIVO)
+            // Guardar en Firestore para análisis
             try {
-                console.log('🤖 Iniciando evaluación de IA para solicitud #' + newApplication.id);
-                
-                // Construir requisitos del gato desde sus características
-                const cat_requirements = {
-                    needs_nets: cat.living_space_requirement === 'casa_grande' || cat.living_space_requirement === 'cualquiera',
-                    sterilized: cat.sterilization_status === 'esterilizado',
-                    activity_level: this._inferActivityLevel(cat.age, cat.description),
-                    living_space: cat.living_space_requirement
+                const firestoreData = {
+                    application_id: newApplication.id,
+                    submission_date: new Date().toISOString(),
+                    cat_id: cat.id,
+                    cat_name: cat.name,
+                    cat_breed: cat.breed,
+                    cat_age: cat.age,
+                    applicant_id: applicantId,
+                    applicant_name: req.user.name,
+                    applicant_email: req.user.email,
+                    ...form_responses,
+                    status: 'pending',
+                    rescuer_id: cat.owner_id
                 };
-
-                // Datos del solicitante desde el formulario
-                const applicant_data = form_responses;
-
-                console.log('📋 Datos para evaluación:', { cat_requirements, applicant_data });
-
-                // Evaluar con IA
-                const evaluation = await geminiService.evaluate_application_risk(
-                    cat_requirements,
-                    applicant_data
-                );
-
-                console.log('✅ Evaluación completada:', { decision: evaluation.decision, score: evaluation.score });
-
-                await applicationService.saveAIEvaluation(newApplication.id, evaluation);
-                console.log('💾 Evaluación guardada en BD');
-
-                if (evaluation.decision === 'REJECT') {
-                    await applicationService.autoRejectApplication(
-                        newApplication.id,
-                        evaluation.auto_reject_reason
-                    );
-
-                    try {
-                        const firestoreData = {
-                            application_id: newApplication.id,
-                            submission_date: new Date().toISOString(),
-                            cat_id: cat.id,
-                            cat_name: cat.name,
-                            cat_breed: cat.breed,
-                            cat_age: cat.age,
-                            applicant_id: applicantId,
-                            applicant_name: req.user.name,
-                            applicant_email: req.user.email,
-                            ...form_responses,
-                            ai_evaluation: evaluation,
-                            status: 'rejected',
-                            rescuer_id: cat.rescuer_id
-                        };
-                        await firebaseService.saveApplicationRecord(firestoreData);
-                        datasetService.updateApplicationsDataset().catch(() => {});
-                    } catch (firestoreError) {
-                        // Error no crítico
-                    }
-
-                    return ErrorHandler.badRequest(res, 
-                        `Tu solicitud fue rechazada automáticamente. Razón: ${evaluation.auto_reject_reason}`,
-                        { 
-                            application: newApplication,
-                            ai_evaluation: evaluation
-                        }
-                    );
-                }
-
-                try {
-                    const firestoreData = {
-                        application_id: newApplication.id,
-                        submission_date: new Date().toISOString(),
-                        
-                        // Datos del gato
-                        cat_id: cat.id,
-                        cat_name: cat.name,
-                        cat_breed: cat.breed,
-                        cat_age: cat.age,
-                        cat_gender: cat.gender,
-                        cat_activity_level: this._inferActivityLevel(cat.age, cat.description),
-                        cat_needs_nets: cat_requirements.needs_nets,
-                        cat_sterilized: cat_requirements.sterilized,
-                        cat_special_needs: cat.special_needs,
-                        
-                        // Datos del adoptante
-                        applicant_id: applicantId,
-                        applicant_name: req.user.name,
-                        applicant_email: req.user.email,
-                        
-                        // Datos de la solicitud
-                        ...form_responses,
-                        
-                        // Evaluación de IA
-                        ai_evaluation: evaluation,
-                        
-                        // Estado
-                        status: evaluation.decision === 'REJECT' ? 'rejected' : 'pending',
-                        rescuer_id: cat.rescuer_id
-                    };
-                    
-                    await firebaseService.saveApplicationRecord(firestoreData);
-                    datasetService.updateApplicationsDataset().catch(() => {});
-                } catch (firestoreError) {
-                    // Error no crítico
-                }
-
-                return ErrorHandler.created(res, { 
-                    application: newApplication,
-                    ai_evaluation: evaluation,
-                    message: evaluation.decision === 'APPROVE' 
-                        ? 'Solicitud enviada con éxito. Eres un candidato excepcional para este gatito.' 
-                        : 'Solicitud enviada con éxito. Será revisada por el rescatista.'
-                }, 'Solicitud enviada con éxito');
-
-            } catch (aiError) {
-                console.error('❌ Error en evaluación de IA:', aiError);
                 
-                // Aún así guardar en Firestore sin evaluación de IA
-                try {
-                    const firestoreData = {
-                        application_id: newApplication.id,
-                        submission_date: new Date().toISOString(),
-                        cat_id: cat.id,
-                        cat_name: cat.name,
-                        applicant_id: applicantId,
-                        applicant_name: req.user.name,
-                        applicant_email: req.user.email,
-                        ...form_responses,
-                        ai_evaluation: null,
-                        status: 'pending',
-                        rescuer_id: cat.rescuer_id
-                    };
-                    await firebaseService.saveApplicationRecord(firestoreData);
-                    datasetService.updateApplicationsDataset().catch(() => {});
-                } catch (firestoreError) {
-                    // Error no crítico
-                }
-                
-                return ErrorHandler.created(res, { 
-                    application: newApplication,
-                    ai_evaluation: null
-                }, 'Solicitud enviada con éxito (pendiente de revisión)');
+                await firebaseService.saveApplicationRecord(firestoreData);
+                datasetService.updateApplicationsDataset().catch(() => {});
+            } catch (firestoreError) {
+                console.error('Error guardando en Firestore:', firestoreError);
             }
+
+            return ErrorHandler.created(res, { 
+                application: newApplication
+            }, 'Solicitud enviada con éxito. Será revisada por el rescatista.')
 
         } catch (error) {
             return ErrorHandler.serverError(res, 'Error al enviar solicitud', error);
         }
     }
 
-    /**
-     * Infiere el nivel de actividad del gato basado en edad y descripción
-     * @private
-     */
-    _inferActivityLevel(age, description) {
-        const descLower = description.toLowerCase();
-        
-        if (descLower.includes('tranquilo') || descLower.includes('senior') || age === 'senior') {
-            return 'low';
-        }
-        
-        if (descLower.includes('juguet') || descLower.includes('energ') || descLower.includes('activ') || age === 'cachorro') {
-            return 'high';
-        }
-        
-        return 'medium';
-    }
+
 
     /**
      * Obtiene todas las solicitudes pendientes recibidas por un rescatista.
@@ -365,97 +231,7 @@ class ApplicationController {
         }
     }
 
-    /**
-     * Reprocesa todas las solicitudes que no tienen evaluación de IA.
-     * Útil para corregir datos históricos o fallos de API.
-     */
-    async fixMissingEvaluations(req, res) {
-        try {
-            // Solo admin puede ejecutar esto
-            if (req.user.role !== config.USER_ROLES.ADMIN) {
-                return ErrorHandler.forbidden(res, 'Solo administradores pueden ejecutar esta acción');
-            }
 
-            const db = require('../db'); // Importar db si no está disponible en scope
-            
-            console.log('🔍 Buscando solicitudes sin evaluación...');
-            
-            const query = `
-                SELECT 
-                    app.id, 
-                    app.form_responses,
-                    cat.id as cat_id,
-                    cat.living_space_requirement,
-                    cat.sterilization_status,
-                    cat.age,
-                    cat.description
-                FROM adoption_applications app
-                JOIN cats cat ON app.cat_id = cat.id
-                WHERE app.ai_score IS NULL OR app.ai_decision IS NULL
-            `;
-            
-            const result = await db.query(query);
-            const applications = result.rows;
-            
-            if (applications.length === 0) {
-                return ErrorHandler.success(res, { processed: 0 }, 'No hay solicitudes pendientes de evaluación');
-            }
-
-            let processed = 0;
-            let errors = 0;
-
-            // Procesar en segundo plano para no bloquear la respuesta HTTP si son muchas
-            // Pero para feedback inmediato, procesaremos un lote pequeño o responderemos stream
-            // Por simplicidad, procesamos y esperamos (asumiendo que no son miles)
-            
-            const results = [];
-
-            for (const app of applications) {
-                try {
-                    const cat_requirements = {
-                        needs_nets: app.living_space_requirement === 'casa_grande' || app.living_space_requirement === 'cualquiera',
-                        sterilized: app.sterilization_status === 'esterilizado',
-                        activity_level: this._inferActivityLevel(app.age, app.description),
-                        living_space: app.living_space_requirement
-                    };
-
-                    const applicant_data = app.form_responses;
-
-                    const evaluation = await geminiService.evaluate_application_risk(
-                        cat_requirements,
-                        applicant_data
-                    );
-
-                    await applicationService.saveAIEvaluation(app.id, evaluation);
-                    
-                    if (evaluation.decision === 'REJECT') {
-                        await applicationService.autoRejectApplication(
-                            app.id,
-                            evaluation.auto_reject_reason
-                        );
-                    }
-
-                    results.push({ id: app.id, status: 'fixed', decision: evaluation.decision });
-                    processed++;
-
-                } catch (err) {
-                    console.error(`Error fixing app ${app.id}:`, err);
-                    results.push({ id: app.id, status: 'error', error: err.message });
-                    errors++;
-                }
-            }
-
-            return ErrorHandler.success(res, { 
-                total: applications.length,
-                processed,
-                errors,
-                details: results 
-            }, `Se procesaron ${processed} solicitudes.`);
-
-        } catch (error) {
-            return ErrorHandler.serverError(res, 'Error al ejecutar corrección de evaluaciones', error);
-        }
-    }
 }
 
 module.exports = new ApplicationController();
