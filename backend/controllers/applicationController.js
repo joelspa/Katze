@@ -364,6 +364,98 @@ class ApplicationController {
             return ErrorHandler.serverError(res, 'Error al actualizar solicitud', error);
         }
     }
+
+    /**
+     * Reprocesa todas las solicitudes que no tienen evaluación de IA.
+     * Útil para corregir datos históricos o fallos de API.
+     */
+    async fixMissingEvaluations(req, res) {
+        try {
+            // Solo admin puede ejecutar esto
+            if (req.user.role !== config.USER_ROLES.ADMIN) {
+                return ErrorHandler.forbidden(res, 'Solo administradores pueden ejecutar esta acción');
+            }
+
+            const db = require('../db'); // Importar db si no está disponible en scope
+            
+            console.log('🔍 Buscando solicitudes sin evaluación...');
+            
+            const query = `
+                SELECT 
+                    app.id, 
+                    app.form_responses,
+                    cat.id as cat_id,
+                    cat.living_space_requirement,
+                    cat.sterilization_status,
+                    cat.age,
+                    cat.description
+                FROM adoption_applications app
+                JOIN cats cat ON app.cat_id = cat.id
+                WHERE app.ai_score IS NULL OR app.ai_decision IS NULL
+            `;
+            
+            const result = await db.query(query);
+            const applications = result.rows;
+            
+            if (applications.length === 0) {
+                return ErrorHandler.success(res, { processed: 0 }, 'No hay solicitudes pendientes de evaluación');
+            }
+
+            let processed = 0;
+            let errors = 0;
+
+            // Procesar en segundo plano para no bloquear la respuesta HTTP si son muchas
+            // Pero para feedback inmediato, procesaremos un lote pequeño o responderemos stream
+            // Por simplicidad, procesamos y esperamos (asumiendo que no son miles)
+            
+            const results = [];
+
+            for (const app of applications) {
+                try {
+                    const cat_requirements = {
+                        needs_nets: app.living_space_requirement === 'casa_grande' || app.living_space_requirement === 'cualquiera',
+                        sterilized: app.sterilization_status === 'esterilizado',
+                        activity_level: this._inferActivityLevel(app.age, app.description),
+                        living_space: app.living_space_requirement
+                    };
+
+                    const applicant_data = app.form_responses;
+
+                    const evaluation = await geminiService.evaluate_application_risk(
+                        cat_requirements,
+                        applicant_data
+                    );
+
+                    await applicationService.saveAIEvaluation(app.id, evaluation);
+                    
+                    if (evaluation.decision === 'REJECT') {
+                        await applicationService.autoRejectApplication(
+                            app.id,
+                            evaluation.auto_reject_reason
+                        );
+                    }
+
+                    results.push({ id: app.id, status: 'fixed', decision: evaluation.decision });
+                    processed++;
+
+                } catch (err) {
+                    console.error(`Error fixing app ${app.id}:`, err);
+                    results.push({ id: app.id, status: 'error', error: err.message });
+                    errors++;
+                }
+            }
+
+            return ErrorHandler.success(res, { 
+                total: applications.length,
+                processed,
+                errors,
+                details: results 
+            }, `Se procesaron ${processed} solicitudes.`);
+
+        } catch (error) {
+            return ErrorHandler.serverError(res, 'Error al ejecutar corrección de evaluaciones', error);
+        }
+    }
 }
 
 module.exports = new ApplicationController();
