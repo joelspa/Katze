@@ -2,6 +2,7 @@
 // Gestiona las peticiones HTTP relacionadas con gatos
 
 const catService = require('../services/catService');
+const datasetService = require('../services/datasetService');
 const Validator = require('../utils/validator');
 const ErrorHandler = require('../utils/errorHandler');
 const config = require('../config/config');
@@ -34,6 +35,8 @@ class CatController {
 
             // Crea el gato en la DB
             const newCat = await catService.createCat(catData);
+
+            datasetService.updateCatsDataset().catch(() => {});
 
             return ErrorHandler.created(res, { cat: newCat }, 'Gato enviado para revisión. Un administrador lo aprobará pronto.');
 
@@ -133,6 +136,8 @@ class CatController {
                 return ErrorHandler.notFound(res, 'Gato no encontrado');
             }
 
+            datasetService.updateCatsDataset().catch(() => {});
+
             // DISPARAR WEBHOOK A MAKE.COM solo cuando se APRUEBA el gato
             if (status === config.APPROVAL_STATUS.APROBADO) {
                 // Disparamos la petición sin 'await' para que no bloquee la respuesta
@@ -150,7 +155,7 @@ class CatController {
                         fecha_aprobacion: new Date().toLocaleDateString('es-ES'),
                         id_gato: updatedCat.id
                     })
-                }).catch(err => console.error('Error enviando a Make:', err));
+                }).catch(() => {});
             }
 
             let message;

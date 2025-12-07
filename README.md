@@ -1,6 +1,54 @@
-# Katze - Plataforma de Adopción de Gatos
+# Katze 🐱 - Plataforma de Adopción de Gatos
 
 Sistema web completo para gestionar adopciones de gatos, con seguimiento post-adopción y contenido educativo.
+
+---
+
+## 🚀 Inicio Rápido
+
+### Requisitos Previos
+- Node.js 18+
+- PostgreSQL 14+
+- Firebase Account (para Storage de imágenes y datasets)
+
+### 1. Instalación y Configuración
+
+```bash
+# 1. Instalar todas las dependencias y configurar la base de datos
+npm run setup
+
+# Esto ejecuta automáticamente:
+# - npm install (dependencias root)
+# - npm install en backend y frontend
+# - npm run migrate (crea tablas)
+# - npm run seed (datos de prueba)
+```
+
+### 2. Configurar Firebase
+
+1. Ve a [Firebase Console](https://console.firebase.google.com/project/katze-app/settings/serviceaccounts/adminsdk)
+2. Haz clic en **"Generar nueva clave privada"**
+3. Guarda el archivo como `backend/serviceAccountKey.json`
+4. Agrega a `backend/.env`:
+   ```env
+   GOOGLE_APPLICATION_CREDENTIALS=./serviceAccountKey.json
+   ```
+
+### 3. Ejecutar el Proyecto
+
+```bash
+# Ejecutar backend y frontend simultáneamente
+npm run dev
+
+# O ejecutar por separado:
+# Backend (puerto 5000)
+npm run dev:back
+
+# Frontend (puerto 5174)
+npm run dev:front
+```
+
+---
 
 ## Características Principales
 
@@ -11,25 +59,22 @@ Sistema web completo para gestionar adopciones de gatos, con seguimiento post-ad
 - **Panel de Administración**: Control total del sistema
 - **Estadísticas**: Métricas de adopciones y seguimiento
 
-## Instalación Rápida
+## Scripts Disponibles
 
-### Requisitos
-- Node.js 18+
-- PostgreSQL 14+
-- Firebase Storage (para imágenes)
-
-### Backend
 ```bash
-cd backend
-npm install
-npm start
-```
+# Desarrollo
+npm run dev          # Ejecutar backend + frontend
+npm run dev:back     # Solo backend
+npm run dev:front    # Solo frontend
 
-### Frontend
-```bash
-cd frontend
-npm install
-npm run dev
+# Base de datos
+npm run migrate      # Ejecutar migraciones
+npm run seed         # Poblar datos de prueba
+npm run setup        # Instalación completa + migración + seed
+
+# Producción
+npm run start:back   # Iniciar backend
+npm run start:front  # Iniciar frontend
 ```
 
 ## Estructura del Proyecto
@@ -55,9 +100,9 @@ Katze/
 - **Rescatista**: Publica gatos y gestiona solicitudes
 - **Administrador**: Control total del sistema
 
-## Variables de Entorno
+## Configuración de Variables de Entorno
 
-Crea un archivo `.env` en el backend:
+Crea un archivo `backend/.env` con las siguientes variables:
 
 ```env
 DB_HOST=localhost

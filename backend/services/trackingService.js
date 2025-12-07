@@ -125,7 +125,6 @@ class TrackingService {
                 await db.query("SELECT mark_overdue_tasks()");
             } catch (err) {
                 // Si la función no existe, continuar sin marcar
-                console.log('Función mark_overdue_tasks no disponible, continuando...');
             }
 
             const result = await db.query(`
@@ -144,7 +143,6 @@ class TrackingService {
                 esterilizaciones_pendientes: '0'
             };
         } catch (error) {
-            console.error('Error en getTrackingStats:', error);
             // Retornar valores por defecto en caso de error
             return {
                 tareas_pendientes: '0',

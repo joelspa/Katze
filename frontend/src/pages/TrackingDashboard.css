@@ -29,7 +29,7 @@
     left: 16px;
     top: 50%;
     transform: translateY(-50%);
-    color: var(--color-gray-400);
+    color: var(--text-body);
     font-size: 18px;
 }
 
@@ -55,7 +55,7 @@
     font-size: 1.1rem;
     color: var(--color-success-dark);
     padding: 60px 20px;
-    background: linear-gradient(135deg, rgba(16, 185, 129, 0.08), rgba(5, 150, 105, 0.15));
+    background: rgba(16, 185, 129, 0.12);
     border: 1px solid rgba(16, 185, 129, 0.3);
     border-radius: 20px;
 }
@@ -85,12 +85,12 @@
 
 .task-card.overdue {
     border-color: rgba(239, 68, 68, 0.4);
-    background: linear-gradient(135deg, var(--color-white) 0%, rgba(254, 242, 242, 1) 100%);
+    background: rgba(254, 242, 242, 1);
 }
 
 [data-theme="dark"] .task-card.overdue {
     border-color: rgba(241, 91, 103, 0.4);
-    background: linear-gradient(135deg, var(--surface-card) 0%, rgba(241, 91, 103, 0.08) 100%);
+    background: rgba(241, 91, 103, 0.08);
 }
 
 .task-type-badge {
@@ -105,17 +105,17 @@
 }
 
 .badge-sterilization {
-    background: linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(59, 130, 246, 0.25) 100%);
+    background: rgba(59, 130, 246, 0.2);
     color: var(--color-info-dark);
 }
 
 .badge-wellness {
-    background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(16, 185, 129, 0.25) 100%);
+    background: rgba(16, 185, 129, 0.2);
     color: var(--color-success-dark);
 }
 
 .badge-visit {
-    background: linear-gradient(135deg, rgba(244, 63, 94, 0.15) 0%, rgba(244, 63, 94, 0.25) 100%);
+    background: rgba(244, 63, 94, 0.2);
     color: var(--color-error-dark);
 }
 
@@ -254,7 +254,7 @@
     border: none;
     border-radius: 8px;
     color: var(--color-white);
-    background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+    background: #06b6d4;
     font-weight: var(--font-weight-semibold);
     font-size: 15px;
     cursor: pointer;
@@ -315,7 +315,7 @@
 .file-input-label {
     display: inline-block;
     padding: 14px 20px;
-    background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
+    background: var(--color-primary);
     color: var(--color-white);
     border-radius: 12px;
     cursor: pointer;
@@ -343,7 +343,7 @@
 
 .upload-progress-bar {
     height: 100%;
-    background: linear-gradient(90deg, #28a745 0%, #20c997 100%);
+    background: #28a745;
     border-radius: 8px;
     transition: width 0.3s ease;
 }
@@ -450,7 +450,7 @@
 [data-theme="dark"] .certificate-label {
   color: rgba(230, 241, 255, 0.90);
 }[data-theme="dark"] .file-input-label {
-    background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
+    background: var(--color-primary);
     box-shadow: 0 12px 24px rgba(46, 196, 182, 0.3);
 }
 

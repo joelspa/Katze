@@ -4,7 +4,7 @@
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
+    background: var(--bg-secondary);
     width: 100%;
 }
 
@@ -108,7 +108,7 @@
 }
 
 .input::placeholder {
-    color: var(--color-gray-400);
+    color: var(--text-body);
 }
 
 .show-password-btn {
@@ -118,7 +118,7 @@
     transform: translateY(-50%);
     background: none;
     border: none;
-    color: var(--color-gray-400);
+    color: var(--text-body);
     cursor: pointer;
     font-size: 20px;
     padding: 4px 8px;
@@ -150,7 +150,7 @@
     padding: 14px;
     font-size: var(--font-size-base);
     font-weight: var(--font-weight-semibold);
-    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+    background: var(--color-primary);
     color: var(--color-white);
     border: none;
     border-radius: var(--border-radius-md);
@@ -189,7 +189,7 @@
 
 /* ===== DARK MODE ===== */
 [data-theme="dark"] .register-page {
-  background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+  background: var(--bg-primary);
 }
 
 [data-theme="dark"] .register-page .container {

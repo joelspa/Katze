@@ -1,6 +1,9 @@
 // Archivo principal del servidor Express
 // Configura rutas, middlewares y controladores para la aplicación Katze
 
+// Cargar variables de entorno desde .env
+require('dotenv').config();
+
 const express = require('express');
 const cors = require('cors');
 const config = require('./config/config');

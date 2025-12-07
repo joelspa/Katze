@@ -95,7 +95,7 @@
 
 /* Avatar Section */
 .profile-avatar-section {
-    background: linear-gradient(135deg, var(--color-primary-light) 0%, var(--color-primary) 100%);
+    background: var(--color-primary);
     padding: 3rem 2rem;
     display: flex;
     align-items: center;
@@ -166,7 +166,7 @@
     width: 48px;
     height: 48px;
     border-radius: 10px;
-    background: linear-gradient(135deg, var(--color-primary-light) 0%, var(--color-primary) 100%);
+    background: var(--color-primary);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -278,7 +278,7 @@
 }
 
 .form-group input::placeholder {
-    color: var(--color-gray-400);
+    color: var(--text-body);
 }
 
 .form-actions {
@@ -311,7 +311,7 @@
 }
 
 .btn-save {
-    background: linear-gradient(135deg, var(--color-primary-light) 0%, var(--color-primary) 100%);
+    background: var(--color-primary);
     color: var(--color-white);
 }
 
@@ -440,7 +440,7 @@
 }
 
 [data-theme="dark"] .profile-avatar-section {
-  background: linear-gradient(135deg, rgba(46, 196, 182, 0.15) 0%, rgba(46, 196, 182, 0.08) 100%);
+  background: rgba(46, 196, 182, 0.12);
   border-bottom: 2px solid var(--border-default);
   backdrop-filter: blur(10px);
 }

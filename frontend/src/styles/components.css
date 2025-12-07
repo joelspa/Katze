@@ -3,23 +3,24 @@
  * Estilos con alto contraste para mejor experiencia de usuario
  */
 
-/* ===== BOTONES BASE ===== */
+/* ===== BOTONES BASE - Área táctil 44-48px ===== */
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: var(--spacing-sm);
-  padding: 12px 24px;
+  min-height: 48px;  /* Área táctil mínima Android/Material Design */
+  padding: 0.75rem 1.5rem;  /* 12px 24px */
   font-size: 1rem;
   font-weight: 600;
   line-height: 1.5;
-  border-radius: 10px;
-  transition: all 0.2s ease;
+  border-radius: var(--border-radius-md);
+  transition: var(--transition-base);
   cursor: pointer;
   border: none;
   text-decoration: none;
   white-space: nowrap;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-sm);
 }
 
 .btn:hover:not(:disabled) {
@@ -97,7 +98,7 @@
 }
 
 .btn-error {
-  background: linear-gradient(135deg, #E63946 0%, #C8202E 100%);
+  background: #E63946;
   color: var(--color-white);
   font-weight: 700;
   font-family: var(--font-family-heading);
@@ -129,15 +130,17 @@
   background: var(--color-primary-dark);
 }
 
-/* Tamaños de botones */
+/* Tamaños de botones - Mínimo 44px iOS */
 .btn-sm {
-  padding: 8px 16px;
-  font-size: 0.875rem;
+  min-height: 44px;  /* Área táctil mínima iOS */
+  padding: 0.5rem 1rem;  /* 8px 16px */
+  font-size: 0.875rem;  /* 14px */
 }
 
 .btn-lg {
-  padding: 16px 32px;
-  font-size: 1.125rem;
+  min-height: 56px;  /* Botón grande */
+  padding: 1rem 2rem;  /* 16px 32px */
+  font-size: 1.125rem;  /* 18px */
 }
 
 .btn-block {
@@ -147,29 +150,30 @@
 
 /* ===== INPUTS Y FORMULARIOS ===== */
 .form-group {
-  margin-bottom: 20px;
+  margin-bottom: var(--spacing-lg);  /* 24px - sistema 8pt */
 }
 
 .form-label {
   display: block;
-  margin-bottom: 8px;
-  font-size: 0.9rem;
+  margin-bottom: var(--spacing-sm);  /* 8px */
+  font-size: 0.875rem;  /* 14px */
   font-weight: 600;
-  color: #404040;
+  color: #333333;  /* Gris oscuro en lugar de negro puro */
 }
 
 .form-input,
 .form-textarea,
 .form-select {
   width: 100%;
-  padding: 12px 16px;
-  font-size: 1rem;
+  min-height: 48px;  /* Área táctil accesible */
+  padding: 0.75rem 1rem;  /* 12px 16px */
+  font-size: 1rem;  /* 16px - evita zoom en iOS */
   line-height: 1.5;
-  color: #1a1a1a;
+  color: #1F1F1F;  /* Gris oscuro en lugar de negro puro */
   background-color: #ffffff;
   border: 2px solid #d4d4d4;
-  border-radius: 8px;
-  transition: all 0.2s ease;
+  border-radius: var(--border-radius-sm);
+  transition: var(--transition-base);
 }
 
 .form-input:focus,
@@ -405,7 +409,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 2000;
+  z-index: var(--z-modal-backdrop);  /* Nivel 10000 */
   padding: 20px;
 }
 
@@ -487,8 +491,7 @@
 
 /* ===== SKELETON LOADING ===== */
 .skeleton {
-  background: linear-gradient(90deg, #f5f5f5 25%, #e5e5e5 50%, #f5f5f5 75%);
-  background-size: 200% 100%;
+  background: #f5f5f5;
   animation: loading 1.5s ease-in-out infinite;
   border-radius: 8px;
 }
@@ -673,8 +676,7 @@
 
 /* Skeleton in dark mode */
 [data-theme="dark"] .skeleton {
-  background: linear-gradient(90deg, var(--bg-secondary) 25%, var(--surface-elevated) 50%, var(--bg-secondary) 75%);
-  background-size: 200% 100%;
+  background: var(--bg-secondary);
 }
 
 /* Spinner */

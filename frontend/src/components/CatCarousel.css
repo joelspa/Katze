@@ -64,28 +64,52 @@
 .carousel-indicators {
     display: flex;
     justify-content: center;
-    gap: 8px;
+    gap: 12px;
     margin-top: 24px;
 }
 
 .indicator {
-    width: 12px;
-    height: 12px;
+    /* Visible indicator */
+    width: 16px;
+    height: 16px;
     border-radius: 50%;
-    background: #e0e0e0;
+    background: #757575;
     border: none;
     cursor: pointer;
     transition: all 0.3s ease;
+    /* Expand touch target with padding */
+    padding: 16px;
+    position: relative;
+}
+
+.indicator::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: inherit;
 }
 
 .indicator:hover {
-    background: #bbb;
+    background: #616161;
+}
+
+.indicator:hover::before {
+    background: #616161;
 }
 
 .indicator.active {
-    background: var(--color-primary);
-    width: 32px;
-    border-radius: 6px;
+    background: #018786;
+}
+
+.indicator.active::before {
+    background: #018786;
+    width: 40px;
+    border-radius: 8px;
 }
 
 /* Responsive */

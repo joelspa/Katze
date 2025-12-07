@@ -12,6 +12,9 @@
 const applicationService = require('../services/applicationService');
 const catService = require('../services/catService');
 const trackingService = require('../services/trackingService');
+const geminiService = require('../services/geminiService');
+const firebaseService = require('../services/firebaseService');
+const datasetService = require('../services/datasetService');
 const Validator = require('../utils/validator');
 const ErrorHandler = require('../utils/errorHandler');
 const config = require('../config/config');
@@ -27,94 +30,42 @@ const config = require('../config/config');
  */
 async function processApprovedApplication(applicationId, catId) {
     try {
-        console.log('[processApprovedApplication] Starting:', { applicationId, catId });
+        await catService.updateAdoptionStatus(catId, config.ADOPTION_STATUS.ADOPTADO);
 
-        // Paso 1: Marcar el gato como adoptado en la base de datos
-        try {
-            console.log('[processApprovedApplication] Actualizando estado de adopción del gato...');
-            await catService.updateAdoptionStatus(catId, config.ADOPTION_STATUS.ADOPTADO);
-            console.log('[processApprovedApplication] Gato marcado como adoptado exitosamente');
-        } catch (error) {
-            console.error('[processApprovedApplication] Error al actualizar estado de adopción:', error);
-            throw new Error(`Error al actualizar estado de adopción del gato $1{catId}: $1{error.message}`);
+        const cat = await catService.getCatById(catId);
+        if (!cat) {
+            throw new Error(`Gato con ID ${catId} no encontrado`);
         }
+        
+        const sterilizationStatus = cat.sterilization_status;
 
-        // Paso 2: Obtener información del gato para determinar tareas de seguimiento del gato para determinar tareas de seguimiento
-        let cat, sterilizationStatus;
-        try {
-            console.log('[processApprovedApplication] Obteniendo información del gato...');
-            cat = await catService.getCatById(catId);
-            if (!cat) {
-                throw new Error(`Gato no encontrado: $1{catId}`);
-            }
-            sterilizationStatus = cat.sterilization_status?.trim();
-            console.log('[processApprovedApplication] Estado de esterilización:', sterilizationStatus);
-        } catch (error) {
-            console.error('[processApprovedApplication] Error al obtener información del gato:', error);
-            throw new Error(`Error al obtener información del gato $1{catId}: $1{error.message}`);
-        }
-
-        // Paso 3: Crear tarea de seguimiento de bienestar SOLO para gatos ya esterilizados o no aplicables
-        // Los gatos pendientes de esterilización recibirán seguimiento de bienestar después de esterilizarse
         if (sterilizationStatus === 'esterilizado' || sterilizationStatus === 'no_aplica') {
-            try {
-                console.log('[processApprovedApplication] Creando tarea de seguimiento de bienestar...');
-                const dueDateBienestar = trackingService.calculateDueDate(
-                    config.TRACKING_PERIODS.BIENESTAR_MONTHS
-                );
-                await trackingService.createTask(
-                    applicationId,
-                    'Seguimiento de Bienestar',
-                    dueDateBienestar,
-                    'Verificar que el gato se haya adaptado bien a su nuevo hogar y esté recibiendo los cuidados necesarios.'
-                );
-                console.log('[processApprovedApplication] Tarea de bienestar creada exitosamente');
-            } catch (error) {
-                console.error('[processApprovedApplication] Error al crear tarea de bienestar:', error);
-                throw new Error(`Error al crear tarea de bienestar para solicitud $1{applicationId}: $1{error.message}`);
-            }
-        } else {
-            console.log('[processApprovedApplication] Tarea de bienestar no creada aún (esperando esterilización)');
+            const dueDateBienestar = trackingService.calculateDueDate(
+                config.TRACKING_PERIODS.BIENESTAR_MONTHS
+            );
+            await trackingService.createTask(
+                applicationId,
+                'Seguimiento de Bienestar',
+                dueDateBienestar,
+                'Verificar que el gato se haya adaptado bien a su nuevo hogar y esté recibiendo los cuidados necesarios.'
+            );
         }
 
-        // Paso 4: Crear tarea de seguimiento de esterilización SOLO si está pendiente
         if (sterilizationStatus === 'pendiente') {
-            try {
-                console.log('[processApprovedApplication] Creando tarea de seguimiento de esterilización...');
-                const dueDateEsterilizacion = trackingService.calculateDueDate(
-                    config.TRACKING_PERIODS.ESTERILIZACION_MONTHS
-                );
-                await trackingService.createTask(
-                    applicationId,
-                    'Seguimiento de Esterilización',
-                    dueDateEsterilizacion,
-                    'Verificar que el adoptante haya completado la esterilización del gato y solicitar certificado veterinario.'
-                );
-                console.log('[processApprovedApplication] Tarea de esterilización creada exitosamente');
-            } catch (error) {
-                console.error('[processApprovedApplication] Error al crear tarea de esterilización:', error);
-                throw new Error(`Error al crear tarea de esterilización para solicitud $1{applicationId}: $1{error.message}`);
-            }
-        } else if (sterilizationStatus === 'esterilizado') {
-            console.log('[processApprovedApplication] Tarea de esterilización no necesaria (gato ya esterilizado)');
-        } else if (sterilizationStatus === 'no_aplica') {
-            console.log('[processApprovedApplication] Tarea de esterilización no necesaria (no aplica para este gato)');
+            const dueDateEsterilizacion = trackingService.calculateDueDate(
+                config.TRACKING_PERIODS.ESTERILIZACION_MONTHS
+            );
+            await trackingService.createTask(
+                applicationId,
+                'Seguimiento de Esterilización',
+                dueDateEsterilizacion,
+                'Verificar que el adoptante haya completado la esterilización del gato y solicitar certificado veterinario.'
+            );
         }
 
-        // Paso 5: Rechazar otras solicitudes pendientes para el mismo gato automáticamente
-        try {
-            console.log('[processApprovedApplication] Rechazando otras solicitudes pendientes...');
-            await applicationService.rejectOtherApplications(catId);
-            console.log('[processApprovedApplication] Otras solicitudes rechazadas exitosamente');
-        } catch (error) {
-            console.error('[processApprovedApplication] Error al rechazar otras solicitudes:', error);
-            throw new Error(`Error al rechazar otras solicitudes para gato $1{catId}: $1{error.message}`);
-        }
+        await applicationService.rejectOtherApplications(catId);
 
-        console.log('[processApprovedApplication] Proceso completado exitosamente');
     } catch (error) {
-        console.error('[processApprovedApplication] ERROR:', error);
-        console.error('[processApprovedApplication] Stack trace:', error.stack);
         throw error;
     }
 }
@@ -126,6 +77,9 @@ class ApplicationController {
     /**
      * Crea una nueva solicitud de adopción para un gato específico.
      * Solo usuarios con rol de adoptante pueden enviar solicitudes.
+     * 
+     * IMPORTANTE: Implementa evaluación automática con IA para filtrar masivamente
+     * solicitudes (500+) y rechazar automáticamente candidatos inapropiados.
      * 
      * @param {Request} req - Objeto request de Express con datos del usuario y formulario
      * @param {Response} res - Objeto response de Express para enviar la respuesta
@@ -164,11 +118,160 @@ class ApplicationController {
                 form_responses
             );
 
-            return ErrorHandler.created(res, { application: newApplication }, 'Solicitud enviada con éxito');
+            // 🤖 EVALUACIÓN AUTOMÁTICA CON IA (FILTRADO MASIVO)
+            try {
+                // Construir requisitos del gato desde sus características
+                const cat_requirements = {
+                    needs_nets: cat.living_space_requirement === 'casa_grande' || cat.living_space_requirement === 'cualquiera',
+                    sterilized: cat.sterilization_status === 'esterilizado',
+                    activity_level: this._inferActivityLevel(cat.age, cat.description),
+                    living_space: cat.living_space_requirement
+                };
+
+                // Datos del solicitante desde el formulario
+                const applicant_data = form_responses;
+
+                // Evaluar con IA
+                const evaluation = await geminiService.evaluate_application_risk(
+                    cat_requirements,
+                    applicant_data
+                );
+
+                await applicationService.saveAIEvaluation(newApplication.id, evaluation);
+
+                if (evaluation.decision === 'REJECT') {
+                    await applicationService.autoRejectApplication(
+                        newApplication.id,
+                        evaluation.auto_reject_reason
+                    );
+
+                    try {
+                        const firestoreData = {
+                            application_id: newApplication.id,
+                            submission_date: new Date().toISOString(),
+                            cat_id: cat.id,
+                            cat_name: cat.name,
+                            cat_breed: cat.breed,
+                            cat_age: cat.age,
+                            applicant_id: applicantId,
+                            applicant_name: req.user.name,
+                            applicant_email: req.user.email,
+                            ...form_responses,
+                            ai_evaluation: evaluation,
+                            status: 'rejected',
+                            rescuer_id: cat.rescuer_id
+                        };
+                        await firebaseService.saveApplicationRecord(firestoreData);
+                        datasetService.updateApplicationsDataset().catch(() => {});
+                    } catch (firestoreError) {
+                        // Error no crítico
+                    }
+
+                    return ErrorHandler.badRequest(res, 
+                        `Tu solicitud fue rechazada automáticamente. Razón: ${evaluation.auto_reject_reason}`,
+                        { 
+                            application: newApplication,
+                            ai_evaluation: evaluation
+                        }
+                    );
+                }
+
+                try {
+                    const firestoreData = {
+                        application_id: newApplication.id,
+                        submission_date: new Date().toISOString(),
+                        
+                        // Datos del gato
+                        cat_id: cat.id,
+                        cat_name: cat.name,
+                        cat_breed: cat.breed,
+                        cat_age: cat.age,
+                        cat_gender: cat.gender,
+                        cat_activity_level: this._inferActivityLevel(cat.age, cat.description),
+                        cat_needs_nets: cat_requirements.needs_nets,
+                        cat_sterilized: cat_requirements.sterilized,
+                        cat_special_needs: cat.special_needs,
+                        
+                        // Datos del adoptante
+                        applicant_id: applicantId,
+                        applicant_name: req.user.name,
+                        applicant_email: req.user.email,
+                        
+                        // Datos de la solicitud
+                        ...form_responses,
+                        
+                        // Evaluación de IA
+                        ai_evaluation: evaluation,
+                        
+                        // Estado
+                        status: evaluation.decision === 'REJECT' ? 'rejected' : 'pending',
+                        rescuer_id: cat.rescuer_id
+                    };
+                    
+                    await firebaseService.saveApplicationRecord(firestoreData);
+                    datasetService.updateApplicationsDataset().catch(() => {});
+                } catch (firestoreError) {
+                    // Error no crítico
+                }
+
+                return ErrorHandler.created(res, { 
+                    application: newApplication,
+                    ai_evaluation: evaluation,
+                    message: evaluation.decision === 'HIGH_MATCH' 
+                        ? 'Solicitud enviada con éxito. Eres un candidato excepcional para este gatito.' 
+                        : 'Solicitud enviada con éxito. Será revisada por el rescatista.'
+                }, 'Solicitud enviada con éxito');
+
+            } catch (aiError) {
+                
+                // Aún así guardar en Firestore sin evaluación de IA
+                try {
+                    const firestoreData = {
+                        application_id: newApplication.id,
+                        submission_date: new Date().toISOString(),
+                        cat_id: cat.id,
+                        cat_name: cat.name,
+                        applicant_id: applicantId,
+                        applicant_name: req.user.name,
+                        applicant_email: req.user.email,
+                        ...form_responses,
+                        ai_evaluation: null,
+                        status: 'pending',
+                        rescuer_id: cat.rescuer_id
+                    };
+                    await firebaseService.saveApplicationRecord(firestoreData);
+                    datasetService.updateApplicationsDataset().catch(() => {});
+                } catch (firestoreError) {
+                    // Error no crítico
+                }
+                
+                return ErrorHandler.created(res, { 
+                    application: newApplication,
+                    ai_evaluation: null
+                }, 'Solicitud enviada con éxito (pendiente de revisión)');
+            }
 
         } catch (error) {
             return ErrorHandler.serverError(res, 'Error al enviar solicitud', error);
         }
+    }
+
+    /**
+     * Infiere el nivel de actividad del gato basado en edad y descripción
+     * @private
+     */
+    _inferActivityLevel(age, description) {
+        const descLower = description.toLowerCase();
+        
+        if (descLower.includes('tranquilo') || descLower.includes('senior') || age === 'senior') {
+            return 'low';
+        }
+        
+        if (descLower.includes('juguet') || descLower.includes('energ') || descLower.includes('activ') || age === 'cachorro') {
+            return 'high';
+        }
+        
+        return 'medium';
     }
 
     /**
@@ -221,45 +324,35 @@ class ApplicationController {
             const { id: applicationId } = req.params;
             const { status } = req.body;
 
-            console.log('[updateApplicationStatus] Iniciando actualización:', { applicationId, status });
-
-            // Validar que el nuevo estado sea válido (aprobada/rechazada)o estado sea válido (aprobada/rechazada)
             if (!Validator.isValidApplicationStatus(status)) {
-                console.log('[updateApplicationStatus] Estado inválido:', status);
                 return ErrorHandler.badRequest(res, 'Estado no válido');
             }
 
-            console.log('[updateApplicationStatus] Validación de estado exitosa');
-
-            // Actualizar el estado de la solicitud en la base de datosa solicitud en la base de datos
             const application = await applicationService.updateApplicationStatus(applicationId, status);
             
             if (!application) {
-                console.log('[updateApplicationStatus] Solicitud no encontrada:', applicationId);
                 return ErrorHandler.notFound(res, 'Solicitud no encontrada');
             }
 
-            console.log('[updateApplicationStatus] Solicitud actualizada:', application.id);
-
             const catId = application.cat_id;
-            console.log('[updateApplicationStatus] ID del gato:', catId);
 
-            // Si la solicitud fue aprobada, procesar la adopción completan completa
             if (status === config.APPLICATION_STATUS.APROBADA) {
-                console.log('[updateApplicationStatus] Procesando aprobación de adopción...');
                 await processApprovedApplication(applicationId, catId);
-                console.log('[updateApplicationStatus] Aprobación procesada exitosamente');
+            }
+
+            datasetService.updateApplicationsDataset().catch(() => {});
+            
+            if (status === config.APPLICATION_STATUS.APROBADA) {
+                datasetService.updateCatsDataset().catch(() => {});
             }
 
             return ErrorHandler.success(
                 res,
                 { application },
-                `Solicitud $1{status} con éxito. Se crearon las tareas de seguimiento.`
+                `Solicitud ${status} con éxito. Se crearon las tareas de seguimiento.`
             );
 
         } catch (error) {
-            console.error('[updateApplicationStatus] ERROR:', error);
-            console.error('[updateApplicationStatus] Stack trace:', error.stack);
             return ErrorHandler.serverError(res, 'Error al actualizar solicitud', error);
         }
     }

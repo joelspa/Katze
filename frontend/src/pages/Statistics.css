@@ -2,7 +2,7 @@
 
 .statistics-container {
     /* min-height handled by page-container */
-    background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
+    background: var(--bg-secondary);
     padding: 80px 24px 60px;
 }
 
@@ -13,7 +13,7 @@
 
 /* Header con Resumen Ejecutivo */
 .stats-header {
-    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+    background: var(--color-primary);
     border-radius: 20px;
     padding: 40px;
     margin-bottom: 32px;
@@ -107,7 +107,7 @@
 }
 
 .kpi-card.featured {
-    background: linear-gradient(135deg, var(--color-success) 0%, var(--color-success-dark) 100%);
+    background: var(--color-success);
     color: var(--color-white);
     border: none;
 }
@@ -260,7 +260,7 @@
 }
 
 .progress-fill.success {
-    background: linear-gradient(90deg, var(--color-success) 0%, var(--color-success-dark) 100%);
+    background: var(--color-success);
 }
 
 .progress-stats {
@@ -325,7 +325,7 @@
 }
 
 .success-state {
-    background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(16, 185, 129, 0.2) 100%);
+    background: rgba(16, 185, 129, 0.15);
     border-radius: 20px;
     padding: 60px 40px;
     text-align: center;
@@ -367,17 +367,17 @@
 
 .summary-card.urgent {
     border-color: var(--color-error);
-    background: linear-gradient(135deg, rgba(239, 68, 68, 0.05) 0%, rgba(239, 68, 68, 0.1) 100%);
+    background: rgba(239, 68, 68, 0.08);
 }
 
 .summary-card.high {
     border-color: var(--color-warning);
-    background: linear-gradient(135deg, rgba(245, 158, 11, 0.05) 0%, rgba(245, 158, 11, 0.1) 100%);
+    background: rgba(245, 158, 11, 0.08);
 }
 
 .summary-card.medium {
     border-color: var(--color-info);
-    background: linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, rgba(59, 130, 246, 0.1) 100%);
+    background: rgba(59, 130, 246, 0.08);
 }
 
 .summary-number {
@@ -474,7 +474,7 @@
     align-items: center;
     justify-content: center;
     font-size: 3rem;
-    background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
+    background: var(--bg-secondary);
 }
 
 .priority-info {
@@ -541,7 +541,7 @@
 }
 
 .action-btn.primary {
-    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+    background: var(--color-primary);
     color: var(--color-white);
 }
 
@@ -617,22 +617,22 @@
 
 .action-card.urgent {
     border-color: var(--color-error);
-    background: linear-gradient(135deg, var(--surface-card) 0%, rgba(239, 68, 68, 0.05) 100%);
+    background: rgba(239, 68, 68, 0.05);
 }
 
 .action-card.high {
     border-color: var(--color-warning);
-    background: linear-gradient(135deg, var(--surface-card) 0%, rgba(245, 158, 11, 0.05) 100%);
+    background: rgba(245, 158, 11, 0.05);
 }
 
 .action-card.medium {
     border-color: var(--color-info);
-    background: linear-gradient(135deg, var(--surface-card) 0%, rgba(59, 130, 246, 0.05) 100%);
+    background: rgba(59, 130, 246, 0.05);
 }
 
 .action-card.low {
     border-color: var(--color-success);
-    background: linear-gradient(135deg, var(--surface-card) 0%, rgba(16, 185, 129, 0.05) 100%);
+    background: rgba(16, 185, 129, 0.05);
 }
 
 .action-header {
@@ -680,27 +680,27 @@
 }
 
 .action-button.error {
-    background: linear-gradient(135deg, var(--color-error) 0%, var(--color-error-dark) 100%);
+    background: var(--color-error);
     color: var(--color-white);
 }
 
 .action-button.warning {
-    background: linear-gradient(135deg, var(--color-warning) 0%, #ff8c00 100%);
+    background: var(--color-warning);
     color: var(--color-white);
 }
 
 .action-button.info {
-    background: linear-gradient(135deg, var(--color-info) 0%, var(--color-info-dark) 100%);
+    background: var(--color-info);
     color: var(--color-white);
 }
 
 .action-button.primary {
-    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+    background: var(--color-primary);
     color: var(--color-white);
 }
 
 .action-button.success {
-    background: linear-gradient(135deg, var(--color-success) 0%, var(--color-success-dark) 100%);
+    background: var(--color-success);
     color: var(--color-white);
 }
 
@@ -805,7 +805,7 @@
 
 /* ===== DARK MODE ===== */
 [data-theme="dark"] .statistics-container {
-  background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+  background: var(--bg-primary);
 }
 
 [data-theme="dark"] .section-title {
@@ -828,7 +828,7 @@
 }
 
 [data-theme="dark"] .stats-header {
-  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+  background: var(--color-primary);
 }
 
 [data-theme="dark"] .kpi-card,
@@ -879,7 +879,7 @@
 }
 
 [data-theme="dark"] .success-state {
-  background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(16, 185, 129, 0.08) 100%);
+  background: rgba(16, 185, 129, 0.12);
   border-color: var(--color-success);
 }
 

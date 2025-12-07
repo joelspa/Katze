@@ -40,26 +40,16 @@ const Login = () => {
             const API_URL = 'http://localhost:5000/api/auth/login';
             const response = await axios.post(API_URL, formData);
 
-            console.log('Respuesta completa:', response.data);
-
-            // El backend devuelve { success: true, data: { token, user } }
             const responseData = response.data.data || response.data;
             const { token, user } = responseData;
 
-            console.log('¡Login exitoso!');
-            console.log('Token:', token);
-            console.log('Usuario:', user);
-
-            // Valida que tengamos los datos necesarios
             if (!token || !user) {
                 setLoading(false);
                 throw new Error('Respuesta del servidor incompleta');
             }
 
-            // Guarda el token y usuario en el contexto y localStorage
             login(user, token);
 
-            // Redirige según el rol del usuario
             if (user.role === 'rescatista' || user.role === 'admin') {
                 navigate('/dashboard');
             } else {
@@ -67,7 +57,7 @@ const Login = () => {
             }
 
         } catch (error: unknown) {
-            setLoading(false); // Detener loading ANTES de mostrar el modal
+            setLoading(false);
             
             let errorMessage = 'Ocurrió un error desconocido';
             if (isAxiosError(error)) {
@@ -75,7 +65,6 @@ const Login = () => {
             } else if (error instanceof Error) {
                 errorMessage = error.message;
             }
-            console.error('Error en el login:', errorMessage);
             await showAlert(errorMessage, 'Error de Autenticación');
         }
     };

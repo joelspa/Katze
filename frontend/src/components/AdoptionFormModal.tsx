@@ -108,7 +108,6 @@ const AdoptionFormModal: React.FC<AdoptionFormModalProps> = ({ catId, catName, o
                 errorMessage = error.response?.data?.message || 'Error del servidor';
             }
             setError(errorMessage);
-            console.error(errorMessage);
         } finally {
             setIsSubmitting(false);
         }

@@ -7,12 +7,28 @@
     <meta name="description" content="Katze - Plataforma de adopción responsable de gatos. Encuentra tu compañero felino perfecto." />
     <title>Katze - Adopción Responsable de Gatos</title>
     
-    <!-- Preconnect para optimizar carga de fuentes -->
+    <!-- Preconnect para optimizar carga de fuentes e imágenes -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://images.pexels.com" />
+    <link rel="preconnect" href="https://images.unsplash.com" />
+    <link rel="dns-prefetch" href="https://placehold.co" />
     
-    <!-- Google Fonts optimizado con &display=swap para evitar FOIT -->
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Open+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
+    <!-- Preload LCP banner image for faster initial render -->
+    <link 
+      rel="preload" 
+      as="image" 
+      href="https://images.pexels.com/photos/1741205/pexels-photo-1741205.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&dpr=1&fm=webp&fit=crop"
+      fetchpriority="high"
+    />
+    
+    <!-- Google Fonts optimizado con display=swap y async loading -->
+    <link 
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Open+Sans:wght@400;500;600;700&display=swap" 
+      rel="stylesheet" 
+      media="print" 
+      onload="this.media='all'; this.onload=null;"
+    />
     <noscript>
       <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Open+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
     </noscript>

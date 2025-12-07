@@ -30,7 +30,6 @@ const getStoredUser = (): User | null => {
         }
         return JSON.parse(storedUser);
     } catch (error) {
-        console.error('Error al parsear usuario desde localStorage:', error);
         // Limpia el localStorage corrupto
         localStorage.removeItem('user');
         return null;
@@ -72,7 +71,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     // Guarda usuario y token en estado + localStorage (optimizado con useCallback)
     const login = useCallback((user: User, token: string) => {
         if (!user || !token) {
-            console.error('Intento de login con datos inválidos:', { user, token });
             return;
         }
         
@@ -81,7 +79,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             localStorage.setItem('token', token);
             localStorage.setItem('user', JSON.stringify(user));
         } catch (error) {
-            console.error('Error al guardar en localStorage:', error);
+            // Error silencioso
         }
         
         // Luego actualiza el estado

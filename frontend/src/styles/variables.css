@@ -1,86 +1,84 @@
 /**
  * VARIABLES CSS - SISTEMA DE DISEÑO KATZE
  * Paleta: Turquesa Menta + Azul Marino + Naranja Atardecer
- * Filosofía: Limpio, Aireado, Moderno - Clínica Veterinaria de Lujo
+ * Modo: Oscuro permanente
  */
 
-:root {
-  /* ===== PALETA DE COLORES PRINCIPAL ===== */
-
-  /* Primary - Turquesa Menta (Identidad) */
-  --color-primary: #2EC4B6;
-  --color-primary-light: #5DD5C8;
-  --color-primary-dark: #24A89D;
-  --color-primary-hover: #28B5A8;
-
-  /* Secondary - Azul Marino Profundo (Base) */
-  --color-secondary: #011627;
-  --color-secondary-light: #1E3A5F;
-  --color-secondary-dark: #000B14;
-
-  /* Accent - Naranja Atardecer (Acción) */
+:root,
+[data-theme="dark"] {
+  /* ===== PALETA MAESTRA KATZE - MODO OSCURO OPTIMIZADO ===== */
+  
+  /* FONDOS - Deep Slate Base */
+  --bg-main: #0f172a;           /* Fondo principal de la página (Deep Slate) */
+  --bg-primary: #0f172a;        /* Alias para compatibilidad */
+  --bg-card: #1e293b;           /* Fondo de tarjetas (Lighter Slate) */
+  --bg-secondary: #1e293b;      /* Alias para compatibilidad */
+  --bg-tertiary: #334155;       /* Nivel terciario */
+  --bg-glass: rgba(30, 41, 59, 0.8);     /* Glass morphism */
+  --bg-glass-dark: rgba(15, 23, 42, 0.95); /* Glass más oscuro */
+  
+  /* SUPERFICIES - Elevación mediante sutiles diferencias */
+  --surface-card: #1e293b;      /* Tarjetas principales */
+  --surface-panel: #334155;     /* Paneles elevados */
+  --surface-elevated: #475569;  /* Máxima elevación */
+  
+  /* MARCA - Teal Brillante (Color Principal) */
+  --color-primary: #2dd4bf;     /* Teal principal - Tu identidad */
+  --primary: #2dd4bf;           /* Alias corto */
+  --color-primary-light: #5eead4;  /* Teal más claro */
+  --color-primary-dark: #14b8a6;   /* Teal oscuro para hover */
+  --color-primary-hover: #14b8a6;  /* Hover state */
+  --primary-hover: #14b8a6;     /* Alias */
+  
+  /* ACENTO SECUNDARIO - Naranja Cálido (Mantener para diversidad) */
   --color-accent: #FF9F1C;
   --color-accent-light: #FFB84D;
   --color-accent-dark: #E68A00;
   --color-accent-hover: #FF8C00;
-
-  /* Neutrals - Grises y Blancos */
-  --color-white: #FFFFFF;
-  --color-black: #333333;
-  /* Gris Carbón para texto */
-  --color-gray-50: #F0F3F5;
-  /* Gris Nube / Menta muy pálido */
-  --color-gray-100: #E8EDEF;
-  --color-gray-200: #D1DBE0;
-  --color-gray-300: #B4C2CA;
-  --color-gray-400: #8FA3AD;
-  --color-gray-500: #6B8491;
-  --color-gray-600: #556B77;
-  --color-gray-700: #3E525D;
-  --color-gray-800: #2A3A44;
-  --color-gray-900: #333333;
-
-  /* Estados con la nueva paleta */
-  --color-success: #2EC4B6;
-  --color-success-light: #5DD5C8;
-  --color-success-dark: #24A89D;
-
-  --color-warning: #FF9F1C;
-  --color-warning-light: #FFB84D;
-  --color-warning-dark: #E68A00;
-
-  --color-error: #E63946;
-  --color-error-light: #F15B67;
-  --color-error-dark: #C8202E;
-
-  --color-info: #2EC4B6;
-  --color-info-light: #5DD5C8;
-  --color-info-dark: #24A89D;
-
-  /* Backgrounds - Limpios y Aireados */
-  --bg-primary: #FFFFFF;
-  --bg-secondary: #F0F3F5;
-  /* Gris Nube */
-  --bg-tertiary: #E8EDEF;
-  --bg-glass: rgba(255, 255, 255, 0.95);
-  --bg-glass-dark: rgba(1, 22, 39, 0.95);
-
-  /* Superficies */
-  --surface-card: #FFFFFF;
-  --surface-panel: #F0F3F5;
-  --surface-elevated: #FFFFFF;
-
-  /* Bordes */
-  --border-default: #D1DBE0;
-  --border-muted: #E8EDEF;
-  --border-dark: #B4C2CA;
-
-  /* Gradients con nueva paleta */
-  --gradient-primary: linear-gradient(135deg, #2EC4B6 0%, #24A89D 100%);
-  --gradient-secondary: linear-gradient(135deg, #011627 0%, #1E3A5F 100%);
-  --gradient-accent: linear-gradient(135deg, #FF9F1C 0%, #E68A00 100%);
-  --gradient-warm: linear-gradient(135deg, #2EC4B6 0%, #5DD5C8 100%);
-  --gradient-hero: linear-gradient(135deg, rgba(46, 196, 182, 0.1) 0%, rgba(240, 243, 245, 0.9) 100%);
+  
+  /* TEXTOS - Jerarquía Visual Optimizada */
+  --text-high: #f8fafc;         /* Títulos, encabezados (Casi blanco puro) */
+  --text-body: #cbd5e1;         /* Párrafos, descripciones (Gris azulado claro) - LEGIBILIDAD */
+  --text-muted: #94a3b8;        /* Metadatos, detalles secundarios (Slate-400) */
+  --color-white: #f8fafc;       /* Blanco principal */
+  --color-black: #0f172a;       /* Negro para texto en botones teal */
+  
+  /* GRISES - Escala Slate (Azul Pizarra) */
+  --color-gray-50: #f8fafc;
+  --color-gray-100: #f1f5f9;
+  --color-gray-200: #e2e8f0;
+  --color-gray-300: #cbd5e1;
+  --color-gray-400: #94a3b8;
+  --color-gray-500: #64748b;
+  --color-gray-600: #475569;
+  --color-gray-700: #334155;
+  --color-gray-800: #1e293b;
+  --color-gray-900: #0f172a;
+  
+  /* ESTADOS - Feedback Visual */
+  --color-success: #10b981;     /* Verde esmeralda */
+  --color-success-light: #34d399;
+  --color-success-dark: #059669;
+  
+  --color-warning: #f59e0b;     /* Ámbar */
+  --color-warning-light: #fbbf24;
+  --color-warning-dark: #d97706;
+  
+  --color-error: #ef4444;       /* Rojo */
+  --color-error-light: #f87171;
+  --color-error-dark: #dc2626;
+  
+  --color-info: #2dd4bf;        /* Teal (mismo que primary) */
+  --color-info-light: #5eead4;
+  --color-info-dark: #14b8a6;
+  
+  /* BORDES - Sutiles para modo oscuro */
+  --border-subtle: rgba(255, 255, 255, 0.1);  /* El secreto del diseño premium */
+  --border-default: rgba(255, 255, 255, 0.1);
+  --border-muted: rgba(255, 255, 255, 0.05);
+  --border-bright: rgba(255, 255, 255, 0.2);
+  --border-dark: #334155;
+  --border-light: #475569;
 
   /* ===== TYPOGRAPHY - Google Fonts ===== */
   --font-family-primary: 'Open Sans', 'Lato', system-ui, -apple-system, sans-serif;
@@ -104,31 +102,38 @@
   /* ===== TRANSITIONS ===== */
   --transition-base: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   --transition-bounce: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-  /* ===== SPACING ===== */
-  --spacing-xs: 0.5rem;
-  --spacing-sm: 0.75rem;
-  --spacing-md: 1rem;
-  --spacing-lg: 1.5rem;
-  --spacing-xl: 2rem;
-  --spacing-2xl: 3rem;
-  --spacing-3xl: 5rem;
+  /* ===== SPACING - Sistema 8pt ===== */
+  --spacing-xs: 0.25rem;    /* 4px - detalles finos */
+  --spacing-sm: 0.5rem;     /* 8px */
+  --spacing-md: 1rem;       /* 16px */
+  --spacing-lg: 1.5rem;     /* 24px */
+  --spacing-xl: 2rem;       /* 32px */
+  --spacing-2xl: 2.5rem;    /* 40px */
+  --spacing-3xl: 3rem;      /* 48px */
+  --spacing-4xl: 4rem;      /* 64px */
+  --spacing-5xl: 5rem;      /* 80px */
+  --spacing-6xl: 7.5rem;    /* 120px - separación entre secciones grandes */
 
-  /* ===== CONTAINERS ===== */
-  --container-sm: 640px;
-  --container-md: 768px;
-  --container-lg: 1024px;
-  --container-xl: 1280px;
+  /* ===== CONTAINERS - Responsive ===== */
+  --container-mobile: 100%;       /* Móvil: ancho completo con padding */
+  --container-sm: 640px;          /* Tablet pequeña */
+  --container-md: 750px;          /* Tablet */
+  --container-lg: 1140px;         /* Laptop */
+  --container-xl: 1320px;         /* Escritorio */
+  --container-2xl: 1440px;        /* Escritorio grande */
+  --container-reading: 700px;     /* Óptimo para contenido de lectura */
 
-  /* ===== FONT SIZES ===== */
-  --font-size-xs: 0.75rem;
-  --font-size-sm: 0.875rem;
-  --font-size-base: 1rem;
-  --font-size-lg: 1.125rem;
-  --font-size-xl: 1.25rem;
-  --font-size-2xl: 1.5rem;
-  --font-size-3xl: 1.875rem;
-  --font-size-4xl: 2.25rem;
-  --font-size-5xl: 3rem;
+  /* ===== FONT SIZES - Escala tipográfica rem (base 16px) ===== */
+  --font-size-xs: 0.75rem;    /* 12px */
+  --font-size-sm: 0.875rem;   /* 14px */
+  --font-size-base: 1rem;     /* 16px - texto cuerpo */
+  --font-size-lg: 1.125rem;   /* 18px - texto cuerpo grande */
+  --font-size-xl: 1.25rem;    /* 20px - H5, H4 */
+  --font-size-2xl: 1.5rem;    /* 24px - H3 */
+  --font-size-3xl: 2rem;      /* 32px - H2 */
+  --font-size-4xl: 3rem;      /* 48px - H1 móvil */
+  --font-size-5xl: 4rem;      /* 64px - H1 escritorio */
+  --font-size-6xl: 4.5rem;    /* 72px - Hero titles */
 
   /* ===== FONT WEIGHTS ===== */
   --font-weight-normal: 400;
@@ -137,6 +142,14 @@
   --font-weight-bold: 700;
   --font-weight-extrabold: 800;
   --container-2xl: 1536px;
+
+  /* ===== Z-INDEX HIERARCHY ===== */
+  --z-base: 0;              /* Elementos base */
+  --z-dropdown: 100;        /* Dropdowns y tooltips */
+  --z-sticky: 1000;         /* Navbar y elementos sticky */
+  --z-modal-backdrop: 10000; /* Overlay de modales */
+  --z-modal: 10001;         /* Contenido de modales */
+  --z-toast: 10002;         /* Notificaciones toast */
 }
 
 /* ===== MODO OSCURO - NOCHE DE GATOS ===== */
@@ -194,39 +207,11 @@
   --border-muted: #152d45;
   --border-dark: #2a4a67;
 
-  /* Shadows - Más sutiles, casi imperceptibles */
+  /* Shadows - Sutiles */
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
   --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.25);
   --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.6), 0 10px 10px -5px rgba(0, 0, 0, 0.3);
   --shadow-glow: 0 0 20px rgba(46, 196, 182, 0.2);
-  /* Glow más sutil */
   --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.4);
-
-  /* Gradients ajustados para oscuridad */
-  --gradient-primary: linear-gradient(135deg, #2EC4B6 0%, #24A89D 100%);
-  --gradient-secondary: linear-gradient(135deg, #0B253A 0%, #152d45 100%);
-  --gradient-accent: linear-gradient(135deg, #FF9F1C 0%, #E68A00 100%);
-  --gradient-warm: linear-gradient(135deg, #2EC4B6 0%, #5DD5C8 100%);
-  --gradient-hero: linear-gradient(135deg, rgba(46, 196, 182, 0.05) 0%, rgba(11, 37, 58, 0.9) 100%);
-
-  /* Estados con mejor contraste */
-  --color-success: #2EC4B6;
-  --color-success-light: #5DD5C8;
-  --color-success-dark: #24A89D;
-
-  --color-warning: #FFB84D;
-  /* Más claro para mejor visibilidad */
-  --color-warning-light: #FFD699;
-  --color-warning-dark: #FF9F1C;
-
-  --color-error: #F15B67;
-  /* Más claro */
-  --color-error-light: #FF8A92;
-  --color-error-dark: #E63946;
-
-  --color-info: #5DD5C8;
-  /* Turquesa más claro */
-  --color-info-light: #8DE5DB;
-  --color-info-dark: #2EC4B6;
 }

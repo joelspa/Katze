@@ -54,28 +54,44 @@ const AdoptionProcessModal = ({ isOpen, onClose }: AdoptionProcessModalProps) =>
                         <h3>Requisitos Previos</h3>
                         <div className="requirements-checklist">
                             <div className="checklist-item">
-                                <span className="check">✓</span>
+                                <span className="check">
+                                    <svg viewBox="0 0 24 24" fill="currentColor" style={{width: '20px', height: '20px'}}>
+                                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                                    </svg>
+                                </span>
                                 <div>
                                     <strong>Ser mayor de edad</strong>
                                     <p>Para poder firmar el compromiso de adopción responsable.</p>
                                 </div>
                             </div>
                             <div className="checklist-item">
-                                <span className="check">✓</span>
+                                <span className="check">
+                                    <svg viewBox="0 0 24 24" fill="currentColor" style={{width: '20px', height: '20px'}}>
+                                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                                    </svg>
+                                </span>
                                 <div>
                                     <strong>Amor por los animales</strong>
                                     <p>Ganas de darle una segunda oportunidad a un gato rescatado.</p>
                                 </div>
                             </div>
                             <div className="checklist-item">
-                                <span className="check">✓</span>
+                                <span className="check">
+                                    <svg viewBox="0 0 24 24" fill="currentColor" style={{width: '20px', height: '20px'}}>
+                                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                                    </svg>
+                                </span>
                                 <div>
                                     <strong>Compromiso de cuidado</strong>
                                     <p>Los gatos pueden vivir 15-20 años. Compromiso de cuidarlo toda su vida.</p>
                                 </div>
                             </div>
                             <div className="checklist-item">
-                                <span className="check">✓</span>
+                                <span className="check">
+                                    <svg viewBox="0 0 24 24" fill="currentColor" style={{width: '20px', height: '20px'}}>
+                                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                                    </svg>
+                                </span>
                                 <div>
                                     <strong>Responsabilidad</strong>
                                     <p>Compromiso de proporcionar alimentación, cuidados básicos y cariño.</p>

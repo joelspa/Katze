@@ -36,8 +36,7 @@ const Register = () => {
         e.preventDefault();
         try {
             const API_URL = 'http://localhost:5000/api/auth/register';
-            const response = await axios.post(API_URL, formData);
-            console.log('¡Usuario registrado!', response.data);
+            await axios.post(API_URL, formData);
             await showAlert('¡Registro exitoso! Ya puedes iniciar sesión con tu cuenta.', 'Registro Completado');
 
         } catch (error: unknown) {

@@ -1,6 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { ThemeToggle } from './ThemeToggle';
 import './Navbar.css';
 
 const Navbar = () => {
@@ -69,10 +68,6 @@ const Navbar = () => {
                         <Link to="/education" className="nav-link" onClick={handleBlogClick}>
                             Blog
                         </Link>
-                    </li>
-
-                    <li className="nav-item">
-                        <ThemeToggle />
                     </li>
 
                     {isLoggedIn ? (

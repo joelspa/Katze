@@ -18,6 +18,42 @@ class ApplicationService {
         return result.rows[0];
     }
 
+    // Guarda los resultados de la evaluación automática de IA
+    async saveAIEvaluation(applicationId, evaluation) {
+        const result = await db.query(
+            `UPDATE adoption_applications 
+             SET ai_decision = $1, 
+                 ai_score = $2, 
+                 ai_auto_reject_reason = $3, 
+                 ai_risk_analysis = $4, 
+                 ai_evaluated_at = NOW()
+             WHERE id = $5
+             RETURNING *`,
+            [
+                evaluation.decision,
+                evaluation.score,
+                evaluation.auto_reject_reason || null,
+                evaluation.risk_analysis,
+                applicationId
+            ]
+        );
+        
+        return result.rows[0];
+    }
+
+    // Rechaza automáticamente una solicitud basado en evaluación de IA
+    async autoRejectApplication(applicationId, reason) {
+        const result = await db.query(
+            `UPDATE adoption_applications 
+             SET status = 'rechazada'
+             WHERE id = $1
+             RETURNING *`,
+            [applicationId]
+        );
+        
+        return result.rows[0];
+    }
+
     // Obtiene las solicitudes recibidas por un rescatista
     async getApplicationsByRescuer(rescuerId) {
         const query = `

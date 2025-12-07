@@ -1,8 +1,9 @@
 // Configuración de Firebase
-// Setup de Firebase para almacenamiento de imágenes
+// Setup de Firebase para almacenamiento de imágenes y Firestore database
 
 import { initializeApp } from 'firebase/app';
 import { getStorage } from 'firebase/storage';
+import { getFirestore } from 'firebase/firestore';
 
 // Configuración del proyecto Firebase
 const firebaseConfig = {
@@ -19,3 +20,6 @@ const app = initializeApp(firebaseConfig);
 
 // Exporta el servicio de storage para subir imágenes
 export const storage = getStorage(app);
+
+// Exporta el servicio de Firestore para registros de aplicaciones
+export const db = getFirestore(app);

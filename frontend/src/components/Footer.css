@@ -1,7 +1,7 @@
 /* Footer.css - Modern Footer Design with Social Links */
 
 .footer {
-    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+    background: var(--color-primary);
     color: var(--color-white);
     padding: 60px 0 0;
     margin-top: 80px;
@@ -107,7 +107,7 @@
 
 /* Instagram */
 .social-link.instagram {
-    background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+    background: #f09433;
     color: white;
 }
 

@@ -1,202 +1,189 @@
-/* CatCard - Clean & Aireado - Protagonista: Fotos de Gatos */
+/* ===========================
+   PROFESSIONAL CAT CARD
+   Fixed 440px height, perfect alignment
+   =========================== */
+
 .cat-card {
+  background-color: #1e293b;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-md);
-  padding-bottom: var(--spacing-md);
-  background: var(--surface-card);
-  border-radius: var(--border-radius-xl);
-  box-shadow: var(--shadow-card);
-  overflow: hidden;
-  transition: all var(--transition-base);
-  cursor: pointer;
-  height: 100%;
+  height: 440px; /* ALTURA FIJA: El secreto de la alineación perfecta */
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s;
   position: relative;
-  border: 2px solid transparent;
+  cursor: pointer;
 }
 
+/* Efecto Hover: La tarjeta "flota" al pasar el mouse */
 .cat-card:hover {
-  box-shadow: 0 8px 24px rgba(46, 196, 182, 0.2);
-  transform: translateY(-6px);
-  border-color: var(--color-primary);
+  transform: translateY(-8px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+  border-color: #2dd4bf; /* Borde Teal brillante */
 }
 
-.cat-card:active {
-  transform: translateY(-2px);
-  transition: all 0.1s ease;
+/* --- 1. IMAGEN --- */
+.card-image {
+  height: 220px; /* Ocupa exactamente la mitad superior */
+  width: 100%;
+  position: relative;
+  background-color: #0f172a; /* Fondo por si la imagen es transparente */
+  overflow: hidden;
 }
 
-/* Dark overlay removed - not needed with contain fit */
-.cat-card::before {
-  content: none;
-}
-
+.card-image img,
 .cat-card-img {
   width: 100%;
-  height: 280px;
-  object-fit: cover;
-  object-position: center;
-  background-color: #f5f5f5;
+  height: 100%;
+  object-fit: cover; /* Recorta la foto para llenar el espacio sin deformar */
+  transition: transform 0.5s ease;
 }
 
-.cat-card-body {
-  padding: var(--spacing-lg);
+/* Zoom suave en la foto al hacer hover */
+.cat-card:hover .card-image img,
+.cat-card:hover .cat-card-img {
+  transform: scale(1.08);
+}
+
+.badge-status {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: #22c55e; /* Verde Disponible */
+  color: white;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  z-index: 10;
+}
+
+/* Hover overlay */
+.hover-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(15, 23, 42, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 5;
+}
+
+.cat-card:hover .hover-overlay {
+  opacity: 1;
+}
+
+.hover-overlay span {
+  color: white;
+  font-size: 1rem;
+  font-weight: 600;
+  padding: 10px 20px;
+  border: 2px solid #2dd4bf;
+  border-radius: 8px;
+  background: rgba(45, 212, 191, 0.1);
+}
+
+/* FLOATING AGE BADGE */
+.badge-age {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: rgba(15, 23, 42, 0.85);
+  color: var(--primary);
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  backdrop-filter: blur(4px);
+  z-index: 10;
+}
+
+/* --- 2. CUERPO DE DATOS --- */
+.card-body {
+  padding: 20px;
   display: flex;
   flex-direction: column;
-  flex: 1;
-  gap: var(--spacing-xs);
-  position: relative;
-  z-index: 2;
-  /* Above overlay */
+  flex: 1; /* Ocupa todo el espacio restante */
 }
 
-.cat-card-header {
+.card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: var(--spacing-md);
+  margin-bottom: 4px;
+}
+
+.cat-name {
+  margin: 0;
+  color: #ffffff;
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+
+.cat-gender {
+  font-size: 1.2rem;
+  color: #94a3b8; /* Gris suave */
+}
+
+.cat-gender.male { 
+  color: #60a5fa; /* Azulito para machos */
+}
+
+.cat-gender.female { 
+  color: #f472b6; /* Rosita para hembras */
+}
+
+.cat-meta {
+  color: #94a3b8;
+  font-size: 0.9rem;
+  margin-top: 0;
+  margin-bottom: 16px;
+}
+
+/* --- 3. CHIPS (Etiquetas) --- */
+.chips-container {
+  display: flex;
   flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: auto; /* IMPORTANTE: Esto empuja el botón al final */
 }
 
-.cat-card-title {
-  font-size: var(--font-size-lg);
-  font-weight: var(--font-weight-bold);
-  line-height: var(--line-height-tight);
-  color: var(--color-gray-900);
-  margin: 0;
-  flex: 1;
-  min-width: 0;
+.chip {
+  background: rgba(45, 212, 191, 0.1); /* Fondo Teal muy transparente */
+  color: #2dd4bf; /* Texto Teal */
+  border: 1px solid rgba(45, 212, 191, 0.2);
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 500;
 }
 
-.cat-card-age-container {
-  display: flex;
-  align-items: center;
-  padding: 6px 12px;
-  background: rgba(59, 130, 246, 0.08);
-  border-radius: 20px;
-  border: 1px solid rgba(59, 130, 246, 0.15);
-  flex-shrink: 0;
-}
-
-.cat-card-age-text {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.cat-card-age-main {
-  font-size: 14px;
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-primary);
-  line-height: 1;
-}
-
-.cat-card-age-subtitle {
-  font-size: 11px;
-  color: var(--color-gray-500);
-  line-height: 1;
-}
-
-.cat-card-text {
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-normal);
-  line-height: var(--line-height-normal);
-  color: var(--color-gray-700);
-  margin: 0;
-  flex-grow: 1;
-  /* Empuja el contenido siguiente hacia abajo */
-}
-
-.cat-card-description {
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-normal);
-  line-height: var(--line-height-relaxed);
-  color: var(--color-gray-700);
-  margin: var(--spacing-sm) 0;
-  flex-grow: 1;
-}
-
-.cat-card-status {
-  display: inline-block;
-  padding: 0.25rem var(--spacing-sm);
-  border-radius: var(--border-radius-full);
-  font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-semibold);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  margin-top: var(--spacing-xs);
-}
-
-.status-esterilizado {
-  background-color: rgba(46, 196, 182, 0.15);
-  color: var(--color-primary-dark);
-  border: 1px solid rgba(46, 196, 182, 0.3);
-}
-
-.status-pendiente {
-  background-color: rgba(255, 159, 28, 0.15);
-  color: var(--color-accent-dark);
-  border: 1px solid rgba(255, 159, 28, 0.3);
-}
-
-.cat-card-button {
-  display: flex;
+/* --- 4. BOTÓN --- */
+.btn-action {
   width: 100%;
-  align-items: center;
-  justify-content: center;
-  padding: 0.75rem var(--spacing-lg);
-  margin-top: auto;
-  /* Siempre al final de la card */
-  background: var(--gradient-accent);
-  color: var(--color-white);
-  text-decoration: none;
-  border-radius: var(--border-radius-md);
-  border: none;
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-bold);
-  font-family: var(--font-family-heading);
-  letter-spacing: 0.02em;
+  padding: 12px;
+  margin-top: 20px;
+  background-color: transparent;
+  border: 1px solid #2dd4bf;
+  color: #2dd4bf;
+  border-radius: 8px;
+  font-weight: 700;
   cursor: pointer;
-  transition: all var(--transition-base);
-  box-shadow: 0 4px 12px rgba(255, 159, 28, 0.3);
+  transition: all 0.2s;
 }
 
-.cat-card-button:hover {
-  background: var(--color-accent-hover);
-  transform: translateY(-2px);
-  text-decoration: none;
-  box-shadow: 0 6px 16px rgba(255, 159, 28, 0.4);
-}
-
-/* Badges de Raza y Tipo de Vivienda */
-.cat-card-badges {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--spacing-xs);
-  margin: var(--spacing-sm) 0;
-}
-
-.cat-card-breed-badge,
-.cat-card-living-badge {
-  display: inline-flex;
-  align-items: center;
-  padding: 0.35rem var(--spacing-sm);
-  border-radius: var(--border-radius-full);
-  font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-semibold);
-  white-space: nowrap;
-}
-
-.cat-card-breed-badge {
-  background: rgba(46, 196, 182, 0.1);
-  color: var(--color-primary-dark);
-  border: 1.5px solid rgba(46, 196, 182, 0.25);
-}
-
-.cat-card-living-badge {
-  background: rgba(1, 22, 39, 0.08);
-  color: var(--color-secondary);
-  border: 1.5px solid rgba(1, 22, 39, 0.15);
+/* Hover del botón: Se rellena de color */
+.btn-action:hover, 
+.cat-card:hover .btn-action {
+  background-color: #2dd4bf;
+  color: #0f172a; /* Texto oscuro para contraste perfecto */
 }
 
 /* ===========================
@@ -206,7 +193,7 @@
 .cat-card-image-container {
   position: relative;
   width: 100%;
-  height: 280px;
+  height: 240px;
   overflow: hidden;
   background: var(--color-gray-200);
   user-select: none;
@@ -320,8 +307,26 @@
 
 /* Responsive para móvil */
 @media (max-width: 768px) {
+  .cat-card {
+    height: 420px;
+  }
+
+  .card-image,
   .cat-card-image-container {
-    height: 240px;
+    height: 200px;
+  }
+  
+  .card-body {
+    padding: 18px;
+  }
+  
+  .cat-name {
+    font-size: 1.25rem;
+  }
+  
+  .btn-action {
+    padding: 10px;
+    font-size: 0.9rem;
   }
   
   /* En móvil, mostrar siempre los botones */
@@ -346,8 +351,35 @@
 }
 
 @media (max-width: 480px) {
+  .cat-card {
+    height: 400px;
+  }
+
+  .card-image,
   .cat-card-image-container {
-    height: 220px;
+    height: 190px;
+  }
+  
+  .card-body {
+    padding: 16px;
+  }
+  
+  .cat-name {
+    font-size: 1.15rem;
+  }
+  
+  .cat-meta {
+    font-size: 0.85rem;
+  }
+  
+  .chip {
+    font-size: 0.75rem;
+    padding: 3px 8px;
+  }
+  
+  .btn-action {
+    padding: 10px;
+    font-size: 0.85rem;
   }
   
   /* Dots más grandes en móvil */
@@ -459,6 +491,63 @@
   background: var(--color-primary);
 }
 
-[data-theme="dark"] .cat-card-description {
-  color: rgba(230, 241, 255, 0.80);
+[data-theme="dark"] .cat-card {
+  background: #1e293b;
+  border-color: rgba(255, 255, 255, 0.05);
+}
+
+[data-theme="dark"] .cat-card:hover {
+  border-color: #2dd4bf;
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+}
+
+[data-theme="dark"] .badge-age {
+  background: rgba(15, 23, 42, 0.95);
+  border: 1px solid var(--primary);
+}
+
+[data-theme="dark"] .badge-status {
+  background: #22c55e;
+}
+
+[data-theme="dark"] .hover-overlay {
+  background: rgba(15, 23, 42, 0.85);
+}
+
+[data-theme="dark"] .cat-name {
+  color: #ffffff;
+}
+
+[data-theme="dark"] .cat-gender {
+  color: #94a3b8;
+}
+
+[data-theme="dark"] .cat-gender.male {
+  color: #60a5fa;
+}
+
+[data-theme="dark"] .cat-gender.female {
+  color: #f472b6;
+}
+
+[data-theme="dark"] .cat-meta {
+  color: #94a3b8;
+}
+
+[data-theme="dark"] .chip {
+  background: rgba(45, 212, 191, 0.1);
+  color: #2dd4bf;
+  border-color: rgba(45, 212, 191, 0.2);
+}
+
+[data-theme="dark"] .btn-action {
+  background: transparent;
+  border-color: #2dd4bf;
+  color: #2dd4bf;
+}
+
+[data-theme="dark"] .btn-action:hover,
+[data-theme="dark"] .cat-card:hover .btn-action {
+  background: #2dd4bf;
+  color: #0f172a;
 }

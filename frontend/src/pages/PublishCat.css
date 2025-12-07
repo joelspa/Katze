@@ -15,7 +15,7 @@
 }
 
 .publish-header {
-    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+    background: var(--color-primary);
     color: var(--color-white);
     padding: 40px;
     text-align: center;
@@ -252,7 +252,7 @@
     padding: 16px;
     font-size: 16px;
     font-weight: var(--font-weight-semibold);
-    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+    background: var(--color-primary);
     color: var(--color-white);
     border: none;
     border-radius: 8px;
@@ -322,7 +322,7 @@
 }
 
 [data-theme="dark"] .publish-header {
-  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+  background: var(--color-primary);
   color: var(--color-secondary);
 }
 

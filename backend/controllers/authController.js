@@ -2,6 +2,7 @@
 // Gestiona las peticiones HTTP relacionadas con autenticación
 
 const authService = require('../services/authService');
+const datasetService = require('../services/datasetService');
 const Validator = require('../utils/validator');
 const ErrorHandler = require('../utils/errorHandler');
 
@@ -44,8 +45,9 @@ class AuthController {
             // Encripta la contraseña
             const passwordHash = await authService.hashPassword(password);
 
-            // Crea el nuevo usuario (con teléfono opcional)
             const newUser = await authService.createUser(email, passwordHash, fullName, role, phone);
+
+            datasetService.updateUsersDataset().catch(() => {});
 
             return ErrorHandler.created(res, { user: newUser }, 'Usuario registrado con éxito');
 

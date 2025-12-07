@@ -39,13 +39,10 @@ const Profile = () => {
             const token = localStorage.getItem('token');
             
             if (!token) {
-                console.error('No hay token de autenticación');
                 alert('No estás autenticado. Por favor inicia sesión.');
                 setLoading(false);
                 return;
             }
-
-            console.log('Cargando perfil con token:', token.substring(0, 20) + '...');
             
             const response = await axios.get('http://localhost:5000/api/users/profile', {
                 headers: {
@@ -53,12 +50,9 @@ const Profile = () => {
                 }
             });
 
-            console.log('Respuesta del servidor:', response.data);
-
             const profileData = response.data.data?.user || response.data.user || response.data.data;
             
             if (!profileData) {
-                console.error('No se encontró información del usuario en la respuesta');
                 alert('Error: No se pudo obtener la información del perfil');
                 setLoading(false);
                 return;
@@ -72,8 +66,6 @@ const Profile = () => {
             });
             setLoading(false);
         } catch (error: any) {
-            console.error('Error al cargar perfil:', error);
-            console.error('Detalles del error:', error.response?.data);
             alert(`Error al cargar perfil: ${error.response?.data?.message || error.message || 'Error desconocido'}`);
             setLoading(false);
         }
@@ -104,7 +96,6 @@ const Profile = () => {
             setIsEditing(false);
             alert('Perfil actualizado exitosamente');
         } catch (error: any) {
-            console.error('Error al actualizar perfil:', error);
             alert(error.response?.data?.message || 'Error al actualizar perfil');
         }
     };

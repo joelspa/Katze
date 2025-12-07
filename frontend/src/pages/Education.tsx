@@ -5,6 +5,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { useDebounce } from '../hooks/useDebounce';
 import axios, { isAxiosError } from 'axios';
 import Footer from '../components/Footer';
+import NewsModal from '../components/NewsModal';
 import './Education.css';
 
 interface EducationalPost {
@@ -24,6 +25,9 @@ const Education = () => {
     const [error, setError] = useState<string | null>(null);
     const [selectedCategory, setSelectedCategory] = useState<CategoryType>('todos');
     const [searchTerm, setSearchTerm] = useState('');
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedPost, setSelectedPost] = useState<EducationalPost | null>(null);
+    const [selectedPostCategory, setSelectedPostCategory] = useState<CategoryType>('todos');
     
     // Debounce para optimizar búsqueda
     const debouncedSearchTerm = useDebounce(searchTerm, 300);
@@ -217,71 +221,109 @@ const Education = () => {
                 </div>
             </div>
 
-            {/* Posts Grid */}
-            <div className="posts-section">
+            {/* News Section - Optimized Layout */}
+            <section className="news-section">
                 <div className="section-header">
-                    <h2>
-                        {selectedCategory === 'todos' ? 'Todos los Artículos' : 
-                         categories.find(c => c.id === selectedCategory)?.name}
-                    </h2>
-                    <p>
-                        {filteredPosts.length} artículo{filteredPosts.length !== 1 ? 's' : ''} 
-                        {selectedCategory !== 'todos' && ` en ${categories.find(c => c.id === selectedCategory)?.name}`}
-                    </p>
+                    <h2 className="section-title">Actualidad Katze</h2>
+                    <p className="section-subtitle">Eventos, campañas de esterilización y consejos para tu michi.</p>
                 </div>
 
                 {filteredPosts.length > 0 ? (
-                    <div className="posts-grid">
-                        {filteredPosts.map((post) => {
-                            const postCategory = categorizePost(post);
-                            const categoryInfo = categories.find(c => c.id === postCategory);
-                            
-                            return (
-                            <article key={post.id} className="education-card">
-                                {/* Badge de categoría */}
-                                {categoryInfo && (
-                                    <div className="card-category-badge">
-                                        <span className="category-icon">{categoryIcons[categoryInfo.id]}</span>
-                                        {categoryInfo.name}
-                                    </div>
-                                )}
+                    <div className="news-layout">
+                        {/* Featured Posts - First 3 */}
+                        <div className="featured-grid">
+                            {filteredPosts.slice(0, 3).map((post) => {
+                                const postCategory = categorizePost(post);
+                                const categoryInfo = categories.find(c => c.id === postCategory);
+                                
+                                const handleCardClick = () => {
+                                    setSelectedPost(post);
+                                    setSelectedPostCategory(postCategory);
+                                    setIsModalOpen(true);
+                                };
 
-                                {/* Imagen cuadrada si existe */}
-                                {post.image_url && (
-                                    <div className="card-image-container">
-                                        <img
-                                            src={post.image_url}
-                                            alt={post.title}
-                                            className="card-image"
-                                        />
-                                    </div>
-                                )}
-
-                                <div className="card-body-container">
-                                    <div className="card-header">
-                                        <h3>{post.title}</h3>
-                                        <div className="card-meta">
-                                            <span className="author">
-                                                <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-                                                    <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z" />
-                                                </svg>
-                                                {post.author_name}
-                                            </span>
-                                            <span className="date">
-                                                <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-                                                    <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1z" />
-                                                </svg>
-                                                {formatDate(post.created_at)}
+                                return (
+                                    <article key={post.id} className="news-card featured" onClick={handleCardClick}>
+                                        <div className="card-image-container">
+                                            <div className="date-badge">
+                                                <span className="badge-day">{new Date(post.created_at).getDate()}</span>
+                                                <span className="badge-month">{new Date(post.created_at).toLocaleDateString('es-ES', { month: 'short' }).toUpperCase()}</span>
+                                            </div>
+                                            <img 
+                                                src={post.image_url || 'https://via.placeholder.com/800x400/1e293b/2dd4bf?text=Katze'} 
+                                                alt={post.title}
+                                                className="featured-image"
+                                            />
+                                            <span className="category-badge">
+                                                {categoryIcons[postCategory]}
+                                                <span>{categoryInfo?.name || 'Blog'}</span>
                                             </span>
                                         </div>
-                                    </div>
-                                    <div className="card-content">
-                                        <p>{post.content}</p>
-                                    </div>
-                                </div>
-                            </article>
-                            );
-                        })}
+                                        
+                                        <div className="card-content">
+                                            <h3 className="card-title">{post.title}</h3>
+                                            <p className="card-excerpt">
+                                                {post.content.substring(0, 180)}...
+                                            </p>
+                                            
+                                            <div className="card-meta">
+                                                <span className="meta-item">
+                                                    <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
+                                                        <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z" />
+                                                    </svg>
+                                                    {post.author_name}
+                                                </span>
+                                                <span className="meta-separator">•</span>
+                                                <span className="meta-item">
+                                                    <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
+                                                        <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1z" />
+                                                    </svg>
+                                                    {formatDate(post.created_at)}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </article>
+                                );
+                            })}
+                        </div>
+
+                        {/* Secondary Posts Grid - Remaining posts */}
+                        {filteredPosts.length > 3 && (
+                            <div className="secondary-posts">
+                                {filteredPosts.slice(3).map((post) => {
+                                    const postCategory = categorizePost(post);
+                                    
+                                    const handleCardClick = () => {
+                                        setSelectedPost(post);
+                                        setSelectedPostCategory(postCategory);
+                                        setIsModalOpen(true);
+                                    };
+
+                                    return (
+                                        <article key={post.id} className="news-card secondary" onClick={handleCardClick}>
+                                            <div className="card-image-container">
+                                                <img 
+                                                    src={post.image_url || 'https://via.placeholder.com/160x160/1e293b/2dd4bf?text=📝'} 
+                                                    alt={post.title}
+                                                    className="secondary-image"
+                                                />
+                                                <span className="category-badge small">
+                                                    {categoryIcons[postCategory]}
+                                                </span>
+                                            </div>
+                                            <div className="card-content">
+                                                <span className="card-date">
+                                                    {formatDate(post.created_at)}
+                                                </span>
+                                                <h4 className="card-title">{post.title}</h4>
+                                                <p className="card-excerpt">{post.content.substring(0, 80)}...</p>
+                                                <span className="read-more-indicator">Leer más →</span>
+                                            </div>
+                                        </article>
+                                    );
+                                })}
+                            </div>
+                        )}
                     </div>
                 ) : searchTerm || selectedCategory !== 'todos' ? (
                     <div className="empty-state">
@@ -309,7 +351,16 @@ const Education = () => {
                         <p className="empty-subtitle">Pronto agregaremos artículos, charlas y recursos sobre cuidado felino.</p>
                     </div>
                 )}
-            </div>
+            </section>
+
+            {/* News Modal */}
+            <NewsModal 
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                post={selectedPost}
+                categoryName={categories.find(c => c.id === selectedPostCategory)?.name}
+                categoryIcon={categoryIcons[selectedPostCategory]}
+            />
 
             <Footer />
         </div>

@@ -129,7 +129,7 @@
 }
 
 .filter-group input::placeholder {
-    color: var(--color-gray-400);
+    color: var(--text-body);
 }
 
 /* Results Info */

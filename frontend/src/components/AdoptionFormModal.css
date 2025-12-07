@@ -14,7 +14,7 @@
   padding: var(--spacing-xl);
   padding-top: calc(var(--spacing-xl) + 20px);
   border-bottom: 2px solid var(--color-gray-200);
-  background: linear-gradient(135deg, var(--color-primary-light), var(--color-primary));
+  background: var(--color-primary);
   color: var(--color-white);
   text-align: center;
   flex-shrink: 0;
@@ -354,7 +354,7 @@
 }
 
 [data-theme="dark"] .modal-header {
-  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
+  background: var(--color-primary);
   border-bottom-color: var(--border-default);
 }
 

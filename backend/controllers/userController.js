@@ -2,6 +2,7 @@
 // Gestiona las peticiones HTTP para administración de usuarios (solo admin)
 
 const userService = require('../services/userService');
+const datasetService = require('../services/datasetService');
 const ErrorHandler = require('../utils/errorHandler');
 const config = require('../config/config');
 const Validator = require('../utils/validator');
@@ -56,6 +57,12 @@ class UserController {
             }
 
             const updatedUser = await userService.updateProfile(userId, { full_name, phone, email });
+            
+            
+            datasetService.updateUsersDataset().catch(err => 
+                console.error('Error updating dataset:', err.message)
+            );
+            
             return ErrorHandler.success(res, { user: updatedUser }, 'Perfil actualizado exitosamente');
 
         } catch (error) {
@@ -122,6 +129,12 @@ class UserController {
             }
 
             const updatedUser = await userService.updateUserRole(id, role);
+            
+            
+            datasetService.updateUsersDataset().catch(err => 
+                console.error('Error updating dataset:', err.message)
+            );
+            
             return ErrorHandler.success(res, updatedUser, 'Rol actualizado correctamente');
 
         } catch (error) {
@@ -188,6 +201,11 @@ class UserController {
 
             // Crear el usuario
             const newUser = await userService.createUser(email, passwordHash, fullName, role, phone || null);
+            
+            
+            datasetService.updateUsersDataset().catch(err => 
+                console.error('Error updating dataset:', err.message)
+            );
             
             return ErrorHandler.created(res, newUser, 'Usuario creado exitosamente');
 
