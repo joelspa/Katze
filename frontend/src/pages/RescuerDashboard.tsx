@@ -103,6 +103,11 @@ const RescuerDashboard = () => {
             const applicationsData = response.data.data?.applications || response.data.applications || response.data;
             console.log('Solicitudes procesadas:', applicationsData);
             
+            // Debug: Verificar datos de IA en las solicitudes
+            applicationsData.forEach((app: Application) => {
+                console.log(`Solicitud #${app.id}: ai_score=${app.ai_score}, ai_decision=${app.ai_decision}, ai_risk_analysis=`, app.ai_risk_analysis);
+            });
+            
             // Agrupar solicitudes por gato
             const grouped = groupApplicationsByCat(applicationsData);
             setGroupedApplications(grouped);
@@ -335,8 +340,8 @@ const RescuerDashboard = () => {
                                                         Candidato destacado
                                                     </span>
                                                 )}
-                                                {app.ai_score && (
-                                                    <span className={`badge-score score-${Math.floor(app.ai_score / 20)}`}>
+                                                {(app.ai_score !== null && app.ai_score !== undefined) && (
+                                                    <span className={`badge-score score-${Math.floor(Number(app.ai_score) / 20)}`}>
                                                         {app.ai_score}/100
                                                     </span>
                                                 )}
@@ -356,8 +361,8 @@ const RescuerDashboard = () => {
                                                         <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
                                                     </svg>
                                                     <div className="ai-analysis-summary">
-                                                        {app.ai_risk_analysis.evaluacion_general && (
-                                                            <span>{app.ai_risk_analysis.evaluacion_general}</span>
+                                                        {(typeof app.ai_risk_analysis === 'object' ? app.ai_risk_analysis.evaluacion_general : app.ai_risk_analysis) && (
+                                                            <span>{typeof app.ai_risk_analysis === 'object' ? app.ai_risk_analysis.evaluacion_general : app.ai_risk_analysis}</span>
                                                         )}
                                                     </div>
                                                     <svg 
@@ -368,7 +373,7 @@ const RescuerDashboard = () => {
                                                         <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
                                                     </svg>
                                                 </button>
-                                                {isAnalysisExpanded[app.id] && (
+                                                {isAnalysisExpanded[app.id] && typeof app.ai_risk_analysis === 'object' && (
                                                     <div className="risk-analysis-details">
                                                         {app.ai_risk_analysis.verificacion_esterilizacion && (
                                                             <p><strong>Esterilización:</strong> {app.ai_risk_analysis.verificacion_esterilizacion}</p>
