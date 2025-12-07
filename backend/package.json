@@ -9,6 +9,7 @@
     "seed": "node seed-database.js",
     "migrate": "node run-migration.js",
     "setup": "node run-migration.js && node seed-database.js",
+    "init-db": "node init-db.js",
     "generate-datasets": "node generate-datasets.js"
   },
   "keywords": ["adoption", "cats", "firebase", "express"],
