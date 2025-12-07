@@ -54,3 +54,4 @@ export default defineConfig({
     include: ['react', 'react-dom', 'react-router-dom', 'axios']
   }
 })
+// Force rebuild: 12/06/2025 23:19:26
