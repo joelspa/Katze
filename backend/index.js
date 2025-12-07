@@ -23,7 +23,10 @@ const {
 const app = express();
 
 // Configuración de middlewares globales
-app.use(cors());
+// Por ahora permite todo (*), luego lo cambiaremos por la URL de Vercel
+app.use(cors({
+    origin: '*'
+}));
 app.use(express.json());
 
 // Ruta de verificación del estado del servidor
@@ -43,6 +46,7 @@ app.use('/api/users', userRoutes);                   // Rutas de usuarios y perf
 app.use('/api/admin', adminRoutes);                  // Rutas de administración (protegidas)
 
 // Inicialización del servidor Express
-app.listen(config.PORT, () => {
-    console.log(`Servidor corriendo en http://localhost:${config.PORT}`);
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+    console.log(`Servidor corriendo en puerto ${PORT}`);
 });
