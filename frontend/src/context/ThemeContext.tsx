@@ -4,6 +4,7 @@ type Theme = 'dark';
 
 interface ThemeContextType {
     theme: Theme;
+    toggleTheme: () => void;
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
@@ -11,6 +12,11 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     // Always use dark theme
     const theme: Theme = 'dark';
+    
+    // Dummy toggleTheme function (does nothing since theme is always dark)
+    const toggleTheme = () => {
+        // Theme is locked to dark mode
+    };
 
     // Apply dark theme to document root
     useEffect(() => {
@@ -19,7 +25,7 @@ export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) =
 
     // Memoize context value
     const contextValue = useMemo(
-        () => ({ theme }),
+        () => ({ theme, toggleTheme }),
         [theme]
     );
 

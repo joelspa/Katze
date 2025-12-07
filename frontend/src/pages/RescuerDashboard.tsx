@@ -39,7 +39,6 @@ interface CatApplicationGroup {
 }
 
 const RescuerDashboard = () => {
-    const [applications, setApplications] = useState<Application[]>([]);
     const [groupedApplications, setGroupedApplications] = useState<CatApplicationGroup[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -102,7 +101,6 @@ const RescuerDashboard = () => {
             // El backend devuelve { success: true, data: { applications: [...] } }
             const applicationsData = response.data.data?.applications || response.data.applications || response.data;
             console.log('Solicitudes procesadas:', applicationsData);
-            setApplications(applicationsData);
             
             // Agrupar solicitudes por gato
             const grouped = groupApplicationsByCat(applicationsData);

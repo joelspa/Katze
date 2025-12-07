@@ -1,11 +1,10 @@
 // Página principal - Home
 // Muestra la galería de gatos disponibles para adopción
 
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import axios, { isAxiosError } from 'axios';
 import { Link } from 'react-router-dom';
 import CatCard, { type Cat } from '../components/CatCard';
-import CatCarousel from '../components/CatCarousel';
 import AdoptionProcessModal from '../components/AdoptionProcessModal';
 import Footer from '../components/Footer';
 import './Home.css';

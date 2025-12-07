@@ -1,7 +1,7 @@
 // Panel de administración
 // Permite a los administradores gestionar publicaciones de gatos y artículos del blog
 
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import axios, { isAxiosError } from 'axios';
 import { useAuth } from '../context/AuthContext';
 import { useModal } from '../hooks/useModal';

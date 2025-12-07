@@ -2,7 +2,6 @@
 // Muestra una vista previa de un gato disponible para adopción
 
 import React, { useState, useCallback, memo } from 'react';
-import { Link } from 'react-router-dom';
 import './CatCard.css';
 import CatDetailModal from './CatDetailModal';
 
@@ -73,18 +72,6 @@ const CatCard: React.FC<CatCardProps> = ({ cat }) => {
         } else if (isRightSwipe) {
             // Swipe derecha: foto anterior
             setCurrentPhotoIndex((prev) => (prev === 0 ? photos.length - 1 : prev - 1));
-        }
-    };
-
-    // Función para obtener la clase CSS según el estado de esterilización
-    const getStatusClass = () => {
-        switch (cat.sterilization_status) {
-            case 'esterilizado':
-                return 'status-esterilizado';
-            case 'pendiente':
-                return 'status-pendiente';
-            default:
-                return '';
         }
     };
 
