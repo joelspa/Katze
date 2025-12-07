@@ -30,6 +30,11 @@
   --color-primary-hover: #14b8a6;  /* Hover state */
   --primary-hover: #14b8a6;     /* Alias */
   
+  /* COLOR SECUNDARIO - Azul Marino (Fondo) */
+  --color-secondary: #0f172a;
+  --color-secondary-light: #1e293b;
+  --color-secondary-dark: #020617;
+
   /* ACENTO SECUNDARIO - Naranja Cálido (Mantener para diversidad) */
   --color-accent: #FF9F1C;
   --color-accent-light: #FFB84D;
@@ -79,6 +84,11 @@
   --border-bright: rgba(255, 255, 255, 0.2);
   --border-dark: #334155;
   --border-light: #475569;
+
+  /* ===== GRADIENTS ===== */
+  --gradient-primary: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
+  --gradient-secondary: linear-gradient(135deg, var(--color-secondary), var(--color-secondary-dark));
+  --gradient-accent: linear-gradient(135deg, var(--color-accent), var(--color-accent-dark));
 
   /* ===== TYPOGRAPHY - Google Fonts ===== */
   --font-family-primary: 'Open Sans', 'Lato', system-ui, -apple-system, sans-serif;
@@ -161,6 +171,11 @@
   --color-primary-light: #5DD5C8;
   --color-primary-dark: #24A89D;
   --color-primary-hover: #28B5A8;
+
+  /* Color Secundario */
+  --color-secondary: #011627;
+  --color-secondary-light: #0B253A;
+  --color-secondary-dark: #000814;
 
   /* Accent se mantiene (contraste complementario) */
   --color-accent: #FF9F1C;

@@ -40,9 +40,21 @@ class CatService {
 
         // Filtro por edad (categorías: cachorro, joven, adulto, senior)
         if (filters.age && filters.age !== 'todos') {
-            query += ` AND LOWER(age) = $${paramIndex}`;
-            params.push(filters.age.toLowerCase());
-            paramIndex++;
+            const ageCategory = filters.age.toLowerCase();
+            switch (ageCategory) {
+                case 'cachorro':
+                    query += ` AND age <= 1`;
+                    break;
+                case 'joven':
+                    query += ` AND age > 1 AND age <= 3`;
+                    break;
+                case 'adulto':
+                    query += ` AND age > 3 AND age <= 7`;
+                    break;
+                case 'senior':
+                    query += ` AND age > 7`;
+                    break;
+            }
         }
 
         // Filtro por tipo de vivienda requerida
