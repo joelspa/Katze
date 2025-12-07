@@ -56,12 +56,14 @@ CREATE TABLE adoption_applications (
 CREATE TABLE tracking_tasks (
     id SERIAL PRIMARY KEY,
     application_id INTEGER REFERENCES adoption_applications(id) ON DELETE CASCADE,
-    task_type VARCHAR(50) NOT NULL CHECK (task_type IN ('bienestar', 'esterilizacion')),
+    task_type VARCHAR(50) NOT NULL CHECK (task_type IN ('Seguimiento de Bienestar', 'Seguimiento de Esterilización', 'bienestar', 'esterilizacion')),
     due_date DATE NOT NULL,
-    status VARCHAR(50) DEFAULT 'pendiente',
+    status VARCHAR(50) DEFAULT 'pendiente' CHECK (status IN ('pendiente', 'completada', 'atrasada')),
     description TEXT,
     notes TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    certificate_url TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- 5. TABLA DE POSTS EDUCATIVOS
@@ -83,7 +85,56 @@ CREATE INDEX idx_cats_status ON cats(approval_status, adoption_status);
 CREATE INDEX idx_applications_cat ON adoption_applications(cat_id);
 CREATE INDEX idx_applications_applicant ON adoption_applications(applicant_id);
 CREATE INDEX idx_tracking_application ON tracking_tasks(application_id);
+CREATE INDEX idx_tracking_status_date ON tracking_tasks(status, due_date);
 CREATE INDEX idx_posts_author ON educational_posts(author_id);
+
+-- FUNCIONES Y VISTAS PARA SEGUIMIENTO
+
+-- Función para marcar tareas atrasadas automáticamente
+CREATE OR REPLACE FUNCTION mark_overdue_tasks() RETURNS void AS $$
+BEGIN
+    UPDATE tracking_tasks 
+    SET status = 'atrasada'
+    WHERE status = 'pendiente' 
+    AND due_date < CURRENT_DATE;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Vista con detalles completos de las tareas de seguimiento
+CREATE OR REPLACE VIEW v_tracking_tasks_details AS
+SELECT 
+    tt.id,
+    tt.application_id,
+    tt.task_type,
+    tt.due_date,
+    tt.status,
+    tt.description,
+    tt.notes,
+    tt.certificate_url,
+    tt.created_at,
+    tt.updated_at,
+    -- Información del gato
+    c.id as cat_id,
+    c.name as cat_name,
+    c.photos_url as cat_photos,
+    c.sterilization_status,
+    -- Información del adoptante
+    u_adoptante.id as adoptante_id,
+    u_adoptante.full_name as adoptante_name,
+    u_adoptante.email as adoptante_email,
+    u_adoptante.phone as adoptante_phone,
+    -- Información del rescatista (owner del gato)
+    c.owner_id,
+    u_rescatista.full_name as rescatista_name,
+    u_rescatista.email as rescatista_email,
+    -- Información de la solicitud
+    aa.status as application_status,
+    aa.created_at as application_date
+FROM tracking_tasks tt
+JOIN adoption_applications aa ON tt.application_id = aa.id
+JOIN cats c ON aa.cat_id = c.id
+JOIN users u_adoptante ON aa.applicant_id = u_adoptante.id
+LEFT JOIN users u_rescatista ON c.owner_id = u_rescatista.id;
 
 -- Confirmar creación exitosa
 SELECT 'Schema creado exitosamente' AS status;
