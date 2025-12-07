@@ -120,6 +120,8 @@ class ApplicationController {
 
             // 🤖 EVALUACIÓN AUTOMÁTICA CON IA (FILTRADO MASIVO)
             try {
+                console.log('🤖 Iniciando evaluación de IA para solicitud #' + newApplication.id);
+                
                 // Construir requisitos del gato desde sus características
                 const cat_requirements = {
                     needs_nets: cat.living_space_requirement === 'casa_grande' || cat.living_space_requirement === 'cualquiera',
@@ -131,13 +133,18 @@ class ApplicationController {
                 // Datos del solicitante desde el formulario
                 const applicant_data = form_responses;
 
+                console.log('📋 Datos para evaluación:', { cat_requirements, applicant_data });
+
                 // Evaluar con IA
                 const evaluation = await geminiService.evaluate_application_risk(
                     cat_requirements,
                     applicant_data
                 );
 
+                console.log('✅ Evaluación completada:', { decision: evaluation.decision, score: evaluation.score });
+
                 await applicationService.saveAIEvaluation(newApplication.id, evaluation);
+                console.log('💾 Evaluación guardada en BD');
 
                 if (evaluation.decision === 'REJECT') {
                     await applicationService.autoRejectApplication(
@@ -223,6 +230,7 @@ class ApplicationController {
                 }, 'Solicitud enviada con éxito');
 
             } catch (aiError) {
+                console.error('❌ Error en evaluación de IA:', aiError);
                 
                 // Aún así guardar en Firestore sin evaluación de IA
                 try {
