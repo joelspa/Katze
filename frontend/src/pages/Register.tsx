@@ -102,6 +102,19 @@ const Register = () => {
                             required
                         />
                     </div>
+
+                    <div className="formGroup">
+                        <label htmlFor="phone" className="label">Teléfono</label>
+                        <input
+                            type="tel"
+                            id="phone"
+                            name="phone"
+                            className="input"
+                            placeholder="Ingresa tu número de teléfono"
+                            onChange={handleChange}
+                            required
+                        />
+                    </div>
                     
                     <div className="formGroup">
                         <label htmlFor="password" className="label">Contraseña</label>
