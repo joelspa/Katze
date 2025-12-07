@@ -24,11 +24,29 @@ const app = express();
 
 // Configuración de middlewares globales
 app.use(cors({
-    origin: [
-        'https://katze-nine.vercel.app/', // Producción
-        'http://localhost:5173',  // Desarrollo local
-        'http://localhost:5174'   // Desarrollo local alternativo
-    ],
+    origin: function (origin, callback) {
+        // Permitir requests sin origin (como curl o postman)
+        if (!origin) return callback(null, true);
+        
+        const allowedOrigins = [
+            'https://katze-nine.vercel.app', // Producción (sin slash final)
+            'http://localhost:5173',
+            'http://localhost:5174',
+            process.env.FRONTEND_URL // URL dinámica desde env
+        ];
+        
+        // Permitir cualquier subdominio de vercel.app para previews
+        if (origin.endsWith('.vercel.app')) {
+            return callback(null, true);
+        }
+
+        if (allowedOrigins.indexOf(origin) !== -1) {
+            callback(null, true);
+        } else {
+            console.log('Bloqueado por CORS:', origin);
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
     credentials: true
 }));
 app.use(express.json());
