@@ -126,6 +126,28 @@ class ApplicationService {
         );
         return result.rows[0]?.cat_id;
     }
+
+    // Guarda la evaluación de IA
+    async saveAIEvaluation(applicationId, evaluation) {
+        const { decision, score, auto_reject_reason, risk_analysis } = evaluation;
+        
+        await db.query(
+            `UPDATE adoption_applications 
+             SET ai_decision = $1, ai_score = $2, ai_auto_reject_reason = $3, ai_risk_analysis = $4
+             WHERE id = $5`,
+            [decision, score, auto_reject_reason, risk_analysis, applicationId]
+        );
+    }
+
+    // Rechaza automáticamente una solicitud
+    async autoRejectApplication(applicationId, reason) {
+        await db.query(
+            `UPDATE adoption_applications 
+             SET status = 'rechazada', ai_auto_reject_reason = $1
+             WHERE id = $2`,
+            [reason, applicationId]
+        );
+    }
 }
 
 module.exports = new ApplicationService();

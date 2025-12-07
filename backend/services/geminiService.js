@@ -1,6 +1,6 @@
 // AI-powered adoption application evaluation service using Google Gemini
 // Automatically filters applications using predefined rules and pattern detection
-// Returns REJECT, REVIEW, or HIGH_MATCH decisions with risk analysis
+// Returns REJECT, REVIEW, or APPROVE decisions with risk analysis
 
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 const config = require('../config/config');
@@ -53,7 +53,9 @@ class GeminiService {
                 decision: 'REVIEW',
                 score: 50,
                 auto_reject_reason: null,
-                risk_analysis: `AI evaluation error: ${error.message}. Manual review required.`
+                risk_analysis: {
+                    evaluacion_general: `AI evaluation error: ${error.message}. Manual review required.`
+                }
             };
         }
     }
@@ -108,12 +110,12 @@ AUTOMATIC REJECTION RULES (CRITICAL - NON-NEGOTIABLE):
 SCORING SCALE:
 - 0-40: Inadequate candidate (REJECT if kill-switch applies)
 - 41-69: Questionable candidate (REVIEW - requires human verification)
-- 70-100: Promising candidate (HIGH_MATCH or REVIEW based on compliance)
+- 70-100: Promising candidate (APPROVE or REVIEW based on compliance)
 
 POSSIBLE DECISIONS:
 - REJECT: Automatic rejection due to critical rule violation
 - REVIEW: Requires human evaluation (ambiguous or average case)
-- HIGH_MATCH: Exceptional candidate meeting all requirements
+- APPROVE: Exceptional candidate meeting all requirements
 
 ADDITIONAL CRITERIA TO CONSIDER (for score and risk_analysis):
 - Compatibilidad de estilo de vida con nivel de actividad del gato
@@ -139,10 +141,15 @@ RED FLAGS TO DETECT:
 RESPONSE FORMAT (strict JSON):
 Respond ONLY with this JSON (no markdown, no additional explanations):
 {
-  "decision": "REJECT" | "REVIEW" | "HIGH_MATCH",
+  "decision": "REJECT" | "REVIEW" | "APPROVE",
   "score": (número entero 0-100),
   "auto_reject_reason": "string o null (solo si decision=REJECT)",
-  "risk_analysis": "string breve (2-3 oraciones máximo)"
+  "risk_analysis": {
+    "verificacion_esterilizacion": "Evaluación de postura sobre esterilización (APROBADO/FALLO/REVISAR - Razón)",
+    "seguridad_hogar": "Evaluación de seguridad (ventanas, mallas, etc.) (APROBADO/FALLO/REVISAR - Razón)",
+    "compatibilidad_espacio": "Evaluación del espacio vs necesidades del gato (APROBADO/FALLO/REVISAR - Razón)",
+    "evaluacion_general": "Resumen general del perfil (2-3 oraciones)"
+  }
 }`;
     }
 
@@ -186,7 +193,7 @@ Respond with evaluation JSON following the defined critical rules.`;
      * Validates evaluation structure
      */
     _validateEvaluation(evaluation) {
-        const validDecisions = ['REJECT', 'REVIEW', 'HIGH_MATCH'];
+        const validDecisions = ['REJECT', 'REVIEW', 'APPROVE'];
         
         if (!evaluation.decision || !validDecisions.includes(evaluation.decision)) {
             throw new Error(`Invalid decision: ${evaluation.decision}`);
@@ -200,8 +207,20 @@ Respond with evaluation JSON following the defined critical rules.`;
             throw new Error('REJECT requires auto_reject_reason');
         }
 
-        if (!evaluation.risk_analysis || typeof evaluation.risk_analysis !== 'string') {
-            throw new Error('risk_analysis is required and must be string');
+        if (!evaluation.risk_analysis || typeof evaluation.risk_analysis !== 'object') {
+            // Allow string for backward compatibility or error messages, but prefer object
+            if (typeof evaluation.risk_analysis === 'string') {
+                 // Try to parse if it looks like JSON, otherwise wrap it
+                 try {
+                     evaluation.risk_analysis = JSON.parse(evaluation.risk_analysis);
+                 } catch (e) {
+                     evaluation.risk_analysis = {
+                         evaluacion_general: evaluation.risk_analysis
+                     };
+                 }
+            } else {
+                throw new Error('risk_analysis is required and must be an object');
+            }
         }
     }
 

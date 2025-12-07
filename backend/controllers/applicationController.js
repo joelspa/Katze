@@ -217,7 +217,7 @@ class ApplicationController {
                 return ErrorHandler.created(res, { 
                     application: newApplication,
                     ai_evaluation: evaluation,
-                    message: evaluation.decision === 'HIGH_MATCH' 
+                    message: evaluation.decision === 'APPROVE' 
                         ? 'Solicitud enviada con éxito. Eres un candidato excepcional para este gatito.' 
                         : 'Solicitud enviada con éxito. Será revisada por el rescatista.'
                 }, 'Solicitud enviada con éxito');
