@@ -42,7 +42,6 @@ const RescuerDashboard = () => {
     const [selectedCat, setSelectedCat] = useState<CatApplicationGroup | null>(null);
     const [selectedApplication, setSelectedApplication] = useState<Application | null>(null);
     const [currentAppIndex, setCurrentAppIndex] = useState(0);
-    const [isAnalysisExpanded, setIsAnalysisExpanded] = useState<{[key: number]: boolean}>({});
     const { token } = useAuth();
 
     // Scroll al inicio cuando se carga la página
@@ -101,7 +100,7 @@ const RescuerDashboard = () => {
             
             // Debug: Verificar datos de IA en las solicitudes
             applicationsData.forEach((app: Application) => {
-                console.log(`Solicitud #${app.id}: ai_score=${app.ai_score}, ai_decision=${app.ai_decision}, ai_risk_analysis=`, app.ai_risk_analysis);
+                console.log(`Solicitud #${app.id}: status=${app.status}, ai_score=${app.ai_score}, ai_feedback=${app.ai_feedback}, ai_flags=`, app.ai_flags);
             });
             
             // Agrupar solicitudes por gato
@@ -241,7 +240,7 @@ const RescuerDashboard = () => {
                                     </svg>
                                     <span>{catGroup.applicationCount} {catGroup.applicationCount === 1 ? 'solicitud' : 'solicitudes'}</span>
                                 </div>
-                                {catGroup.applications.some(app => app.ai_decision === 'APPROVE') && (
+                                {catGroup.applications.some(app => app.ai_score && app.ai_score >= 70) && (
                                     <div className="stat-item highlight">
                                         <svg viewBox="0 0 20 20" fill="currentColor">
                                             <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
@@ -303,10 +302,7 @@ const RescuerDashboard = () => {
                             <div className="applications-list">
                                 {selectedCat.applications
                                     .sort((a, b) => {
-                                        // Priorizar APPROVE primero
-                                        if (a.ai_decision === 'APPROVE' && b.ai_decision !== 'APPROVE') return -1;
-                                        if (a.ai_decision !== 'APPROVE' && b.ai_decision === 'APPROVE') return 1;
-                                        // Luego por score
+                                        // Ordenar por score descendente
                                         return (b.ai_score || 0) - (a.ai_score || 0);
                                     })
                                     .map((app) => (
@@ -561,43 +557,7 @@ const RescuerDashboard = () => {
                                 </section>
                             )}
 
-                            {/* Análisis de IA */}
-                            {selectedApplication.ai_risk_analysis && (
-                                <section className="ai-section">
-                                    <h3 className="section-title-ai">
-                                        <svg viewBox="0 0 20 20" fill="currentColor">
-                                            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-                                        </svg>
-                                        Análisis de IA
-                                    </h3>
-                                    <div className="ai-grid">
-                                        {selectedApplication.ai_risk_analysis.verificacion_esterilizacion && (
-                                            <div className="ai-item">
-                                                <strong>Esterilización</strong>
-                                                <p>{selectedApplication.ai_risk_analysis.verificacion_esterilizacion}</p>
-                                            </div>
-                                        )}
-                                        {selectedApplication.ai_risk_analysis.seguridad_hogar && (
-                                            <div className="ai-item">
-                                                <strong>Seguridad del hogar</strong>
-                                                <p>{selectedApplication.ai_risk_analysis.seguridad_hogar}</p>
-                                            </div>
-                                        )}
-                                        {selectedApplication.ai_risk_analysis.compatibilidad_espacio && (
-                                            <div className="ai-item">
-                                                <strong>Espacio</strong>
-                                                <p>{selectedApplication.ai_risk_analysis.compatibilidad_espacio}</p>
-                                            </div>
-                                        )}
-                                        {selectedApplication.ai_risk_analysis.evaluacion_general && (
-                                            <div className="ai-item ai-item-full">
-                                                <strong>Evaluación general</strong>
-                                                <p>{selectedApplication.ai_risk_analysis.evaluacion_general}</p>
-                                            </div>
-                                        )}
-                                    </div>
-                                </section>
-                            )}
+                            {/* Análisis de IA ya mostrado con badges y feedback arriba */}
                         </div>
 
                         {/* Acciones */}
