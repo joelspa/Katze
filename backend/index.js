@@ -25,7 +25,7 @@ const app = express();
 // Configuración de middlewares globales
 app.use(cors({
     origin: [
-        'https://katze-liard.vercel.app',
+        'https://katze-e923szmz6-joels-projects-0162a826.vercel.app', // Producción
         'http://localhost:5173',  // Desarrollo local
         'http://localhost:5174'   // Desarrollo local alternativo
     ],
