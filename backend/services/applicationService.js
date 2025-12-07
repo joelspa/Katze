@@ -58,7 +58,17 @@ class ApplicationService {
     async getApplicationsByRescuer(rescuerId) {
         const query = `
             SELECT 
-                app.*, 
+                app.id,
+                app.applicant_id,
+                app.cat_id,
+                app.form_responses,
+                app.status,
+                app.created_at,
+                app.ai_decision,
+                app.ai_score,
+                app.ai_risk_analysis,
+                app.ai_auto_reject_reason,
+                app.ai_evaluated_at,
                 cat.name as cat_name,
                 cat.photos_url as cat_photos,
                 u.full_name as applicant_name,
@@ -79,7 +89,17 @@ class ApplicationService {
     async getAllApplications() {
         const query = `
             SELECT 
-                app.*, 
+                app.id,
+                app.applicant_id,
+                app.cat_id,
+                app.form_responses,
+                app.status,
+                app.created_at,
+                app.ai_decision,
+                app.ai_score,
+                app.ai_risk_analysis,
+                app.ai_auto_reject_reason,
+                app.ai_evaluated_at,
                 cat.name as cat_name,
                 cat.photos_url as cat_photos,
                 u.full_name as applicant_name,
