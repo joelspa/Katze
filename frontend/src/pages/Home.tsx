@@ -410,8 +410,15 @@ const Home = () => {
                     Considera donar, ser voluntario o convertirte en un hogar temporal.
                 </p>
                 <div className="cant-adopt-buttons">
-                    <button className="volunteer-btn">Ser Voluntario</button>
-                    <button className="newsletter-btn">Suscríbete al Newsletter</button>
+                    <a 
+                        href="https://wa.me/59163567265?text=Hola,%20quiero%20ser%20voluntario" 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="volunteer-btn"
+                        style={{ textDecoration: 'none', display: 'inline-block', textAlign: 'center' }}
+                    >
+                        Ser Voluntario
+                    </a>
                 </div>
             </section>
 
