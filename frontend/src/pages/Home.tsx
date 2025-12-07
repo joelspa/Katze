@@ -44,6 +44,7 @@ const Home = () => {
         try {
             setLoading(true);
             const API_URL = `${API_BASE_URL}/api/cats`;
+            console.log('📡 Fetching cats from:', API_URL); // Debug log
 
             // Construir query params si hay filtros activos
             const params = new URLSearchParams();
