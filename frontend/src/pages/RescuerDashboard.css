@@ -1841,3 +1841,290 @@
         padding: 20px;
     }
 }
+
+/* ==========================================================================
+   NEW UI/UX REDESIGN (Master-Detail Pattern)
+   ========================================================================== */
+
+/* ===== MASTER VIEW: CAT SUMMARY CARDS ===== */
+.applications-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 24px;
+    padding: 20px 0;
+}
+
+.cat-summary-card {
+    background: white;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    position: relative;
+    border: 1px solid #e5e7eb;
+    display: flex;
+    flex-direction: column;
+}
+
+.cat-summary-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    border-color: #3b82f6;
+}
+
+.cat-image-container {
+    height: 200px;
+    width: 100%;
+    position: relative;
+}
+
+.cat-image-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.cat-overlay-gradient {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(17, 24, 39, 0.9) 0%, transparent 100%);
+}
+
+.cat-info-overlay {
+    position: absolute;
+    bottom: 12px;
+    left: 16px;
+    right: 16px;
+    color: white;
+}
+
+.cat-info-overlay h3 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin: 0 0 4px 0;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+
+.cat-info-overlay p {
+    font-size: 0.875rem;
+    color: #d1d5db;
+    margin: 0;
+}
+
+.cat-card-footer {
+    padding: 16px;
+    background: white;
+    border-top: 1px solid #f3f4f6;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.request-count {
+    display: flex;
+    flex-direction: column;
+}
+
+.request-count-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    font-weight: 600;
+    color: #6b7280;
+    letter-spacing: 0.05em;
+}
+
+.request-count-number {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #111827;
+    line-height: 1;
+    margin-top: 4px;
+}
+
+.top-match-badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background-color: #ecfdf5;
+    color: #059669;
+    padding: 6px 12px;
+    border-radius: 9999px;
+    border: 1px solid #d1fae5;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.view-list-link {
+    font-size: 0.875rem;
+    color: #3b82f6;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* ===== DETAIL VIEW: REQUEST ITEMS ===== */
+.modal-content.modal-cat-applications {
+    max-width: 600px;
+    width: 95%;
+    padding: 0;
+    background: #f9fafb;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.modal-header-sticky {
+    background: white;
+    padding: 20px 24px;
+    border-bottom: 1px solid #e5e7eb;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-header-sticky h2 {
+    margin: 0;
+    font-size: 1.25rem;
+    color: #111827;
+}
+
+.modal-scroll-body {
+    padding: 20px 24px;
+    overflow-y: auto;
+    flex: 1;
+}
+
+.request-item-card {
+    background: white;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 16px;
+    border-left: 4px solid #d1d5db; /* Default gray */
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    transition: transform 0.2s;
+}
+
+.request-item-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+/* Score Colors */
+.border-green { border-left-color: #10b981; background: linear-gradient(to right, #ecfdf5 0%, white 100%); }
+.border-yellow { border-left-color: #f59e0b; background: linear-gradient(to right, #fffbeb 0%, white 100%); }
+.border-gray { border-left-color: #9ca3af; }
+
+.request-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+}
+
+.applicant-name {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin: 0;
+}
+
+.request-time {
+    font-size: 0.75rem;
+    color: #6b7280;
+}
+
+.score-display {
+    text-align: center;
+    background: white;
+    padding: 4px 8px;
+    border-radius: 8px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+.score-number {
+    display: block;
+    font-size: 1.5rem;
+    font-weight: 900;
+    line-height: 1;
+    color: #1f2937;
+}
+
+.score-label {
+    font-size: 0.625rem;
+    text-transform: uppercase;
+    color: #6b7280;
+    font-weight: 600;
+}
+
+.tags-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.ai-tag {
+    font-size: 0.75rem;
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-weight: 500;
+    background: #f3f4f6;
+    color: #374151;
+    border: 1px solid #e5e7eb;
+}
+
+.ai-tag.positive { background: #ecfdf5; color: #065f46; border-color: #a7f3d0; }
+.ai-tag.warning { background: #fffbeb; color: #92400e; border-color: #fde68a; }
+
+.ai-feedback-quote {
+    font-size: 0.875rem;
+    color: #4b5563;
+    font-style: italic;
+    background: #f9fafb;
+    padding: 10px 12px;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    border: 1px solid #f3f4f6;
+    display: flex;
+    gap: 8px;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 12px;
+    padding-top: 12px;
+    border-top: 1px solid #f3f4f6;
+}
+
+.btn-approve-sm {
+    flex: 1;
+    background: #10b981;
+    color: white;
+    border: none;
+    padding: 8px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-approve-sm:hover { background: #059669; }
+
+.btn-reject-sm {
+    padding: 8px 16px;
+    background: transparent;
+    color: #6b7280;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 0.875rem;
+    cursor: pointer;
+}
+
+.btn-reject-sm:hover { color: #ef4444; background: #fef2f2; }

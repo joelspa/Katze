@@ -241,68 +241,53 @@ const RescuerDashboard = () => {
                             </div>
                         ) : (
                             <div className="applications-grid">
-                                {groupedApplications.map((catGroup) => (
-                                    <div 
-                                        key={catGroup.cat_id} 
-                                        className="cat-card-group"
-                                        onClick={() => setSelectedCat(catGroup)}
-                                    >
-                                        {catGroup.cat_photos && catGroup.cat_photos.length > 0 && (
-                                            <div className="cat-photo-preview">
+                                {groupedApplications.map((catGroup) => {
+                                    const hasTopCandidate = catGroup.applications.some(app => (app.ai_score || 0) >= 90);
+                                    
+                                    return (
+                                        <div 
+                                            key={catGroup.cat_id} 
+                                            className="cat-summary-card"
+                                            onClick={() => setSelectedCat(catGroup)}
+                                        >
+                                            <div className="cat-image-container">
                                                 <img 
-                                                    src={catGroup.cat_photos[0]} 
+                                                    src={catGroup.cat_photos && catGroup.cat_photos.length > 0 ? catGroup.cat_photos[0] : 'https://placehold.co/400x300/e0e0e0/666?text=Sin+Foto'} 
                                                     alt={catGroup.cat_name}
-                                                    onError={(e) => {
-                                                        e.currentTarget.src = 'https://placehold.co/400x300/e0e0e0/666?text=Sin+Foto';
-                                                    }}
                                                 />
-                                                {catGroup.applicationCount > 1 && (
-                                                    <div className="application-count-badge">
-                                                        <svg viewBox="0 0 20 20" fill="currentColor">
-                                                            <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
-                                                            <path fillRule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clipRule="evenodd" />
+                                                <div className="cat-overlay-gradient" />
+                                                <div className="cat-info-overlay">
+                                                    <h3>{catGroup.cat_name}</h3>
+                                                    {/* Placeholder for age/gender if available in future */}
+                                                    {/* <p>2 años • Macho</p> */}
+                                                </div>
+                                            </div>
+
+                                            <div className="cat-card-footer">
+                                                <div className="request-count">
+                                                    <span className="request-count-label">Solicitudes</span>
+                                                    <span className="request-count-number">{catGroup.applicationCount}</span>
+                                                </div>
+
+                                                {hasTopCandidate ? (
+                                                    <div className="top-match-badge">
+                                                        <svg viewBox="0 0 20 20" fill="currentColor" style={{width: '14px', height: '14px'}}>
+                                                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                                                         </svg>
-                                                        {catGroup.applicationCount}
+                                                        Top Match
+                                                    </div>
+                                                ) : (
+                                                    <div className="view-list-link">
+                                                        Ver lista
+                                                        <svg viewBox="0 0 20 20" fill="currentColor" style={{width: '16px', height: '16px'}}>
+                                                            <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                                                        </svg>
                                                     </div>
                                                 )}
                                             </div>
-                                        )}
-                                        <div className="card-header">
-                                            <div className="cat-icon">
-                                                <svg viewBox="0 0 24 24" fill="currentColor">
-                                                    <path d="M12 2C10.34 2 9 3.34 9 5c0 .35.07.69.18 1H6c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-3.18c.11-.31.18-.65.18-1 0-1.66-1.34-3-3-3zm0 2c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1z"/>
-                                                </svg>
-                                            </div>
-                                            <h3 className="cat-name">{catGroup.cat_name}</h3>
                                         </div>
-                                        
-                                        <div className="card-stats">
-                                            <div className="stat-item">
-                                                <svg viewBox="0 0 20 20" fill="currentColor">
-                                                    <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
-                                                </svg>
-                                                <span>{catGroup.applicationCount} {catGroup.applicationCount === 1 ? 'solicitud' : 'solicitudes'}</span>
-                                            </div>
-                                            {catGroup.applications.some(app => app.ai_score && app.ai_score >= 70) && (
-                                                <div className="stat-item highlight">
-                                                    <svg viewBox="0 0 20 20" fill="currentColor">
-                                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                                    </svg>
-                                                    <span>Candidatos destacados</span>
-                                                </div>
-                                            )}
-                                        </div>
-
-                                        <div className="card-footer">
-                                            <button className="btn-view-details">
-                                                Ver solicitudes
-                                                <svg viewBox="0 0 20 20" fill="currentColor">
-                                                    <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
-                                                </svg>
-                                            </button>
-                                        </div>
-                                    </div>
-                                ))}
+                                    );
+                                })}
                             </div>
                         )}
                     </div>
@@ -319,115 +304,95 @@ const RescuerDashboard = () => {
             {selectedCat && !selectedApplication && (
                 <div className="modal-overlay" onClick={() => setSelectedCat(null)}>
                     <div className="modal-content modal-cat-applications" onClick={(e) => e.stopPropagation()}>
-                        <button 
-                            className="modal-close"
-                            onClick={() => setSelectedCat(null)}
-                        >
-                            <svg viewBox="0 0 20 20" fill="currentColor">
-                                <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
-                            </svg>
-                        </button>
-
-                        <div className="modal-header">
-                            {selectedCat.cat_photos && selectedCat.cat_photos.length > 0 ? (
-                                <div className="modal-cat-photo">
-                                    <img 
-                                        src={selectedCat.cat_photos[0]} 
-                                        alt={selectedCat.cat_name}
-                                        onError={(e) => {
-                                            e.currentTarget.src = 'https://placehold.co/400x300/e0e0e0/666?text=Sin+Foto';
-                                        }}
-                                    />
-                                </div>
-                            ) : (
-                                <div className="modal-icon-svg">
-                                    <svg viewBox="0 0 24 24" fill="currentColor">
-                                        <path d="M12 2C10.34 2 9 3.34 9 5c0 .35.07.69.18 1H6c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-3.18c.11-.31.18-.65.18-1 0-1.66-1.34-3-3-3z"/>
-                                    </svg>
-                                </div>
-                            )}
+                        <div className="modal-header-sticky">
                             <h2>Solicitudes para {selectedCat.cat_name}</h2>
-                            <p className="modal-subtitle">{selectedCat.applicationCount} {selectedCat.applicationCount === 1 ? 'solicitud pendiente' : 'solicitudes pendientes'}</p>
+                            <button 
+                                className="modal-close-btn"
+                                onClick={() => setSelectedCat(null)}
+                                style={{background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.5rem'}}
+                            >
+                                ×
+                            </button>
                         </div>
 
-                        <div className="modal-body">
-                            <div className="applications-list">
-                                {selectedCat.applications
-                                    .sort((a, b) => {
-                                        // Ordenar por score descendente
-                                        return (b.ai_score || 0) - (a.ai_score || 0);
-                                    })
-                                    .map((app) => (
-                                    <div 
-                                        key={app.id}
-                                        className={`application-item ${app.ai_score && app.ai_score >= 70 ? 'high-match' : ''}`}
-                                    >
-                                        <div className="application-item-header">
-                                            <div className="applicant-info">
-                                                <div className="applicant-avatar-small">
-                                                    <svg viewBox="0 0 20 20" fill="currentColor">
-                                                        <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
-                                                    </svg>
-                                                </div>
+                        <div className="modal-scroll-body">
+                            {selectedCat.applications
+                                .sort((a, b) => (b.ai_score || 0) - (a.ai_score || 0))
+                                .map((app) => {
+                                    // Determine border color based on score
+                                    let borderClass = 'border-gray';
+                                    if ((app.ai_score || 0) >= 80) borderClass = 'border-green';
+                                    else if ((app.ai_score || 0) >= 50) borderClass = 'border-yellow';
+
+                                    return (
+                                        <div key={app.id} className={`request-item-card ${borderClass}`}>
+                                            <div className="request-header">
                                                 <div>
-                                                    <p className="applicant-name-bold">{app.applicant_name}</p>
-                                                    <p className="applicant-email-small">{app.applicant_email}</p>
-                                                    
-                                                    {/* Status Badge */}
-                                                    {app.status === 'procesando' && (
-                                                        <span className="status-processing">Evaluando...</span>
-                                                    )}
+                                                    <h4 className="applicant-name">{app.applicant_name}</h4>
+                                                    <span className="request-time">
+                                                        {new Date(app.created_at || Date.now()).toLocaleDateString('es-ES', {
+                                                            day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit'
+                                                        })}
+                                                    </span>
+                                                </div>
+                                                <div className="score-display">
+                                                    <span className="score-number">{app.ai_score || 0}</span>
+                                                    <span className="score-label">IA Score</span>
                                                 </div>
                                             </div>
-                                            
-                                            <div className="ai-badges">
-                                                {/* AI Score Badge */}
-                                                {app.ai_score !== null && app.ai_score !== undefined && (
-                                                    <AIScoreBadge score={app.ai_score} />
-                                                )}
-                                            </div>
-                                        </div>
 
-                                        {/* AI Flags - Badges de Características */}
-                                        {app.ai_flags && app.ai_flags.length > 0 && (
-                                            <div style={{ marginTop: '8px', display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
-                                                {app.ai_flags.map((flag, idx) => (
-                                                    <AIBadge key={idx} flag={flag} />
-                                                ))}
-                                            </div>
-                                        )}
-
-                                        {/* AI Feedback */}
-                                        {app.ai_feedback && (
-                                            <div className="ai-feedback-section">
-                                                <div className="ai-feedback-title">
-                                                    <svg viewBox="0 0 20 20" fill="currentColor" style={{ width: '16px', height: '16px' }}>
-                                                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-                                                    </svg>
-                                                    Análisis IA
+                                            {/* Tags */}
+                                            {app.ai_flags && app.ai_flags.length > 0 && (
+                                                <div className="tags-container">
+                                                    {app.ai_flags.map((flag, idx) => {
+                                                        let tagClass = '';
+                                                        if (flag.includes('Casa') || flag.includes('Veterinario') || flag.includes('Experiencia')) tagClass = 'positive';
+                                                        if (flag.includes('Calle') || flag.includes('Riesgo')) tagClass = 'warning';
+                                                        
+                                                        return (
+                                                            <span key={idx} className={`ai-tag ${tagClass}`}>
+                                                                {flag}
+                                                            </span>
+                                                        );
+                                                    })}
                                                 </div>
-                                                <p className="ai-feedback-text">{app.ai_feedback}</p>
-                                            </div>
-                                        )}
+                                            )}
 
-                                        <div className="application-item-actions">
-                                            <button 
-                                                className="btn-quick-action btn-view btn-view-full"
-                                                onClick={() => {
-                                                    const index = selectedCat.applications.findIndex(a => a.id === app.id);
-                                                    setCurrentAppIndex(index);
-                                                    setSelectedApplication(app);
-                                                }}
-                                            >
-                                                Ver detalles completos
-                                                <svg viewBox="0 0 20 20" fill="currentColor">
-                                                    <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
-                                                </svg>
-                                            </button>
+                                            {/* AI Feedback Quote */}
+                                            {app.ai_feedback && (
+                                                <div className="ai-feedback-quote">
+                                                    <span>🤖</span>
+                                                    <span>"{app.ai_feedback}"</span>
+                                                </div>
+                                            )}
+
+                                            {/* Action Buttons */}
+                                            <div className="action-buttons">
+                                                <button 
+                                                    className="btn-approve-sm"
+                                                    onClick={() => {
+                                                        const index = selectedCat.applications.findIndex(a => a.id === app.id);
+                                                        setCurrentAppIndex(index);
+                                                        setSelectedApplication(app);
+                                                    }}
+                                                >
+                                                    Revisar y Aprobar
+                                                </button>
+                                                <button 
+                                                    className="btn-reject-sm"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        if (confirm('¿Estás seguro de descartar esta solicitud?')) {
+                                                            handleUpdateStatus(app.id, 'rechazada');
+                                                        }
+                                                    }}
+                                                >
+                                                    Descartar
+                                                </button>
+                                            </div>
                                         </div>
-                                    </div>
-                                ))}
-                            </div>
+                                    );
+                                })}
                         </div>
                     </div>
                 </div>
