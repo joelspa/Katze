@@ -4374,7 +4374,7 @@
 }
 
 [data-theme="dark"] .modal-header-sticky h2 {
-    color: var(--color-gray-100);
+    color: #FFFFFF; /* Blanco puro para títulos */
 }
 
 [data-theme="dark"] .modal-close-btn {
@@ -4391,11 +4391,12 @@
 }
 
 [data-theme="dark"] .applicant-name {
-    color: var(--color-gray-100);
+    color: #FFFFFF; /* Blanco puro para máxima legibilidad */
+    font-weight: 800;
 }
 
 [data-theme="dark"] .request-time {
-    color: var(--color-gray-400);
+    color: #9CA3AF; /* Gris medio-claro para fecha */
 }
 
 [data-theme="dark"] .score-display {
@@ -4405,22 +4406,24 @@
 }
 
 [data-theme="dark"] .score-number {
-    color: var(--color-gray-100);
+    color: #FFFFFF; /* Blanco para el score */
+    font-size: 1.75rem; /* Más grande */
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.1); /* Brillo sutil */
 }
 
 [data-theme="dark"] .score-label {
-    color: var(--color-gray-400);
+    color: #9CA3AF;
 }
 
 /* Dark Mode Gradients for Request Cards */
 [data-theme="dark"] .border-green {
     border-left-color: #10b981;
-    background: linear-gradient(to right, rgba(16, 185, 129, 0.1) 0%, var(--surface-card) 100%);
+    background: linear-gradient(to right, rgba(16, 185, 129, 0.15) 0%, var(--surface-card) 100%);
 }
 
 [data-theme="dark"] .border-yellow {
     border-left-color: #f59e0b;
-    background: linear-gradient(to right, rgba(245, 158, 11, 0.1) 0%, var(--surface-card) 100%);
+    background: linear-gradient(to right, rgba(245, 158, 11, 0.15) 0%, var(--surface-card) 100%);
 }
 
 [data-theme="dark"] .border-gray {
@@ -4428,29 +4431,30 @@
     background: var(--surface-card);
 }
 
-/* Dark Mode AI Tags */
+/* Dark Mode AI Tags - Outline Style for Informational Tags */
 [data-theme="dark"] .ai-tag {
-    background: var(--bg-secondary);
-    color: var(--color-gray-300);
-    border-color: var(--border-default);
+    background: rgba(255, 255, 255, 0.05); /* Fondo semitransparente */
+    color: #E5E7EB; /* Texto claro */
+    border-color: rgba(255, 255, 255, 0.1);
 }
 
+/* Specific colors for positive/warning tags but keeping them subtle */
 [data-theme="dark"] .ai-tag.positive {
-    background: rgba(6, 95, 70, 0.3);
-    color: #34d399;
-    border-color: rgba(52, 211, 153, 0.2);
+    background: rgba(16, 185, 129, 0.1); /* Verde muy suave */
+    color: #6EE7B7; /* Verde pastel claro */
+    border-color: rgba(16, 185, 129, 0.2);
 }
 
 [data-theme="dark"] .ai-tag.warning {
-    background: rgba(146, 64, 14, 0.3);
-    color: #fbbf24;
-    border-color: rgba(251, 191, 36, 0.2);
+    background: rgba(245, 158, 11, 0.1); /* Amarillo muy suave */
+    color: #FCD34D; /* Amarillo pastel claro */
+    border-color: rgba(245, 158, 11, 0.2);
 }
 
 [data-theme="dark"] .ai-feedback-quote {
-    background: var(--bg-secondary);
-    color: var(--color-gray-300);
-    border-color: var(--border-default);
+    background: rgba(0, 0, 0, 0.2); /* Fondo ligeramente más oscuro para profundidad */
+    color: #D1D5DB; /* Gris plata para el texto */
+    border-color: rgba(255, 255, 255, 0.05);
 }
 
 [data-theme="dark"] .action-buttons {
@@ -4464,4 +4468,11 @@
 [data-theme="dark"] .btn-reject-sm:hover {
     background: rgba(239, 68, 68, 0.1);
     color: #f87171;
+}
+
+/* Status Badge Improvements for Dark Mode */
+[data-theme="dark"] .status-badge.status-revision_pendiente {
+    background: rgba(234, 179, 8, 0.2); /* Fondo amarillo sólido pero transparente */
+    color: #FDE047; /* Amarillo brillante */
+    border: 1px solid rgba(234, 179, 8, 0.3);
 }
