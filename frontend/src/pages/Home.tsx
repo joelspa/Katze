@@ -264,6 +264,7 @@ const Home = () => {
                     </div>
                 ) : (
                     <div className="catalog-grid">
+                        {/* Muestra los primeros 8 gatos - ordenados por antigüedad (los que más tiempo llevan esperando aparecen primero) */}
                         {cats.slice(0, 8).length > 0 ? (
                             cats.slice(0, 8).map((cat) => (
                                 <CatCard key={cat.id} cat={cat} />

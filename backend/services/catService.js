@@ -64,7 +64,9 @@ class CatService {
             paramIndex++;
         }
 
-        // Ordenar por tiempo en adopción: los gatos más antiguos primero (mayor prioridad)
+        // IMPORTANTE: Ordenar por fecha de creación ascendente (más antiguos primero)
+        // Esto da mayor visibilidad y prioridad a los gatos que llevan más tiempo esperando adopción
+        // Los gatos publicados hace más tiempo aparecen primero en el catálogo y página principal
         query += ` ORDER BY created_at ASC`;
         
         const result = await db.query(query, params);
