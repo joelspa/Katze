@@ -1042,16 +1042,6 @@ const AdminDashboard = () => {
                                                 <label>TELÉFONO</label>
                                                 <div className="detail-value">{selectedApplication.applicant_phone || 'No especificado'}</div>
                                             </div>
-                                            
-                                            <div className="detail-group">
-                                                <label>EDAD</label>
-                                                <div className="detail-value">{selectedApplication.applicant_age ? `${selectedApplication.applicant_age} años` : 'No especificado'}</div>
-                                            </div>
-                                            
-                                            <div className="detail-group">
-                                                <label>OCUPACIÓN</label>
-                                                <div className="detail-value">{selectedApplication.applicant_occupation || 'No especificado'}</div>
-                                            </div>
                                         </div>
 
                                         {/* Columna Derecha: Perfil del Hogar */}

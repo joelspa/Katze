@@ -48,6 +48,15 @@ app.use('/api/admin', adminRoutes);                  // Rutas de administración
 // Inicialización del servidor Express
 // Versión: 1.2.0 - Sistema de evaluación AI asíncrona en español
 const PORT = process.env.PORT || 5000;
+
+// Iniciar Worker de IA en segundo plano
+const ApplicationQueueWorker = require('./workers/processApplicationQueue');
+const aiWorker = new ApplicationQueueWorker();
+
 app.listen(PORT, () => {
     console.log(`Servidor corriendo en puerto ${PORT}`);
+    
+    // Iniciar el worker después de que el servidor esté listo
+    console.log('🤖 Iniciando sistema de evaluación IA...');
+    aiWorker.start().catch(err => console.error('❌ Error iniciando worker:', err));
 });
