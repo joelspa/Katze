@@ -16,15 +16,15 @@ class AIService {
             this.enabled = false;
         } else {
             this.genAI = new GoogleGenerativeAI(config.GEMINI_API_KEY);
-            // Usar gemini-1.5-flash - compatible con SDK 0.24.1 y API v1
+            // Usar gemini-1.5-pro - modelo estable compatible con SDK 0.24.1
             this.model = this.genAI.getGenerativeModel({ 
-                model: 'gemini-1.5-flash',
+                model: 'gemini-1.5-pro',
                 generationConfig: {
                     temperature: 0.2, // Bajo para decisiones consistentes
                     topP: 0.95,
                     topK: 40,
-                    maxOutputTokens: 512
-                    // Removido responseMimeType temporalmente para testing
+                    maxOutputTokens: 512,
+                    responseMimeType: 'application/json'
                 }
             });
             this.enabled = true;
