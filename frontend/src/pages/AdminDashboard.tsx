@@ -128,6 +128,19 @@ const AdminDashboard = () => {
         applicant_name: string;
         applicant_email: string;
         applicant_phone?: string;
+        
+        // Mapped fields for UI compatibility
+        application_status: string;
+        ai_suitability_score?: number;
+        applicant_age?: number;
+        applicant_occupation?: string;
+        living_situation?: string;
+        has_other_pets?: boolean;
+        experience_with_cats?: boolean;
+        reason_for_adoption?: string;
+        updated_at?: string; // mapped from ai_evaluated_at
+
+        // Original fields
         status: string;
         form_responses: any;
         ai_score?: number;
@@ -431,7 +444,23 @@ const AdminDashboard = () => {
             });
             
             const applicationsData = response.data.data?.applications || response.data.applications || response.data;
-            setApplications(applicationsData);
+            
+            // Map backend data to frontend interface
+            const mappedApplications = Array.isArray(applicationsData) ? applicationsData.map((app: any) => ({
+                ...app,
+                application_status: app.status,
+                ai_suitability_score: app.ai_score,
+                // Safely access form_responses properties
+                applicant_age: app.form_responses?.age || app.form_responses?.applicant_age || 0,
+                applicant_occupation: app.form_responses?.occupation || app.form_responses?.applicant_occupation || 'No especificada',
+                living_situation: app.form_responses?.livingSpace || app.form_responses?.living_situation || 'No especificado',
+                has_other_pets: app.form_responses?.hasOtherPets || app.form_responses?.has_other_pets || false,
+                experience_with_cats: app.form_responses?.hasExperience || app.form_responses?.experience_with_cats || false,
+                reason_for_adoption: app.form_responses?.whyAdopt || app.form_responses?.reason_for_adoption || 'No especificada',
+                updated_at: app.ai_evaluated_at || app.created_at
+            })) : [];
+
+            setApplications(mappedApplications);
         } catch (error) {
             console.error('Error al cargar solicitudes:', error);
             if (isAxiosError(error)) {
@@ -751,10 +780,10 @@ const AdminDashboard = () => {
                                             <p><strong>Teléfono:</strong> {application.applicant_phone}</p>
                                             <p><strong>Edad:</strong> {application.applicant_age} años</p>
                                             <p><strong>Ocupación:</strong> {application.applicant_occupation}</p>
-                                            {application.ai_suitability_score !== null && (
+                                            {application.ai_suitability_score != null && (
                                                 <div className="ai-score">
                                                     <strong>Puntuación IA:</strong>
-                                                    <span className={`score-badge score-${Math.floor(application.ai_suitability_score / 20)}`}>
+                                                    <span className={`score-badge score-${Math.floor((application.ai_suitability_score || 0) / 20)}`}>
                                                         {application.ai_suitability_score}/100
                                                     </span>
                                                 </div>
@@ -819,10 +848,10 @@ const AdminDashboard = () => {
                                     <p>{selectedApplication.reason_for_adoption}</p>
                                 </div>
 
-                                {selectedApplication.ai_suitability_score !== null && (
+                                {selectedApplication.ai_suitability_score != null && (
                                     <div className="modal-section">
                                         <h3>Evaluación IA</h3>
-                                        <p><strong>Puntuación:</strong> <span className={`score-badge score-${Math.floor(selectedApplication.ai_suitability_score / 20)}`}>{selectedApplication.ai_suitability_score}/100</span></p>
+                                        <p><strong>Puntuación:</strong> <span className={`score-badge score-${Math.floor((selectedApplication.ai_suitability_score || 0) / 20)}`}>{selectedApplication.ai_suitability_score}/100</span></p>
                                         {selectedApplication.ai_feedback && (
                                             <div className="ai-feedback">
                                                 <strong>Análisis:</strong>
