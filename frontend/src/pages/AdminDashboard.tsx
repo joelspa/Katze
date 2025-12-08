@@ -317,6 +317,7 @@ const AdminDashboard = () => {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             const tasksData = response.data.data?.tasks || response.data.tasks || response.data;
+            console.log('Tracking Tasks Data:', tasksData);
             setTrackingTasks(tasksData);
         } catch (error) {
             console.error('Error al cargar tareas de seguimiento:', error);

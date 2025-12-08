@@ -3377,11 +3377,12 @@
 }
 
 [data-theme="dark"] .tasks-table td {
-    color: var(--color-gray-700);
+    color: var(--text-body);
 }
 
 [data-theme="dark"] .cat-name,
-[data-theme="dark"] .applicant-name {
+[data-theme="dark"] .applicant-name,
+[data-theme="dark"] .owner-name {
     color: var(--color-white);
 }
 
