@@ -376,6 +376,37 @@ const AdminDashboard = () => {
         }
     };
 
+    // Actualiza el estado de una solicitud de adopción
+    const handleUpdateApplicationStatus = async (applicationId: number, newStatus: 'aprobada' | 'rechazada') => {
+        const actionText = newStatus === 'aprobada' ? 'aprobar' : 'rechazar';
+        const confirmed = await showConfirm(
+            `¿Estás seguro de que deseas ${actionText} esta solicitud? Esta acción notificará al usuario.`,
+            `Confirmar ${newStatus === 'aprobada' ? 'Aprobación' : 'Rechazo'}`
+        );
+
+        if (!confirmed) return;
+
+        try {
+            const API_URL = `${API_BASE_URL}/api/applications/${applicationId}/status`;
+            await axios.put(
+                API_URL,
+                { status: newStatus },
+                { headers: { 'Authorization': `Bearer ${token}` } }
+            );
+
+            await showAlert(`Solicitud ${newStatus} correctamente`, 'Operación Exitosa');
+            setSelectedApplication(null); // Cerrar modal
+            fetchApplications(); // Recargar lista
+        } catch (error: unknown) {
+            console.error('Error updating application status:', error);
+            if (isAxiosError(error)) {
+                await showAlert(error.response?.data?.message || `Error al ${actionText} la solicitud`, 'Error');
+            } else {
+                await showAlert(`Error al ${actionText} la solicitud`, 'Error');
+            }
+        }
+    };
+
     // Crea un nuevo usuario (solo admin)
     const handleCreateUser = async () => {
         if (!newUserForm.email || !newUserForm.password || !newUserForm.fullName || !newUserForm.role) {
@@ -1098,6 +1129,22 @@ const AdminDashboard = () => {
                                         </span>
                                     </div>
                                     <div className="footer-actions">
+                                        {(selectedApplication.application_status === 'pendiente' || selectedApplication.application_status === 'revision_pendiente') && (
+                                            <>
+                                                <button 
+                                                    className="btn-reject" 
+                                                    onClick={() => handleUpdateApplicationStatus(selectedApplication.id, 'rechazada')}
+                                                >
+                                                    Rechazar
+                                                </button>
+                                                <button 
+                                                    className="btn-approve" 
+                                                    onClick={() => handleUpdateApplicationStatus(selectedApplication.id, 'aprobada')}
+                                                >
+                                                    Aprobar
+                                                </button>
+                                            </>
+                                        )}
                                         <button className="btn-secondary" onClick={() => setSelectedApplication(null)}>
                                             Cerrar
                                         </button>
