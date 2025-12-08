@@ -17,7 +17,7 @@ class AIService {
         } else {
             this.genAI = new GoogleGenerativeAI(config.GEMINI_API_KEY);
             this.model = this.genAI.getGenerativeModel({ 
-                model: 'gemini-1.5-flash',
+                model: 'gemini-1.5-flash-latest',
                 generationConfig: {
                     temperature: 0.2, // Bajo para decisiones consistentes
                     topP: 0.95,

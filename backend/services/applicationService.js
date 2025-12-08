@@ -5,12 +5,13 @@ const db = require('../db');
 
 class ApplicationService {
     // Crea solicitud de adopción con respuestas del formulario
+    // Estado inicial: 'procesando' (será evaluada automáticamente por el worker)
     async createApplication(applicantId, catId, formResponses) {
         const formResponsesJson = JSON.stringify(formResponses);
         
         const result = await db.query(
             `INSERT INTO adoption_applications (applicant_id, cat_id, form_responses, status)
-             VALUES ($1, $2, $3, 'pendiente')
+             VALUES ($1, $2, $3, 'procesando')
              RETURNING *`,
             [applicantId, catId, formResponsesJson]
         );
