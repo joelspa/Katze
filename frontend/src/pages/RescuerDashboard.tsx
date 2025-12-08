@@ -511,125 +511,84 @@ const RescuerDashboard = () => {
                         )}
 
                         <div className="modal-body">
-                            {/* Grid de Datos Rápidos (Bento Grid) */}
-                            {selectedApplication.form_responses && typeof selectedApplication.form_responses === 'object' && (
-                                <section className="quick-data-grid">
-                                    {Object.entries(selectedApplication.form_responses).map(([key, value]) => {
-                                        const strValue = String(value);
-                                        const isShortAnswer = strValue.length < 50;
-                                        
-                                        if (!isShortAnswer) return null; // Largo texto se maneja después
-                                        
-                                        // Traducir claves al español
-                                        const translateKey = (key: string): string => {
-                                            const translations: Record<string, string> = {
-                                                'hasTime': 'Disponibilidad de Tiempo',
-                                                'hasSpace': 'Espacio Suficiente',
-                                                'livingSpace': 'Tipo de Vivienda',
-                                                'hasOtherPets': 'Otras Mascotas',
-                                                'otherPetsDetails': 'Detalles de Mascotas',
-                                                'hasExperience': 'Experiencia con Gatos',
-                                                'acceptsSterilization': 'Acepta Esterilización',
-                                                'acceptsFollowUp': 'Acepta Seguimiento',
-                                                'submittedAt': 'Fecha de Solicitud'
-                                            };
-                                            return translations[key] || key.replace(/_/g, ' ').replace(/([A-Z])/g, ' $1').trim();
-                                        };
-                                        
-                                        // Traducir valores al español
-                                        const translateValue = (key: string, value: any): string => {
-                                            if (typeof value === 'boolean') {
-                                                return value ? 'Sí' : 'No';
-                                            }
-                                            if (key === 'livingSpace') {
-                                                const livingSpaceTranslations: Record<string, string> = {
-                                                    'casa': 'Casa',
-                                                    'apartamento': 'Apartamento',
-                                                    'otro': 'Otro'
-                                                };
-                                                return livingSpaceTranslations[String(value)] || String(value);
-                                            }
-                                            if (key === 'submittedAt') {
-                                                try {
-                                                    return new Date(String(value)).toLocaleDateString('es-ES', {
-                                                        day: '2-digit',
-                                                        month: 'short',
-                                                        year: 'numeric',
-                                                        hour: '2-digit',
-                                                        minute: '2-digit'
-                                                    });
-                                                } catch {
-                                                    return String(value);
-                                                }
-                                            }
-                                            return String(value);
-                                        };
-                                        
-                                        // SVG según tipo de pregunta
-                                        const getIconSVG = (key: string) => {
-                                            const k = key.toLowerCase();
-                                            if (k.includes('vivienda') || k.includes('casa')) {
-                                                return <svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>;
-                                            } else if (k.includes('tiempo') || k.includes('horas')) {
-                                                return <svg viewBox="0 0 24 24" fill="currentColor"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>;
-                                            } else if (k.includes('fondo') || k.includes('emergencia')) {
-                                                return <svg viewBox="0 0 24 24" fill="currentColor"><path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/></svg>;
-                                            } else if (k.includes('conviv') || k.includes('familia')) {
-                                                return <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>;
-                                            } else if (k.includes('esteri') || k.includes('esteril')) {
-                                                return <svg viewBox="0 0 24 24" fill="currentColor"><path d="M9.64 7.64c.23-.5.36-1.05.36-1.64 0-2.21-1.79-4-4-4S2 3.79 2 6s1.79 4 4 4c.59 0 1.14-.13 1.64-.36L10 12l-2.36 2.36C7.14 14.13 6.59 14 6 14c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4c0-.59-.13-1.14-.36-1.64L12 14l7 7h3v-1L9.64 7.64zM6 8c-1.1 0-2-.89-2-2s.9-2 2-2 2 .89 2 2-.9 2-2 2zm0 12c-1.1 0-2-.89-2-2s.9-2 2-2 2 .89 2 2-.9 2-2 2zm6-7.5c-.28 0-.5-.22-.5-.5s.22-.5.5-.5.5.22.5.5-.22.5-.5.5zM19 3l-6 6 2 2 7-7V3z"/></svg>;
-                                            } else if (k.includes('gato') || k.includes('mascota')) {
-                                                return <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 8c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zm0-5C6.48 3 2 7.48 2 13c0 4.95 4.05 9 9 9h4v-2h-4c-3.86 0-7-3.14-7-7 0-4.41 3.59-8 8-8s8 3.59 8 8c0 1.55-.42 3-1.16 4.25l1.67 1.67C21.44 17.07 22 15.11 22 13c0-5.52-4.48-10-10-10z"/></svg>;
-                                            } else if (k.includes('jardín') || k.includes('jardin') || k.includes('exterior')) {
-                                                return <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17 8C8 10 5.9 16.17 3.82 21.34l1.89.66.95-2.66c.48-.17.98-.31 1.48-.41C19.05 17.74 20 11 20 11c-1 1-1 1-2 1s-1 0-1-1zM5.21 16.95c.41-.41.91-.7 1.45-.84C8.39 15.49 9.4 14.5 10 13c-1.06 1.06-3.5 2.5-4.79 3.95z"/></svg>;
-                                            } else if (k.includes('experiencia') || k.includes('previo')) {
-                                                return <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>;
-                                            }
-                                            return <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3h-4.18C14.4 1.84 13.3 1 12 1c-1.3 0-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm2 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>;
-                                        };
-                                        
-                                        return (
-                                            <div key={key} className="data-card">
-                                                <small className="data-label">{translateKey(key)}</small>
-                                                <div className="data-value">
-                                                    <span className="data-icon">{getIconSVG(key)}</span>
-                                                    <span>{translateValue(key, value)}</span>
-                                                </div>
-                                            </div>
-                                        );
-                                    })}
-                                </section>
-                            )}
+                            <div className="application-details-grid">
+                                {/* Columna Izquierda: Datos del Solicitante */}
+                                <div className="detail-column">
+                                    <h4 className="column-header">DATOS DEL SOLICITANTE</h4>
+                                    
+                                    <div className="detail-group">
+                                        <label>NOMBRE</label>
+                                        <div className="detail-value">{selectedApplication.applicant_name}</div>
+                                    </div>
+                                    
+                                    <div className="detail-group">
+                                        <label>EMAIL</label>
+                                        <a href={`mailto:${selectedApplication.applicant_email}`} className="detail-link">
+                                            {selectedApplication.applicant_email}
+                                        </a>
+                                    </div>
+                                    
+                                    <div className="detail-group">
+                                        <label>TELÉFONO</label>
+                                        <div className="detail-value">{selectedApplication.applicant_phone || 'No especificado'}</div>
+                                    </div>
+                                    
+                                    {/* Add Age and Occupation if available in form_responses */}
+                                    {selectedApplication.form_responses?.age && (
+                                        <div className="detail-group">
+                                            <label>EDAD</label>
+                                            <div className="detail-value">{selectedApplication.form_responses.age} años</div>
+                                        </div>
+                                    )}
+                                    
+                                    {selectedApplication.form_responses?.occupation && (
+                                        <div className="detail-group">
+                                            <label>OCUPACIÓN</label>
+                                            <div className="detail-value">{selectedApplication.form_responses.occupation}</div>
+                                        </div>
+                                    )}
+                                </div>
 
-                            {/* Respuestas Largas (Texto Narrativo) */}
-                            {selectedApplication.form_responses && typeof selectedApplication.form_responses === 'object' && (
-                                <section className="narrative-section">
-                                    {Object.entries(selectedApplication.form_responses).map(([key, value]) => {
-                                        const strValue = String(value);
-                                        const isLongAnswer = strValue.length >= 50;
-                                        
-                                        if (!isLongAnswer) return null;
-                                        
-                                        // Traducir claves para respuestas largas
-                                        const translateLongKey = (key: string): string => {
-                                            const translations: Record<string, string> = {
-                                                'whyAdopt': '¿Por qué eres el hogar perfecto para este gato?',
-                                                'reason': '¿Por qué eres el hogar perfecto para este gato?'
-                                            };
-                                            return translations[key] || key.replace(/_/g, ' ').replace(/([A-Z])/g, ' $1').trim();
-                                        };
-                                        
-                                        return (
-                                            <div key={key} className="narrative-block">
-                                                <h4 className="narrative-question">{translateLongKey(key)}</h4>
-                                                <p className="narrative-answer">{strValue}</p>
-                                            </div>
-                                        );
-                                    })}
-                                </section>
-                            )}
+                                {/* Columna Derecha: Perfil del Hogar */}
+                                <div className="detail-column">
+                                    <h4 className="column-header">PERFIL DEL HOGAR</h4>
+                                    
+                                    <div className="detail-group">
+                                        <label>VIVIENDA</label>
+                                        <div className="detail-value">
+                                            <span className="badge badge-blue">
+                                                {selectedApplication.form_responses?.livingSpace || 'No especificado'}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div className="detail-group">
+                                        <label>MASCOTAS ACTUALES</label>
+                                        <div className="detail-value">
+                                            <span className="badge badge-neutral">
+                                                {selectedApplication.form_responses?.hasOtherPets ? 'TIENE MASCOTAS' : 'NO TIENE MASCOTAS'}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div className="detail-group">
+                                        <label>EXPERIENCIA</label>
+                                        <div className="detail-value">
+                                            <span className={`badge ${selectedApplication.form_responses?.hasExperience ? 'badge-green' : 'badge-neutral'}`}>
+                                                {selectedApplication.form_responses?.hasExperience ? 'TIENE EXPERIENCIA' : 'SIN EXPERIENCIA'}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
 
-                            {/* Análisis de IA ya mostrado con badges y feedback arriba */}
+                            {/* Bloque de Razón de Adopción */}
+                            <div className="reason-block">
+                                <h4 className="reason-header">RAZÓN DE ADOPCIÓN</h4>
+                                <p className="reason-text">
+                                    "{selectedApplication.form_responses?.whyAdopt || selectedApplication.form_responses?.reason || 'No especificado'}"
+                                </p>
+                            </div>
                         </div>
 
                         {/* Acciones */}

@@ -824,13 +824,19 @@ const AdminDashboard = () => {
                                                         }}
                                                     />
                                                 ) : (
-                                                    <div style={{width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#9ca3af'}}>
-                                                        <svg viewBox="0 0 24 24" fill="currentColor" style={{width: '48px', height: '48px'}}>
+                                                    <div className="no-photo-placeholder">
+                                                        <svg viewBox="0 0 24 24" fill="currentColor">
                                                             <path d="M12 2C10.34 2 9 3.34 9 5c0 .35.07.69.18 1H6c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-3.18c.11-.31.18-.65.18-1 0-1.66-1.34-3-3-3z"/>
                                                         </svg>
                                                     </div>
                                                 )}
                                                 
+                                                {hasTopCandidate && (
+                                                    <div className="top-match-badge-overlay">
+                                                        <span>Top Match</span>
+                                                    </div>
+                                                )}
+
                                                 <div className="cat-info-overlay">
                                                     <h3>{group.cat_name}</h3>
                                                     <p>ID: {group.cat_id}</p>
@@ -839,15 +845,9 @@ const AdminDashboard = () => {
 
                                             <div className="cat-card-footer">
                                                 <div className="request-count">
-                                                    <span className="request-count-label">Solicitudes</span>
+                                                    <span className="request-count-label">SOLICITUDES</span>
                                                     <span className="request-count-number">{group.applicationCount}</span>
                                                 </div>
-
-                                                {hasTopCandidate && (
-                                                    <div className="top-match-badge">
-                                                        <span>🏆 Top Match</span>
-                                                    </div>
-                                                )}
 
                                                 <div className="view-list-link">
                                                     Ver lista
@@ -905,10 +905,10 @@ const AdminDashboard = () => {
                                                             </span>
                                                             <div style={{marginTop: '4px'}}>
                                                                 <span className={`status-badge status-${application.application_status}`} style={{fontSize: '0.75rem'}}>
-                                                                    {application.application_status === 'revision_pendiente' && '⏳ Pendiente'}
-                                                                    {application.application_status === 'procesando' && '🔄 Procesando'}
-                                                                    {application.application_status === 'aprobada' && '✅ Aprobada'}
-                                                                    {application.application_status === 'rechazada' && '❌ Rechazada'}
+                                                                    {application.application_status === 'revision_pendiente' && 'Pendiente'}
+                                                                    {application.application_status === 'procesando' && 'Procesando'}
+                                                                    {application.application_status === 'aprobada' && 'Aprobada'}
+                                                                    {application.application_status === 'rechazada' && 'Rechazada'}
                                                                 </span>
                                                             </div>
                                                         </div>
@@ -938,7 +938,6 @@ const AdminDashboard = () => {
                                                     {/* AI Feedback Quote */}
                                                     {application.ai_feedback && (
                                                         <div className="ai-feedback-quote">
-                                                            <span>🤖</span>
                                                             <span>"{application.ai_feedback}"</span>
                                                         </div>
                                                     )}
@@ -964,73 +963,129 @@ const AdminDashboard = () => {
                     {/* Modal de detalles de solicitud */}
                     {selectedApplication && (
                         <div className="modal-overlay" onClick={() => setSelectedApplication(null)}>
-                            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-                                <button className="modal-close" onClick={() => setSelectedApplication(null)}>×</button>
-                                <h2>Detalles de la Solicitud</h2>
+                            <div className="modal-content modal-detail-enhanced" onClick={(e) => e.stopPropagation()}>
+                                <button className="modal-close" onClick={() => setSelectedApplication(null)}>
+                                    <svg viewBox="0 0 20 20" fill="currentColor" style={{width: '24px', height: '24px'}}>
+                                        <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                                    </svg>
+                                </button>
                                 
-                                <div className="modal-section">
-                                    <h3>Información del Gato</h3>
-                                    <p><strong>Nombre:</strong> {selectedApplication.cat_name}</p>
+                                <div className="modal-header-enhanced">
+                                    <h2>Detalles de la Solicitud</h2>
+                                    <p className="subtitle">Para: <strong>{selectedApplication.cat_name}</strong></p>
                                 </div>
+                                
+                                <div className="application-details-grid">
+                                    {/* Columna Izquierda: Datos del Solicitante */}
+                                    <div className="detail-column">
+                                        <h4 className="column-header">DATOS DEL SOLICITANTE</h4>
+                                        
+                                        <div className="detail-group">
+                                            <label>NOMBRE</label>
+                                            <div className="detail-value">{selectedApplication.applicant_name}</div>
+                                        </div>
+                                        
+                                        <div className="detail-group">
+                                            <label>EMAIL</label>
+                                            <a href={`mailto:${selectedApplication.applicant_email}`} className="detail-link">
+                                                {selectedApplication.applicant_email}
+                                            </a>
+                                        </div>
+                                        
+                                        <div className="detail-group">
+                                            <label>TELÉFONO</label>
+                                            <div className="detail-value">{selectedApplication.applicant_phone || 'No especificado'}</div>
+                                        </div>
+                                        
+                                        <div className="detail-group">
+                                            <label>EDAD</label>
+                                            <div className="detail-value">{selectedApplication.applicant_age ? `${selectedApplication.applicant_age} años` : 'No especificado'}</div>
+                                        </div>
+                                        
+                                        <div className="detail-group">
+                                            <label>OCUPACIÓN</label>
+                                            <div className="detail-value">{selectedApplication.applicant_occupation || 'No especificado'}</div>
+                                        </div>
+                                    </div>
 
-                                <div className="modal-section">
-                                    <h3>Información del Solicitante</h3>
-                                    <p><strong>Nombre:</strong> {selectedApplication.applicant_name}</p>
-                                    <p><strong>Email:</strong> {selectedApplication.applicant_email}</p>
-                                    <p><strong>Teléfono:</strong> {selectedApplication.applicant_phone}</p>
-                                    <p><strong>Edad:</strong> {selectedApplication.applicant_age} años</p>
-                                    <p><strong>Ocupación:</strong> {selectedApplication.applicant_occupation}</p>
-                                </div>
-
-                                <div className="modal-section">
-                                    <h3>Detalles de la Vivienda</h3>
-                                    <p><strong>Tipo:</strong> {selectedApplication.living_situation}</p>
-                                    <p><strong>Mascotas actuales:</strong> {selectedApplication.has_other_pets ? 'Sí' : 'No'}</p>
-                                    <p><strong>Experiencia previa:</strong> {selectedApplication.experience_with_cats ? 'Sí' : 'No'}</p>
-                                </div>
-
-                                <div className="modal-section">
-                                    <h3>Razón de Adopción</h3>
-                                    <p>{selectedApplication.reason_for_adoption}</p>
-                                </div>
-
-                                {selectedApplication.ai_suitability_score != null && (
-                                    <div className="modal-section">
-                                        <h3>Evaluación IA</h3>
-                                        <p><strong>Puntuación:</strong> <span className={`score-badge score-${Math.floor((selectedApplication.ai_suitability_score || 0) / 20)}`}>{selectedApplication.ai_suitability_score}/100</span></p>
-                                        {selectedApplication.ai_feedback && (
-                                            <div className="ai-feedback">
-                                                <strong>Análisis:</strong>
-                                                <p>{selectedApplication.ai_feedback}</p>
+                                    {/* Columna Derecha: Perfil del Hogar */}
+                                    <div className="detail-column">
+                                        <h4 className="column-header">PERFIL DEL HOGAR</h4>
+                                        
+                                        <div className="detail-group">
+                                            <label>VIVIENDA</label>
+                                            <div className="detail-value">
+                                                <span className="badge badge-blue">
+                                                    {selectedApplication.living_situation || 'No especificado'}
+                                                </span>
                                             </div>
+                                        </div>
+                                        
+                                        <div className="detail-group">
+                                            <label>MASCOTAS ACTUALES</label>
+                                            <div className="detail-value">
+                                                <span className={`badge ${selectedApplication.has_other_pets ? 'badge-neutral' : 'badge-neutral'}`}>
+                                                    {selectedApplication.has_other_pets ? 'TIENE MASCOTAS' : 'NO TIENE MASCOTAS'}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        
+                                        <div className="detail-group">
+                                            <label>EXPERIENCIA</label>
+                                            <div className="detail-value">
+                                                <span className={`badge ${selectedApplication.experience_with_cats ? 'badge-green' : 'badge-neutral'}`}>
+                                                    {selectedApplication.experience_with_cats ? 'TIENE EXPERIENCIA' : 'SIN EXPERIENCIA'}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Bloque de Razón de Adopción */}
+                                <div className="reason-block">
+                                    <h4 className="reason-header">RAZÓN DE ADOPCIÓN</h4>
+                                    <p className="reason-text">
+                                        "{selectedApplication.reason_for_adoption || 'No especificado'}"
+                                    </p>
+                                </div>
+
+                                {/* Evaluación IA */}
+                                {selectedApplication.ai_suitability_score != null && (
+                                    <div className="ai-evaluation-block">
+                                        <div className="ai-header">
+                                            <h4>ANÁLISIS DE IA</h4>
+                                            <span className={`score-badge score-${Math.floor((selectedApplication.ai_suitability_score || 0) / 20)}`}>
+                                                {selectedApplication.ai_suitability_score}/100
+                                            </span>
+                                        </div>
+                                        
+                                        {selectedApplication.ai_feedback && (
+                                            <p className="ai-feedback-text">{selectedApplication.ai_feedback}</p>
                                         )}
+                                        
                                         {selectedApplication.ai_flags && selectedApplication.ai_flags.length > 0 && (
-                                            <div className="ai-flags">
-                                                <strong>Alertas:</strong>
-                                                <ul>
-                                                    {selectedApplication.ai_flags.map((flag, idx) => (
-                                                        <li key={idx}>⚠️ {flag}</li>
-                                                    ))}
-                                                </ul>
+                                            <div className="ai-flags-container">
+                                                {selectedApplication.ai_flags.map((flag, idx) => (
+                                                    <span key={idx} className="ai-flag-badge">{flag}</span>
+                                                ))}
                                             </div>
                                         )}
                                     </div>
                                 )}
 
-                                <div className="modal-section">
-                                    <h3>Estado y Fechas</h3>
-                                    <p><strong>Estado:</strong> 
+                                {/* Footer con Acciones */}
+                                <div className="modal-footer-enhanced">
+                                    <div className="footer-info">
+                                        <span className="date-info">Solicitado el {new Date(selectedApplication.created_at).toLocaleDateString('es-ES')}</span>
                                         <span className={`status-badge status-${selectedApplication.application_status}`}>
-                                            {selectedApplication.application_status === 'revision_pendiente' && '⏳ Pendiente de revisión'}
-                                            {selectedApplication.application_status === 'procesando' && '🔄 En procesamiento'}
-                                            {selectedApplication.application_status === 'aprobada' && '✅ Aprobada'}
-                                            {selectedApplication.application_status === 'rechazada' && '❌ Rechazada'}
+                                            {selectedApplication.application_status}
                                         </span>
-                                    </p>
-                                    <p><strong>Fecha de solicitud:</strong> {new Date(selectedApplication.created_at).toLocaleString('es-ES')}</p>
-                                    {selectedApplication.updated_at && (
-                                        <p><strong>Última actualización:</strong> {new Date(selectedApplication.updated_at).toLocaleString('es-ES')}</p>
-                                    )}
+                                    </div>
+                                    <div className="footer-actions">
+                                        <button className="btn-secondary" onClick={() => setSelectedApplication(null)}>
+                                            Cerrar
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
