@@ -27,6 +27,7 @@ interface Application {
     ai_feedback?: string; // Explicación corta de la IA
     ai_flags?: string[]; // Etiquetas: Casa Segura, Pro-Esterilización, etc.
     ai_evaluated_at?: string;
+    created_at?: string;
 }
 
 // Interfaz para agrupar solicitudes por gato
