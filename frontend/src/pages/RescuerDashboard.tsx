@@ -3,8 +3,10 @@
 
 import { useState, useEffect } from 'react';
 import axios, { isAxiosError } from 'axios';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { AIBadge, AIScoreBadge } from '../components/AIBadge';
+import TrackingDashboard from './TrackingDashboard';
 import './RescuerDashboard.css';
 import './AdminDashboard.css'; // Reutilizar estilos del admin dashboard
 import '../components/AIBadge.css';
@@ -36,7 +38,7 @@ interface CatApplicationGroup {
     applicationCount: number;
 }
 
-type TabType = 'cats' | 'applications' | 'tracking';
+type TabType = 'applications' | 'tracking';
 
 const RescuerDashboard = () => {
     const [activeTab, setActiveTab] = useState<TabType>('applications');
@@ -193,15 +195,6 @@ const RescuerDashboard = () => {
 
                 <nav className="admin-nav">
                     <button 
-                        className={`nav-item ${activeTab === 'cats' ? 'active' : ''}`}
-                        onClick={() => setActiveTab('cats')}
-                    >
-                        <svg viewBox="0 0 20 20" fill="currentColor">
-                            <path d="M10 3.5a1.5 1.5 0 013 0V4a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-.5a1.5 1.5 0 000 3h.5a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-.5a1.5 1.5 0 00-3 0v.5a1 1 0 01-1 1H6a1 1 0 01-1-1v-3a1 1 0 00-1-1h-.5a1.5 1.5 0 010-3H4a1 1 0 001-1V6a1 1 0 011-1h3a1 1 0 001-1v-.5z" />
-                        </svg>
-                        <span>Mis Gatos</span>
-                    </button>
-                    <button 
                         className={`nav-item ${activeTab === 'applications' ? 'active' : ''}`}
                         onClick={() => setActiveTab('applications')}
                     >
@@ -220,6 +213,12 @@ const RescuerDashboard = () => {
                         </svg>
                         <span>Seguimiento</span>
                     </button>
+                    <Link to="/publish" className="nav-item">
+                        <svg viewBox="0 0 20 20" fill="currentColor">
+                            <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
+                        </svg>
+                        <span>Publicar Gato</span>
+                    </Link>
                 </nav>
             </aside>
 
@@ -309,31 +308,9 @@ const RescuerDashboard = () => {
                     </div>
                 )}
 
-                {activeTab === 'cats' && (
-                    <div className="dashboard-container" style={{padding: 0, background: 'transparent', boxShadow: 'none'}}>
-                        <div className="section-header">
-                            <svg className="section-icon" viewBox="0 0 20 20" fill="currentColor">
-                                <path d="M10 3.5a1.5 1.5 0 013 0V4a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-.5a1.5 1.5 0 000 3h.5a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-.5a1.5 1.5 0 00-3 0v.5a1 1 0 01-1 1H6a1 1 0 01-1-1v-3a1 1 0 00-1-1h-.5a1.5 1.5 0 010-3H4a1 1 0 001-1V6a1 1 0 011-1h3a1 1 0 001-1v-.5z" />
-                            </svg>
-                            <h2>Mis Gatos</h2>
-                        </div>
-                        <div className="empty-state">
-                            <p className="empty-state-text">Funcionalidad de gestión de gatos próximamente.</p>
-                        </div>
-                    </div>
-                )}
-
                 {activeTab === 'tracking' && (
                     <div className="dashboard-container" style={{padding: 0, background: 'transparent', boxShadow: 'none'}}>
-                        <div className="section-header">
-                            <svg className="section-icon" viewBox="0 0 20 20" fill="currentColor">
-                                <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
-                            </svg>
-                            <h2>Seguimiento de Adopciones</h2>
-                        </div>
-                        <div className="empty-state">
-                            <p className="empty-state-text">Panel de seguimiento próximamente.</p>
-                        </div>
+                        <TrackingDashboard />
                     </div>
                 )}
             </main>

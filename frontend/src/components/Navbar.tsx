@@ -75,18 +75,8 @@ const Navbar = () => {
                             {user?.role === 'rescatista' && (
                                 <>
                                     <li className="nav-item">
-                                        <Link to="/publish" className="nav-link nav-button-cta">
-                                            Publicar Gato
-                                        </Link>
-                                    </li>
-                                    <li className="nav-item">
                                         <Link to="/dashboard" className="nav-link">
-                                            Panel Adopciones
-                                        </Link>
-                                    </li>
-                                    <li className="nav-item">
-                                        <Link to="/tracking" className="nav-link">
-                                            Panel Seguimiento
+                                            Panel Rescatista
                                         </Link>
                                     </li>
                                 </>
