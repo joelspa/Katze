@@ -51,7 +51,9 @@ const Login = () => {
 
             login(user, token);
 
-            if (user.role === 'rescatista' || user.role === 'admin') {
+            if (user.role === 'admin') {
+                navigate('/admin');
+            } else if (user.role === 'rescatista') {
                 navigate('/dashboard');
             } else {
                 navigate('/');

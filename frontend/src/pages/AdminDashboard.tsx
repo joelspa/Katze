@@ -149,9 +149,21 @@ const AdminDashboard = () => {
         created_at: string;
         owner_name: string;
     }
+
+    // Interfaz para agrupar solicitudes por gato
+    interface CatApplicationGroup {
+        cat_id: number;
+        cat_name: string;
+        cat_photos?: string[];
+        applications: Application[];
+        applicationCount: number;
+    }
+
     const [applications, setApplications] = useState<Application[]>([]);
+    const [groupedApplications, setGroupedApplications] = useState<CatApplicationGroup[]>([]);
     const [loadingApplications, setLoadingApplications] = useState(false);
     const [selectedApplication, setSelectedApplication] = useState<Application | null>(null);
+    const [selectedCatGroup, setSelectedCatGroup] = useState<CatApplicationGroup | null>(null);
     const [applicationFilter, setApplicationFilter] = useState<string>('all');
     
     const { token } = useAuth();
@@ -432,6 +444,31 @@ const AdminDashboard = () => {
         }
     };
 
+    // Función para agrupar solicitudes por gato
+    const groupApplicationsByCat = (apps: Application[]): CatApplicationGroup[] => {
+        const grouped = apps.reduce((acc, app) => {
+            const catId = app.cat_id;
+            
+            if (!acc[catId]) {
+                acc[catId] = {
+                    cat_id: app.cat_id,
+                    cat_name: app.cat_name,
+                    cat_photos: app.cat_photos,
+                    applications: [],
+                    applicationCount: 0
+                };
+            }
+            
+            acc[catId].applications.push(app);
+            acc[catId].applicationCount++;
+            
+            return acc;
+        }, {} as Record<number, CatApplicationGroup>);
+
+        // Convertir a array y ordenar por cantidad de solicitudes (más solicitudes primero)
+        return Object.values(grouped).sort((a, b) => b.applicationCount - a.applicationCount);
+    };
+
     // Carga todas las solicitudes de adopción (admin puede ver todas)
     const fetchApplications = async () => {
         if (!token) return;
@@ -461,6 +498,7 @@ const AdminDashboard = () => {
             })) : [];
 
             setApplications(mappedApplications);
+            setGroupedApplications(groupApplicationsByCat(mappedApplications));
         } catch (error) {
             console.error('Error al cargar solicitudes:', error);
             if (isAxiosError(error)) {
@@ -761,57 +799,118 @@ const AdminDashboard = () => {
                         </div>
                     ) : (
                         <div className="admin-cards-grid">
-                            {applications
-                                .filter(app => applicationFilter === 'all' || app.application_status === applicationFilter)
-                                .map(application => (
-                                    <div key={application.id} className="admin-card">
+                            {groupedApplications
+                                .filter(group => {
+                                    if (applicationFilter === 'all') return true;
+                                    return group.applications.some(app => app.application_status === applicationFilter);
+                                })
+                                .map(group => (
+                                    <div key={group.cat_id} className="admin-card cat-group-card">
                                         <div className="card-header">
-                                            <h3>{application.cat_name}</h3>
-                                            <span className={`status-badge status-${application.application_status}`}>
-                                                {application.application_status === 'revision_pendiente' && '⏳ Pendiente'}
-                                                {application.application_status === 'procesando' && '🔄 Procesando'}
-                                                {application.application_status === 'aprobada' && '✅ Aprobada'}
-                                                {application.application_status === 'rechazada' && '❌ Rechazada'}
+                                            <h3>{group.cat_name}</h3>
+                                            <span className="status-badge status-info">
+                                                {group.applicationCount} {group.applicationCount === 1 ? 'solicitud' : 'solicitudes'}
                                             </span>
                                         </div>
                                         <div className="card-content">
-                                            <p><strong>Solicitante:</strong> {application.applicant_name}</p>
-                                            <p><strong>Email:</strong> {application.applicant_email}</p>
-                                            <p><strong>Teléfono:</strong> {application.applicant_phone}</p>
-                                            <p><strong>Edad:</strong> {application.applicant_age} años</p>
-                                            <p><strong>Ocupación:</strong> {application.applicant_occupation}</p>
-                                            {application.ai_suitability_score != null && (
-                                                <div className="ai-score">
-                                                    <strong>Puntuación IA:</strong>
-                                                    <span className={`score-badge score-${Math.floor((application.ai_suitability_score || 0) / 20)}`}>
-                                                        {application.ai_suitability_score}/100
-                                                    </span>
+                                            {group.cat_photos && group.cat_photos.length > 0 && (
+                                                <div className="cat-preview-image" style={{marginBottom: '10px'}}>
+                                                    <img 
+                                                        src={group.cat_photos[0]} 
+                                                        alt={group.cat_name} 
+                                                        style={{width: '100%', height: '150px', objectFit: 'cover', borderRadius: '8px'}}
+                                                    />
                                                 </div>
                                             )}
-                                            <p className="date-info">
-                                                <small>📅 {new Date(application.created_at).toLocaleDateString('es-ES', {
-                                                    year: 'numeric',
-                                                    month: 'long',
-                                                    day: 'numeric'
-                                                })}</small>
-                                            </p>
+                                            <div className="applications-mini-list">
+                                                {group.applications
+                                                    .filter(app => applicationFilter === 'all' || app.application_status === applicationFilter)
+                                                    .slice(0, 3)
+                                                    .map(app => (
+                                                        <div key={app.id} className="mini-app-item" style={{marginBottom: '8px', padding: '8px', background: '#f8f9fa', borderRadius: '6px'}}>
+                                                            <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+                                                                <span style={{fontWeight: 'bold'}}>{app.applicant_name}</span>
+                                                                <span className={`status-badge status-${app.application_status}`} style={{fontSize: '0.7rem', padding: '2px 6px'}}>
+                                                                    {app.application_status === 'revision_pendiente' && 'Pendiente'}
+                                                                    {app.application_status === 'procesando' && 'Procesando'}
+                                                                    {app.application_status === 'aprobada' && 'Aprobada'}
+                                                                    {app.application_status === 'rechazada' && 'Rechazada'}
+                                                                </span>
+                                                            </div>
+                                                            {app.ai_suitability_score != null && (
+                                                                <div style={{fontSize: '0.8rem', color: '#666', marginTop: '4px'}}>
+                                                                    Score IA: <span style={{fontWeight: 'bold'}}>{app.ai_suitability_score}/100</span>
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    ))
+                                                }
+                                                {group.applications.filter(app => applicationFilter === 'all' || app.application_status === applicationFilter).length > 3 && (
+                                                    <div style={{textAlign: 'center', fontSize: '0.9rem', color: '#666', marginTop: '5px'}}>
+                                                        + {group.applications.filter(app => applicationFilter === 'all' || app.application_status === applicationFilter).length - 3} más
+                                                    </div>
+                                                )}
+                                            </div>
                                         </div>
                                         <div className="card-actions">
                                             <button 
                                                 className="btn-primary"
-                                                onClick={() => setSelectedApplication(application)}
+                                                onClick={() => setSelectedCatGroup(group)}
                                             >
-                                                Ver Detalles
+                                                Ver Todas las Solicitudes
                                             </button>
                                         </div>
                                     </div>
                                 ))
                             }
-                            {applications.filter(app => applicationFilter === 'all' || app.application_status === applicationFilter).length === 0 && (
+                            {groupedApplications.length === 0 && (
                                 <div className="empty-state">
                                     <p>No hay solicitudes con el filtro seleccionado</p>
                                 </div>
                             )}
+                        </div>
+                    )}
+
+                    {/* Modal de grupo de solicitudes por gato */}
+                    {selectedCatGroup && !selectedApplication && (
+                        <div className="modal-overlay" onClick={() => setSelectedCatGroup(null)}>
+                            <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{maxWidth: '800px'}}>
+                                <button className="modal-close" onClick={() => setSelectedCatGroup(null)}>×</button>
+                                <h2>Solicitudes para {selectedCatGroup.cat_name}</h2>
+                                
+                                <div className="applications-list-full">
+                                    {selectedCatGroup.applications
+                                        .filter(app => applicationFilter === 'all' || app.application_status === applicationFilter)
+                                        .map(application => (
+                                            <div key={application.id} className="application-list-item" style={{border: '1px solid #eee', padding: '15px', marginBottom: '15px', borderRadius: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+                                                <div className="app-info">
+                                                    <h4 style={{margin: '0 0 5px 0'}}>{application.applicant_name}</h4>
+                                                    <p style={{margin: '0 0 5px 0', fontSize: '0.9rem', color: '#666'}}>{application.applicant_email}</p>
+                                                    <div style={{display: 'flex', gap: '10px', alignItems: 'center'}}>
+                                                        <span className={`status-badge status-${application.application_status}`}>
+                                                            {application.application_status === 'revision_pendiente' && '⏳ Pendiente'}
+                                                            {application.application_status === 'procesando' && '🔄 Procesando'}
+                                                            {application.application_status === 'aprobada' && '✅ Aprobada'}
+                                                            {application.application_status === 'rechazada' && '❌ Rechazada'}
+                                                        </span>
+                                                        {application.ai_suitability_score != null && (
+                                                            <span className={`score-badge score-${Math.floor((application.ai_suitability_score || 0) / 20)}`}>
+                                                                IA: {application.ai_suitability_score}/100
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                                <button 
+                                                    className="btn-secondary"
+                                                    onClick={() => setSelectedApplication(application)}
+                                                >
+                                                    Ver Detalles
+                                                </button>
+                                            </div>
+                                        ))
+                                    }
+                                </div>
+                            </div>
                         </div>
                     )}
 
