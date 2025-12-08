@@ -1,152 +1,131 @@
 # Katze 🐱 - Plataforma de Adopción de Gatos
 
-Sistema web completo para gestionar adopciones de gatos, con seguimiento post-adopción y contenido educativo.
+Sistema web completo para gestionar adopciones de gatos, con seguimiento post-adopción, evaluación por IA y contenido educativo.
 
 ---
 
-## 🚀 Inicio Rápido
+## 🚀 Características Principales
+
+- **Publicación de Gatos**: Rescatistas publican gatos disponibles para adopción.
+- **Solicitudes de Adopción**: Adoptantes envían solicitudes con formulario personalizado.
+- **Evaluación por IA**: Sistema automático que analiza solicitudes y detecta riesgos/oportunidades.
+- **Seguimiento Post-Adopción**: Tareas automáticas para verificar bienestar y esterilización.
+- **Contenido Educativo**: Charlas y recursos sobre cuidado felino.
+- **Panel de Administración**: Control total del sistema, gestión de usuarios y métricas.
+- **Estadísticas**: Métricas de adopciones y seguimiento en tiempo real.
+
+---
+
+## 🛠️ Tecnologías
+
+- **Backend**: Node.js, Express, PostgreSQL.
+- **Frontend**: React, TypeScript, Vite.
+- **IA**: Google Gemini 1.5 Flash.
+- **Almacenamiento**: Firebase Storage.
+- **Base de Datos**: PostgreSQL (Render).
+
+---
+
+## 📦 Instalación y Configuración
 
 ### Requisitos Previos
 - Node.js 18+
 - PostgreSQL 14+
-- Firebase Account (para Storage de imágenes y datasets)
+- Cuenta de Firebase (para imágenes)
+- API Key de Google Gemini (para IA)
 
-### 1. Instalación y Configuración
+### 1. Configuración Inicial
 
 ```bash
-# 1. Instalar todas las dependencias y configurar la base de datos
+# Instalar dependencias y configurar base de datos local
 npm run setup
-
-# Esto ejecuta automáticamente:
-# - npm install (dependencias root)
-# - npm install en backend y frontend
-# - npm run migrate (crea tablas)
-# - npm run seed (datos de prueba)
 ```
 
-### 2. Configurar Firebase
+### 2. Variables de Entorno
 
-1. Ve a [Firebase Console](https://console.firebase.google.com/project/katze-app/settings/serviceaccounts/adminsdk)
-2. Haz clic en **"Generar nueva clave privada"**
-3. Guarda el archivo como `backend/serviceAccountKey.json`
-4. Agrega a `backend/.env`:
-   ```env
-   GOOGLE_APPLICATION_CREDENTIALS=./serviceAccountKey.json
-   ```
+Configura el archivo `backend/.env`:
+
+```env
+PORT=5000
+DB_USER=postgres
+DB_HOST=localhost
+DB_NAME=katze
+DB_PASSWORD=root
+JWT_SECRET=tu_secreto_jwt
+GEMINI_API_KEY=tu_api_key_gemini
+GOOGLE_APPLICATION_CREDENTIALS=./serviceAccountKey.json
+```
 
 ### 3. Ejecutar el Proyecto
 
 ```bash
 # Ejecutar backend y frontend simultáneamente
 npm run dev
-
-# O ejecutar por separado:
-# Backend (puerto 5000)
-npm run dev:back
-
-# Frontend (puerto 5174)
-npm run dev:front
 ```
 
 ---
 
-## Características Principales
+## 🤖 Sistema de Evaluación por IA
 
-- **Publicación de Gatos**: Rescatistas publican gatos disponibles para adopción
-- **Solicitudes de Adopción**: Adoptantes envían solicitudes con formulario personalizado
-- **Seguimiento Post-Adopción**: Tareas automáticas para verificar bienestar y esterilización
-- **Contenido Educativo**: Charlas y recursos sobre cuidado felino
-- **Panel de Administración**: Control total del sistema
-- **Estadísticas**: Métricas de adopciones y seguimiento
+El sistema utiliza **Google Gemini 1.5 Flash** para analizar las solicitudes de adopción en tiempo real.
 
-## Scripts Disponibles
+- **Puntaje (0-100)**: Evalúa la idoneidad del candidato.
+- **Banderas (Flags)**: Detecta riesgos (ej. "No acepta esterilización") o puntos positivos (ej. "Casa propia").
+- **Acción Sugerida**: Recomienda "Revisión Manual" o "Rechazo Automático" (nunca aprueba automáticamente).
+
+---
+
+## 📊 Panel de Administración
+
+El panel administrativo permite:
+- **Gestión de Usuarios**: Ver y cambiar roles (Adoptante, Rescatista, Admin).
+- **Gestión de Solicitudes**: Aprobar o rechazar solicitudes con un clic.
+- **Seguimiento**: Ver tareas de bienestar y esterilización pendientes/atrasadas.
+- **Métricas**: Visualizar estadísticas de adopción.
+
+---
+
+## 🌍 Despliegue en Producción (Render)
+
+Para ejecutar migraciones o seeds en la base de datos de producción (Render):
 
 ```bash
-# Desarrollo
-npm run dev          # Ejecutar backend + frontend
-npm run dev:back     # Solo backend
-npm run dev:front    # Solo frontend
+# Ejecutar migraciones en producción
+node backend/run-migration.js
 
-# Base de datos
-npm run migrate      # Ejecutar migraciones
-npm run seed         # Poblar datos de prueba
-npm run setup        # Instalación completa + migración + seed
-
-# Producción
-npm run start:back   # Iniciar backend
-npm run start:front  # Iniciar frontend
+# Poblar base de datos con datos de demostración (¡Borra datos existentes!)
+npm run seed:demo
 ```
 
-## Estructura del Proyecto
+---
 
-```
-Katze/
-├── backend/              # API REST con Node.js + Express
-│   ├── controllers/      # Manejo de peticiones HTTP
-│   ├── services/         # Lógica de negocio
-│   ├── routes/           # Definición de endpoints
-│   ├── middleware/       # Autenticación y validación
-│   └── config/           # Configuración
-│
-└── frontend/             # React + TypeScript + Vite
-    ├── pages/            # Páginas principales
-    ├── components/       # Componentes reutilizables
-    └── context/          # Contexto de autenticación
-```
+## 🔗 API Endpoints Principales
 
-## Roles de Usuario
+### Autenticación
+- `POST /api/auth/login`: Iniciar sesión
+- `POST /api/auth/register`: Registrar usuario
 
-- **Adoptante**: Busca y solicita adoptar gatos
-- **Rescatista**: Publica gatos y gestiona solicitudes
-- **Administrador**: Control total del sistema
+### Gatos
+- `GET /api/cats`: Listar gatos
+- `POST /api/cats`: Publicar gato (Rescatista)
 
-## Configuración de Variables de Entorno
+### Solicitudes
+- `POST /api/cats/:id/apply`: Enviar solicitud
+- `PUT /api/applications/:id/status`: Aprobar/Rechazar (Admin/Rescatista)
 
-Crea un archivo `backend/.env` con las siguientes variables:
+### Seguimiento
+- `GET /api/tracking/all`: Ver todas las tareas (Admin)
+- `POST /api/tracking/tasks/:id/complete`: Completar tarea
 
-```env
-DB_HOST=localhost
-DB_PORT=5432
-DB_NAME=katze_db
-DB_USER=tu_usuario
-DB_PASSWORD=tu_password
-JWT_SECRET=tu_secreto_jwt
-PORT=3000
-```
+---
 
-En el frontend crea `.env`:
+## 👥 Roles de Usuario
 
-```env
-VITE_API_URL=http://localhost:3000
-VITE_FIREBASE_API_KEY=tu_api_key
-VITE_FIREBASE_PROJECT_ID=tu_project_id
-VITE_FIREBASE_STORAGE_BUCKET=tu_bucket
-```
+- **Adoptante**: Busca gatos, envía solicitudes.
+- **Rescatista**: Publica gatos, revisa solicitudes recibidas.
+- **Admin**: Acceso total al sistema, gestión de usuarios y contenido.
 
-## Documentación Adicional
+---
 
-- [Arquitectura del Sistema](backend/ARCHITECTURE.md)
-- [Rutas de la API](API_ROUTES.md)
-
-## Base de Datos
-
-El proyecto incluye:
-- **Schema SQL**: Tablas principales (users, cats, applications, tracking_tasks, education_talks)
-- **Seed**: Ejecuta `npm run seed` en backend para datos de prueba
-- **Credenciales de prueba**:
-  - Admin: admin@test.com / password123
-  - Rescatista: rescatista@test.com / password123
-  - Adoptante: adoptante@test.com / password123
-
-## Scripts Disponibles
-
-### Backend
-- `npm start` - Inicia servidor en producción
-- `npm run dev` - Inicia con nodemon (desarrollo)
-- `npm run seed` - Siembra base de datos con datos de prueba
-
-### Frontend
-- `npm run dev` - Inicia servidor de desarrollo (Vite)
-- `npm run build` - Compila para producción
-- `npm run preview` - Vista previa del build
+Desarrollado para el curso de Desarrollo de Aplicaciones Web - UDI 2025.
 
