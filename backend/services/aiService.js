@@ -16,9 +16,9 @@ class AIService {
             this.enabled = false;
         } else {
             this.genAI = new GoogleGenerativeAI(config.GEMINI_API_KEY);
-            // Usar gemini-1.5-flash sin sufijo - compatible con SDK 0.21.0
+            // Usar gemini-1.5-flash - compatible con SDK 0.24.1
             this.model = this.genAI.getGenerativeModel({ 
-                model: 'models/gemini-1.5-flash',
+                model: 'gemini-1.5-flash',
                 generationConfig: {
                     temperature: 0.2, // Bajo para decisiones consistentes
                     topP: 0.95,

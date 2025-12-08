@@ -13,12 +13,17 @@
     "generate-datasets": "node generate-datasets.js",
     "build": "node run-migration.js"
   },
-  "keywords": ["adoption", "cats", "firebase", "express"],
+  "keywords": [
+    "adoption",
+    "cats",
+    "firebase",
+    "express"
+  ],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
-    "@google/generative-ai": "^0.21.0",
+    "@google/generative-ai": "^0.24.1",
     "axios": "^1.13.2",
     "bcrypt": "^6.0.0",
     "cors": "^2.8.5",
