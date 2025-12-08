@@ -1,16 +1,25 @@
 // Seed de demostración completo para Katze
 // Genera datos realistas para demostrar todas las funcionalidades
 
+require('dotenv').config();
 const { Pool } = require('pg');
 const bcrypt = require('bcrypt');
 
-const pool = new Pool({
-    user: 'postgres',
-    host: 'localhost',
-    database: 'katze',
-    password: 'root',
-    port: 5432
-});
+const isProduction = process.env.NODE_ENV === 'production' || 
+                     (process.env.DB_HOST && process.env.DB_HOST.includes('render.com'));
+
+const poolConfig = {
+    user: process.env.DB_USER || 'postgres',
+    host: process.env.DB_HOST || 'localhost',
+    database: process.env.DB_NAME || 'katze',
+    password: process.env.DB_PASSWORD || 'root',
+    port: process.env.DB_PORT || 5432,
+    ssl: isProduction ? { rejectUnauthorized: false } : false
+};
+
+console.log(`🔌 Conectando a la base de datos: ${poolConfig.host} (${poolConfig.database})`);
+
+const pool = new Pool(poolConfig);
 
 // Datos realistas para la demostración
 const nombres_gatos = [
@@ -195,8 +204,8 @@ async function createCats(rescatistas) {
             } else if (edadNumero < 6) {
                 sterilizationStatus = 'pendiente'; // Muy jóvenes
             } else {
-                // Para disponibles: más probabilidad de no esterilizados (no_aplica)
-                sterilizationStatus = Math.random() > 0.4 ? 'no_aplica' : 'esterilizado';
+                // Para disponibles: más probabilidad de no esterilizados
+                sterilizationStatus = Math.random() > 0.4 ? 'no_esterilizado' : 'esterilizado';
             }
             
             const description = `${sexo} ${color.toLowerCase()} de ${edadStr}. Raza: ${raza}. Personalidad: ${personalidad.join(', ')}. ${historia}`;
@@ -218,7 +227,7 @@ async function createCats(rescatistas) {
                     status.adoption,
                     rescatista.id,
                     historia,
-                    JSON.stringify([`https://placekitten.com/400/${300 + catIndex}`, `https://placekitten.com/400/${301 + catIndex}`]),
+                    [`https://loremflickr.com/400/300/cat?lock=${catIndex}`, `https://loremflickr.com/400/300/cat?lock=${catIndex + 100}`],
                     raza,
                     livingSpace
                 ]

@@ -989,103 +989,105 @@ const AdminDashboard = () => {
                                     <p className="subtitle">Para: <strong>{selectedApplication.cat_name}</strong></p>
                                 </div>
                                 
-                                <div className="application-details-grid">
-                                    {/* Columna Izquierda: Datos del Solicitante */}
-                                    <div className="detail-column">
-                                        <h4 className="column-header">DATOS DEL SOLICITANTE</h4>
-                                        
-                                        <div className="detail-group">
-                                            <label>NOMBRE</label>
-                                            <div className="detail-value">{selectedApplication.applicant_name}</div>
+                                <div className="modal-body-scrollable">
+                                    <div className="application-details-grid">
+                                        {/* Columna Izquierda: Datos del Solicitante */}
+                                        <div className="detail-column">
+                                            <h4 className="column-header">DATOS DEL SOLICITANTE</h4>
+                                            
+                                            <div className="detail-group">
+                                                <label>NOMBRE</label>
+                                                <div className="detail-value">{selectedApplication.applicant_name}</div>
+                                            </div>
+                                            
+                                            <div className="detail-group">
+                                                <label>EMAIL</label>
+                                                <a href={`mailto:${selectedApplication.applicant_email}`} className="detail-link">
+                                                    {selectedApplication.applicant_email}
+                                                </a>
+                                            </div>
+                                            
+                                            <div className="detail-group">
+                                                <label>TELÉFONO</label>
+                                                <div className="detail-value">{selectedApplication.applicant_phone || 'No especificado'}</div>
+                                            </div>
+                                            
+                                            <div className="detail-group">
+                                                <label>EDAD</label>
+                                                <div className="detail-value">{selectedApplication.applicant_age ? `${selectedApplication.applicant_age} años` : 'No especificado'}</div>
+                                            </div>
+                                            
+                                            <div className="detail-group">
+                                                <label>OCUPACIÓN</label>
+                                                <div className="detail-value">{selectedApplication.applicant_occupation || 'No especificado'}</div>
+                                            </div>
                                         </div>
-                                        
-                                        <div className="detail-group">
-                                            <label>EMAIL</label>
-                                            <a href={`mailto:${selectedApplication.applicant_email}`} className="detail-link">
-                                                {selectedApplication.applicant_email}
-                                            </a>
-                                        </div>
-                                        
-                                        <div className="detail-group">
-                                            <label>TELÉFONO</label>
-                                            <div className="detail-value">{selectedApplication.applicant_phone || 'No especificado'}</div>
-                                        </div>
-                                        
-                                        <div className="detail-group">
-                                            <label>EDAD</label>
-                                            <div className="detail-value">{selectedApplication.applicant_age ? `${selectedApplication.applicant_age} años` : 'No especificado'}</div>
-                                        </div>
-                                        
-                                        <div className="detail-group">
-                                            <label>OCUPACIÓN</label>
-                                            <div className="detail-value">{selectedApplication.applicant_occupation || 'No especificado'}</div>
+
+                                        {/* Columna Derecha: Perfil del Hogar */}
+                                        <div className="detail-column">
+                                            <h4 className="column-header">PERFIL DEL HOGAR</h4>
+                                            
+                                            <div className="detail-group">
+                                                <label>VIVIENDA</label>
+                                                <div className="detail-value">
+                                                    <span className="badge badge-blue">
+                                                        {selectedApplication.living_situation || 'No especificado'}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            
+                                            <div className="detail-group">
+                                                <label>MASCOTAS ACTUALES</label>
+                                                <div className="detail-value">
+                                                    <span className={`badge ${selectedApplication.has_other_pets ? 'badge-neutral' : 'badge-neutral'}`}>
+                                                        {selectedApplication.has_other_pets ? 'TIENE MASCOTAS' : 'NO TIENE MASCOTAS'}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            
+                                            <div className="detail-group">
+                                                <label>EXPERIENCIA</label>
+                                                <div className="detail-value">
+                                                    <span className={`badge ${selectedApplication.experience_with_cats ? 'badge-green' : 'badge-neutral'}`}>
+                                                        {selectedApplication.experience_with_cats ? 'TIENE EXPERIENCIA' : 'SIN EXPERIENCIA'}
+                                                    </span>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
 
-                                    {/* Columna Derecha: Perfil del Hogar */}
-                                    <div className="detail-column">
-                                        <h4 className="column-header">PERFIL DEL HOGAR</h4>
-                                        
-                                        <div className="detail-group">
-                                            <label>VIVIENDA</label>
-                                            <div className="detail-value">
-                                                <span className="badge badge-blue">
-                                                    {selectedApplication.living_situation || 'No especificado'}
-                                                </span>
-                                            </div>
-                                        </div>
-                                        
-                                        <div className="detail-group">
-                                            <label>MASCOTAS ACTUALES</label>
-                                            <div className="detail-value">
-                                                <span className={`badge ${selectedApplication.has_other_pets ? 'badge-neutral' : 'badge-neutral'}`}>
-                                                    {selectedApplication.has_other_pets ? 'TIENE MASCOTAS' : 'NO TIENE MASCOTAS'}
-                                                </span>
-                                            </div>
-                                        </div>
-                                        
-                                        <div className="detail-group">
-                                            <label>EXPERIENCIA</label>
-                                            <div className="detail-value">
-                                                <span className={`badge ${selectedApplication.experience_with_cats ? 'badge-green' : 'badge-neutral'}`}>
-                                                    {selectedApplication.experience_with_cats ? 'TIENE EXPERIENCIA' : 'SIN EXPERIENCIA'}
-                                                </span>
-                                            </div>
-                                        </div>
+                                    {/* Bloque de Razón de Adopción */}
+                                    <div className="reason-block">
+                                        <h4 className="reason-header">RAZÓN DE ADOPCIÓN</h4>
+                                        <p className="reason-text">
+                                            "{selectedApplication.reason_for_adoption || 'No especificado'}"
+                                        </p>
                                     </div>
+
+                                    {/* Evaluación IA */}
+                                    {selectedApplication.ai_suitability_score != null && (
+                                        <div className="ai-evaluation-block">
+                                            <div className="ai-header">
+                                                <h4>ANÁLISIS DE IA</h4>
+                                                <span className={`score-badge score-${Math.floor((selectedApplication.ai_suitability_score || 0) / 20)}`}>
+                                                    {selectedApplication.ai_suitability_score}/100
+                                                </span>
+                                            </div>
+                                            
+                                            {selectedApplication.ai_feedback && (
+                                                <p className="ai-feedback-text">{selectedApplication.ai_feedback}</p>
+                                            )}
+                                            
+                                            {selectedApplication.ai_flags && selectedApplication.ai_flags.length > 0 && (
+                                                <div className="ai-flags-container">
+                                                    {selectedApplication.ai_flags.map((flag, idx) => (
+                                                        <span key={idx} className="ai-flag-badge">{flag}</span>
+                                                    ))}
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
                                 </div>
-
-                                {/* Bloque de Razón de Adopción */}
-                                <div className="reason-block">
-                                    <h4 className="reason-header">RAZÓN DE ADOPCIÓN</h4>
-                                    <p className="reason-text">
-                                        "{selectedApplication.reason_for_adoption || 'No especificado'}"
-                                    </p>
-                                </div>
-
-                                {/* Evaluación IA */}
-                                {selectedApplication.ai_suitability_score != null && (
-                                    <div className="ai-evaluation-block">
-                                        <div className="ai-header">
-                                            <h4>ANÁLISIS DE IA</h4>
-                                            <span className={`score-badge score-${Math.floor((selectedApplication.ai_suitability_score || 0) / 20)}`}>
-                                                {selectedApplication.ai_suitability_score}/100
-                                            </span>
-                                        </div>
-                                        
-                                        {selectedApplication.ai_feedback && (
-                                            <p className="ai-feedback-text">{selectedApplication.ai_feedback}</p>
-                                        )}
-                                        
-                                        {selectedApplication.ai_flags && selectedApplication.ai_flags.length > 0 && (
-                                            <div className="ai-flags-container">
-                                                {selectedApplication.ai_flags.map((flag, idx) => (
-                                                    <span key={idx} className="ai-flag-badge">{flag}</span>
-                                                ))}
-                                            </div>
-                                        )}
-                                    </div>
-                                )}
 
                                 {/* Footer con Acciones */}
                                 <div className="modal-footer-enhanced">

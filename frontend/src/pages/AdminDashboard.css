@@ -4547,7 +4547,14 @@
     gap: 40px;
     padding: 32px;
     background: var(--surface-card);
+    /* overflow-y: auto; - Eliminado para permitir scroll global */
+}
+
+.modal-body-scrollable {
+    flex: 1;
     overflow-y: auto;
+    display: flex;
+    flex-direction: column;
 }
 
 @media (max-width: 768px) {
