@@ -798,70 +798,67 @@ const AdminDashboard = () => {
                             <p>Cargando solicitudes...</p>
                         </div>
                     ) : (
-                        <div className="admin-cards-grid">
+                        <div className="applications-grid">
                             {groupedApplications
                                 .filter(group => {
                                     if (applicationFilter === 'all') return true;
                                     return group.applications.some(app => app.application_status === applicationFilter);
                                 })
-                                .map(group => (
-                                    <div key={group.cat_id} className="admin-card cat-group-card">
-                                        <div className="card-header">
-                                            <h3>{group.cat_name}</h3>
-                                            <span className="status-badge status-info">
-                                                {group.applicationCount} {group.applicationCount === 1 ? 'solicitud' : 'solicitudes'}
-                                            </span>
-                                        </div>
-                                        <div className="card-content">
-                                            {group.cat_photos && group.cat_photos.length > 0 && (
-                                                <div className="cat-preview-image" style={{marginBottom: '10px'}}>
+                                .map(group => {
+                                    // Check if there's a top candidate (Score >= 80)
+                                    const hasTopCandidate = group.applications.some(app => (app.ai_suitability_score || 0) >= 80);
+                                    
+                                    return (
+                                        <div 
+                                            key={group.cat_id} 
+                                            className="cat-summary-card"
+                                            onClick={() => setSelectedCatGroup(group)}
+                                        >
+                                            <div className="cat-image-container">
+                                                {group.cat_photos && group.cat_photos.length > 0 ? (
                                                     <img 
                                                         src={group.cat_photos[0]} 
-                                                        alt={group.cat_name} 
-                                                        style={{width: '100%', height: '150px', objectFit: 'cover', borderRadius: '8px'}}
+                                                        alt={group.cat_name}
+                                                        onError={(e) => {
+                                                            e.currentTarget.src = 'https://placehold.co/400x300/e0e0e0/666?text=Sin+Foto';
+                                                        }}
                                                     />
-                                                </div>
-                                            )}
-                                            <div className="applications-mini-list">
-                                                {group.applications
-                                                    .filter(app => applicationFilter === 'all' || app.application_status === applicationFilter)
-                                                    .slice(0, 3)
-                                                    .map(app => (
-                                                        <div key={app.id} className="mini-app-item" style={{marginBottom: '8px', padding: '8px', background: '#f8f9fa', borderRadius: '6px'}}>
-                                                            <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
-                                                                <span style={{fontWeight: 'bold'}}>{app.applicant_name}</span>
-                                                                <span className={`status-badge status-${app.application_status}`} style={{fontSize: '0.7rem', padding: '2px 6px'}}>
-                                                                    {app.application_status === 'revision_pendiente' && 'Pendiente'}
-                                                                    {app.application_status === 'procesando' && 'Procesando'}
-                                                                    {app.application_status === 'aprobada' && 'Aprobada'}
-                                                                    {app.application_status === 'rechazada' && 'Rechazada'}
-                                                                </span>
-                                                            </div>
-                                                            {app.ai_suitability_score != null && (
-                                                                <div style={{fontSize: '0.8rem', color: '#666', marginTop: '4px'}}>
-                                                                    Score IA: <span style={{fontWeight: 'bold'}}>{app.ai_suitability_score}/100</span>
-                                                                </div>
-                                                            )}
-                                                        </div>
-                                                    ))
-                                                }
-                                                {group.applications.filter(app => applicationFilter === 'all' || app.application_status === applicationFilter).length > 3 && (
-                                                    <div style={{textAlign: 'center', fontSize: '0.9rem', color: '#666', marginTop: '5px'}}>
-                                                        + {group.applications.filter(app => applicationFilter === 'all' || app.application_status === applicationFilter).length - 3} más
+                                                ) : (
+                                                    <div style={{width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#9ca3af'}}>
+                                                        <svg viewBox="0 0 24 24" fill="currentColor" style={{width: '48px', height: '48px'}}>
+                                                            <path d="M12 2C10.34 2 9 3.34 9 5c0 .35.07.69.18 1H6c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-3.18c.11-.31.18-.65.18-1 0-1.66-1.34-3-3-3z"/>
+                                                        </svg>
                                                     </div>
                                                 )}
+                                                
+                                                <div className="cat-info-overlay">
+                                                    <h3>{group.cat_name}</h3>
+                                                    <p>ID: {group.cat_id}</p>
+                                                </div>
+                                            </div>
+
+                                            <div className="cat-card-footer">
+                                                <div className="request-count">
+                                                    <span className="request-count-label">Solicitudes</span>
+                                                    <span className="request-count-number">{group.applicationCount}</span>
+                                                </div>
+
+                                                {hasTopCandidate && (
+                                                    <div className="top-match-badge">
+                                                        <span>🏆 Top Match</span>
+                                                    </div>
+                                                )}
+
+                                                <div className="view-list-link">
+                                                    Ver lista
+                                                    <svg viewBox="0 0 20 20" fill="currentColor" style={{width: '16px', height: '16px'}}>
+                                                        <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                                                    </svg>
+                                                </div>
                                             </div>
                                         </div>
-                                        <div className="card-actions">
-                                            <button 
-                                                className="btn-primary"
-                                                onClick={() => setSelectedCatGroup(group)}
-                                            >
-                                                Ver Todas las Solicitudes
-                                            </button>
-                                        </div>
-                                    </div>
-                                ))
+                                    );
+                                })
                             }
                             {groupedApplications.length === 0 && (
                                 <div className="empty-state">
@@ -874,40 +871,90 @@ const AdminDashboard = () => {
                     {/* Modal de grupo de solicitudes por gato */}
                     {selectedCatGroup && !selectedApplication && (
                         <div className="modal-overlay" onClick={() => setSelectedCatGroup(null)}>
-                            <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{maxWidth: '800px'}}>
-                                <button className="modal-close" onClick={() => setSelectedCatGroup(null)}>×</button>
-                                <h2>Solicitudes para {selectedCatGroup.cat_name}</h2>
+                            <div className="modal-content modal-cat-applications" onClick={(e) => e.stopPropagation()}>
+                                <div className="modal-header-sticky">
+                                    <h2>Solicitudes para {selectedCatGroup.cat_name}</h2>
+                                    <button 
+                                        className="modal-close-btn"
+                                        onClick={() => setSelectedCatGroup(null)}
+                                        style={{background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.5rem'}}
+                                    >
+                                        ×
+                                    </button>
+                                </div>
                                 
-                                <div className="applications-list-full">
+                                <div className="modal-scroll-body">
                                     {selectedCatGroup.applications
                                         .filter(app => applicationFilter === 'all' || app.application_status === applicationFilter)
-                                        .map(application => (
-                                            <div key={application.id} className="application-list-item" style={{border: '1px solid #eee', padding: '15px', marginBottom: '15px', borderRadius: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
-                                                <div className="app-info">
-                                                    <h4 style={{margin: '0 0 5px 0'}}>{application.applicant_name}</h4>
-                                                    <p style={{margin: '0 0 5px 0', fontSize: '0.9rem', color: '#666'}}>{application.applicant_email}</p>
-                                                    <div style={{display: 'flex', gap: '10px', alignItems: 'center'}}>
-                                                        <span className={`status-badge status-${application.application_status}`}>
-                                                            {application.application_status === 'revision_pendiente' && '⏳ Pendiente'}
-                                                            {application.application_status === 'procesando' && '🔄 Procesando'}
-                                                            {application.application_status === 'aprobada' && '✅ Aprobada'}
-                                                            {application.application_status === 'rechazada' && '❌ Rechazada'}
-                                                        </span>
-                                                        {application.ai_suitability_score != null && (
-                                                            <span className={`score-badge score-${Math.floor((application.ai_suitability_score || 0) / 20)}`}>
-                                                                IA: {application.ai_suitability_score}/100
+                                        .sort((a, b) => (b.ai_suitability_score || 0) - (a.ai_suitability_score || 0))
+                                        .map(application => {
+                                            // Determine border color based on score
+                                            let borderClass = 'border-gray';
+                                            if ((application.ai_suitability_score || 0) >= 80) borderClass = 'border-green';
+                                            else if ((application.ai_suitability_score || 0) >= 50) borderClass = 'border-yellow';
+
+                                            return (
+                                                <div key={application.id} className={`request-item-card ${borderClass}`}>
+                                                    <div className="request-header">
+                                                        <div>
+                                                            <h4 className="applicant-name">{application.applicant_name}</h4>
+                                                            <span className="request-time">
+                                                                {new Date(application.created_at).toLocaleDateString('es-ES', {
+                                                                    day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit'
+                                                                })}
                                                             </span>
-                                                        )}
+                                                            <div style={{marginTop: '4px'}}>
+                                                                <span className={`status-badge status-${application.application_status}`} style={{fontSize: '0.75rem'}}>
+                                                                    {application.application_status === 'revision_pendiente' && '⏳ Pendiente'}
+                                                                    {application.application_status === 'procesando' && '🔄 Procesando'}
+                                                                    {application.application_status === 'aprobada' && '✅ Aprobada'}
+                                                                    {application.application_status === 'rechazada' && '❌ Rechazada'}
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                        <div className="score-display">
+                                                            <span className="score-number">{application.ai_suitability_score || 0}</span>
+                                                            <span className="score-label">IA Score</span>
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Tags */}
+                                                    {application.ai_flags && application.ai_flags.length > 0 && (
+                                                        <div className="tags-container">
+                                                            {application.ai_flags.map((flag, idx) => {
+                                                                let tagClass = '';
+                                                                if (flag.includes('Casa') || flag.includes('Veterinario') || flag.includes('Experiencia')) tagClass = 'positive';
+                                                                if (flag.includes('Calle') || flag.includes('Riesgo')) tagClass = 'warning';
+                                                                
+                                                                return (
+                                                                    <span key={idx} className={`ai-tag ${tagClass}`}>
+                                                                        {flag}
+                                                                    </span>
+                                                                );
+                                                            })}
+                                                        </div>
+                                                    )}
+
+                                                    {/* AI Feedback Quote */}
+                                                    {application.ai_feedback && (
+                                                        <div className="ai-feedback-quote">
+                                                            <span>🤖</span>
+                                                            <span>"{application.ai_feedback}"</span>
+                                                        </div>
+                                                    )}
+
+                                                    {/* Action Buttons */}
+                                                    <div className="action-buttons">
+                                                        <button 
+                                                            className="btn-approve-sm"
+                                                            onClick={() => setSelectedApplication(application)}
+                                                        >
+                                                            Ver Detalles Completos
+                                                        </button>
                                                     </div>
                                                 </div>
-                                                <button 
-                                                    className="btn-secondary"
-                                                    onClick={() => setSelectedApplication(application)}
-                                                >
-                                                    Ver Detalles
-                                                </button>
-                                            </div>
-                                        ))
+                                            );
+                                        })
                                     }
                                 </div>
                             </div>
