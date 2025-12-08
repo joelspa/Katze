@@ -112,9 +112,24 @@ const PublishCat = () => {
             }
             const imageUrls = await uploadImages();
 
+            // Convertir la categoría de edad a un número aproximado
+            const ageMap: { [key: string]: number } = {
+                'cachorro': 0,
+                'joven': 1,
+                'adulto': 4,
+                'senior': 9
+            };
+
             // Paso B: Preparar los datos para el backend
             const catData = {
-                ...formData,
+                name: formData.name,
+                description: formData.description,
+                age: ageMap[formData.age] || 4, // Convertir edad categórica a número
+                health_status: formData.health_status,
+                sterilization_status: formData.sterilization_status === 'no_aplica' ? 'pendiente' : formData.sterilization_status,
+                breed: formData.breed,
+                living_space_requirement: formData.living_space_requirement,
+                story: formData.description, // Usar la descripción como historia
                 photos_url: imageUrls, // Envía las URLs de Firebase
             };
 

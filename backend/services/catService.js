@@ -8,13 +8,14 @@ class CatService {
     async createCat(catData) {
         const { name, description, age, health_status, sterilization_status, photos_url, owner_id, approval_status, story, breed, living_space_requirement } = catData;
         
-        const photosJson = JSON.stringify(photos_url || []);
+        // PostgreSQL maneja arrays nativamente, no necesitamos JSON.stringify
+        const photosArray = photos_url || [];
         
         const result = await db.query(
             `INSERT INTO cats (name, description, age, health_status, sterilization_status, photos_url, owner_id, approval_status, story, breed, living_space_requirement)
              VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
              RETURNING *`,
-            [name, description, age, health_status, sterilization_status, photosJson, owner_id, approval_status, story, breed || 'Mestizo', living_space_requirement || 'cualquiera']
+            [name, description, age, health_status, sterilization_status, photosArray, owner_id, approval_status, story, breed || 'Mestizo', living_space_requirement || 'cualquiera']
         );
         
         return result.rows[0];
