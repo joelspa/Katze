@@ -5,6 +5,7 @@ const express = require('express');
 const router = express.Router();
 const catController = require('../controllers/catController');
 const userController = require('../controllers/userController');
+const applicationController = require('../controllers/applicationController');
 const authMiddleware = require('../middleware/authMiddleware');
 const adminMiddleware = require('../middleware/adminMiddleware');
 
@@ -50,5 +51,10 @@ router.put('/users/:id/role', userController.updateUserRole);
 
 // Obtiene estadísticas de usuarios por rol
 router.get('/users/stats/by-role', userController.getUserStatsByRole);
+
+// ========== GESTIÓN DE SOLICITUDES DE ADOPCIÓN ==========
+
+// Obtiene TODAS las solicitudes de adopción del sistema
+router.get('/applications', applicationController.getReceivedApplications);
 
 module.exports = router;

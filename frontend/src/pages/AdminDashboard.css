@@ -3857,3 +3857,172 @@
         padding: 16px;
     }
 }
+
+/* ========== ESTILOS PARA SOLICITUDES DE ADOPCIÓN ========== */
+
+/* Status badges para solicitudes */
+.status-badge.status-revision_pendiente {
+    background: rgba(251, 191, 36, 0.1);
+    color: #f59e0b;
+    border: 1px solid rgba(251, 191, 36, 0.3);
+}
+
+.status-badge.status-procesando {
+    background: rgba(59, 130, 246, 0.1);
+    color: #3b82f6;
+    border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.status-badge.status-aprobada {
+    background: rgba(34, 197, 94, 0.1);
+    color: #22c55e;
+    border: 1px solid rgba(34, 197, 94, 0.3);
+}
+
+.status-badge.status-rechazada {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+/* AI Score badges */
+.ai-score {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 8px 0;
+}
+
+.score-badge {
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 0.875rem;
+}
+
+.score-badge.score-0,
+.score-badge.score-1 {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.score-badge.score-2 {
+    background: rgba(251, 191, 36, 0.1);
+    color: #f59e0b;
+    border: 1px solid rgba(251, 191, 36, 0.3);
+}
+
+.score-badge.score-3 {
+    background: rgba(132, 204, 22, 0.1);
+    color: #84cc16;
+    border: 1px solid rgba(132, 204, 22, 0.3);
+}
+
+.score-badge.score-4,
+.score-badge.score-5 {
+    background: rgba(34, 197, 94, 0.1);
+    color: #22c55e;
+    border: 1px solid rgba(34, 197, 94, 0.3);
+}
+
+/* Date info styling */
+.date-info {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border-color);
+}
+
+/* AI Feedback section in modal */
+.ai-feedback {
+    background: rgba(59, 130, 246, 0.05);
+    padding: 12px;
+    border-radius: 8px;
+    margin-top: 8px;
+    border-left: 3px solid #3b82f6;
+}
+
+.ai-feedback p {
+    margin: 8px 0 0 0;
+    line-height: 1.6;
+}
+
+/* AI Flags section in modal */
+.ai-flags {
+    background: rgba(251, 191, 36, 0.05);
+    padding: 12px;
+    border-radius: 8px;
+    margin-top: 8px;
+    border-left: 3px solid #f59e0b;
+}
+
+.ai-flags ul {
+    margin: 8px 0 0 0;
+    padding-left: 20px;
+}
+
+.ai-flags li {
+    margin: 4px 0;
+    line-height: 1.6;
+}
+
+/* Dark mode support for applications */
+[data-theme="dark"] .status-badge.status-revision_pendiente {
+    background: rgba(251, 191, 36, 0.2);
+    color: #fbbf24;
+    border-color: rgba(251, 191, 36, 0.4);
+}
+
+[data-theme="dark"] .status-badge.status-procesando {
+    background: rgba(59, 130, 246, 0.2);
+    color: #60a5fa;
+    border-color: rgba(59, 130, 246, 0.4);
+}
+
+[data-theme="dark"] .status-badge.status-aprobada {
+    background: rgba(34, 197, 94, 0.2);
+    color: #4ade80;
+    border-color: rgba(34, 197, 94, 0.4);
+}
+
+[data-theme="dark"] .status-badge.status-rechazada {
+    background: rgba(239, 68, 68, 0.2);
+    color: #f87171;
+    border-color: rgba(239, 68, 68, 0.4);
+}
+
+[data-theme="dark"] .score-badge.score-0,
+[data-theme="dark"] .score-badge.score-1 {
+    background: rgba(239, 68, 68, 0.2);
+    color: #f87171;
+    border-color: rgba(239, 68, 68, 0.4);
+}
+
+[data-theme="dark"] .score-badge.score-2 {
+    background: rgba(251, 191, 36, 0.2);
+    color: #fbbf24;
+    border-color: rgba(251, 191, 36, 0.4);
+}
+
+[data-theme="dark"] .score-badge.score-3 {
+    background: rgba(132, 204, 22, 0.2);
+    color: #a3e635;
+    border-color: rgba(132, 204, 22, 0.4);
+}
+
+[data-theme="dark"] .score-badge.score-4,
+[data-theme="dark"] .score-badge.score-5 {
+    background: rgba(34, 197, 94, 0.2);
+    color: #4ade80;
+    border-color: rgba(34, 197, 94, 0.4);
+}
+
+[data-theme="dark"] .ai-feedback {
+    background: rgba(59, 130, 246, 0.1);
+    border-left-color: #60a5fa;
+}
+
+[data-theme="dark"] .ai-flags {
+    background: rgba(251, 191, 36, 0.1);
+    border-left-color: #fbbf24;
+}

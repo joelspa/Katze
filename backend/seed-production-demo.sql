@@ -4,23 +4,24 @@
 -- ============================================
 -- 1. USUARIOS (Admin, Rescatistas, Adoptantes)
 -- ============================================
+-- CONTRASEÑA PARA TODOS: 123
 
 -- Admin
 INSERT INTO users (email, password_hash, full_name, phone, role) VALUES
-('admin@katze.com', '$2b$10$vI8aWBnW3fID.ZQ4/zo1G.q1lRps.9cGLcZEiGDMVr5yM1Pgo7SSi', 'Joel Administrador', '1234567890', 'admin');
+('admin@katze.com', '$2b$10$GjAyJ9PBh/BRLdrznH8mSO4SFfTr4m/81H1dkzIr9JnCHjVAVLjKG', 'Admin', '1234567890', 'admin');
 
 -- Rescatistas
 INSERT INTO users (email, password_hash, full_name, phone, role) VALUES
-('maria.lopez@gmail.com', '$2b$10$vI8aWBnW3fID.ZQ4/zo1G.q1lRps.9cGLcZEiGDMVr5yM1Pgo7SSi', 'María López', '5551234567', 'rescatista'),
-('carlos.rodriguez@gmail.com', '$2b$10$vI8aWBnW3fID.ZQ4/zo1G.q1lRps.9cGLcZEiGDMVr5yM1Pgo7SSi', 'Carlos Rodríguez', '5552345678', 'rescatista'),
-('ana.martinez@gmail.com', '$2b$10$vI8aWBnW3fID.ZQ4/zo1G.q1lRps.9cGLcZEiGDMVr5yM1Pgo7SSi', 'Ana Martínez', '5553456789', 'rescatista');
+('rescatista1@katze.com', '$2b$10$GjAyJ9PBh/BRLdrznH8mSO4SFfTr4m/81H1dkzIr9JnCHjVAVLjKG', 'Rescatista 1', '5551111111', 'rescatista'),
+('rescatista2@katze.com', '$2b$10$GjAyJ9PBh/BRLdrznH8mSO4SFfTr4m/81H1dkzIr9JnCHjVAVLjKG', 'Rescatista 2', '5552222222', 'rescatista'),
+('rescatista3@katze.com', '$2b$10$GjAyJ9PBh/BRLdrznH8mSO4SFfTr4m/81H1dkzIr9JnCHjVAVLjKG', 'Rescatista 3', '5553333333', 'rescatista');
 
 -- Adoptantes
 INSERT INTO users (email, password_hash, full_name, phone, role) VALUES
-('juan.perez@gmail.com', '$2b$10$vI8aWBnW3fID.ZQ4/zo1G.q1lRps.9cGLcZEiGDMVr5yM1Pgo7SSi', 'Juan Pérez', '5554567890', 'adoptante'),
-('laura.garcia@gmail.com', '$2b$10$vI8aWBnW3fID.ZQ4/zo1G.q1lRps.9cGLcZEiGDMVr5yM1Pgo7SSi', 'Laura García', '5555678901', 'adoptante'),
-('pedro.sanchez@gmail.com', '$2b$10$vI8aWBnW3fID.ZQ4/zo1G.q1lRps.9cGLcZEiGDMVr5yM1Pgo7SSi', 'Pedro Sánchez', '5556789012', 'adoptante'),
-('sofia.torres@gmail.com', '$2b$10$vI8aWBnW3fID.ZQ4/zo1G.q1lRps.9cGLcZEiGDMVr5yM1Pgo7SSi', 'Sofía Torres', '5557890123', 'adoptante');
+('adoptante1@katze.com', '$2b$10$GjAyJ9PBh/BRLdrznH8mSO4SFfTr4m/81H1dkzIr9JnCHjVAVLjKG', 'Adoptante 1', '5554444444', 'adoptante'),
+('adoptante2@katze.com', '$2b$10$GjAyJ9PBh/BRLdrznH8mSO4SFfTr4m/81H1dkzIr9JnCHjVAVLjKG', 'Adoptante 2', '5555555555', 'adoptante'),
+('adoptante3@katze.com', '$2b$10$GjAyJ9PBh/BRLdrznH8mSO4SFfTr4m/81H1dkzIr9JnCHjVAVLjKG', 'Adoptante 3', '5556666666', 'adoptante'),
+('adoptante4@katze.com', '$2b$10$GjAyJ9PBh/BRLdrznH8mSO4SFfTr4m/81H1dkzIr9JnCHjVAVLjKG', 'Adoptante 4', '5557777777', 'adoptante');
 
 -- ============================================
 -- 2. GATOS EN ADOPCIÓN
@@ -179,6 +180,210 @@ INSERT INTO adoption_applications (cat_id, applicant_id, status, form_responses,
 'Candidato acepta esterilización y tiene espacio. Primer gato. Score 70/100.',
 ARRAY['Pro-Esterilización', 'Espacio Adecuado', 'Primer Gato', 'Apartamento'],
 NOW() - INTERVAL '2 days');
+
+-- ============================================
+-- SOLICITUDES ADICIONALES (Más de 1 por gato)
+-- ============================================
+
+-- Whiskers (cat_id=1) - 3 solicitudes adicionales
+INSERT INTO adoption_applications (cat_id, applicant_id, status, form_responses, ai_score, ai_feedback, ai_flags, ai_evaluated_at) VALUES
+(1, 6, 'revision_pendiente',
+'{
+  "whyAdopt": "Busco un compañero tranquilo para mi jubilación. Whiskers parece perfecto para un estilo de vida relajado.",
+  "hasExperience": true,
+  "hasSpace": true,
+  "hasTime": true,
+  "livingSpace": "casa",
+  "hasOtherPets": false,
+  "acceptsSterilization": true,
+  "acceptsFollowUp": true,
+  "submittedAt": "2024-12-04T09:00:00Z"
+}',
+88,
+'Candidato con experiencia, acepta esterilización y busca gato senior. Score 88/100.',
+ARRAY['Pro-Esterilización', 'Espacio Adecuado', 'Experiencia Previa', 'Casa'],
+NOW() - INTERVAL '3 days'),
+
+(1, 7, 'rechazada',
+'{
+  "whyAdopt": "Quiero un gato viejo porque son baratos",
+  "hasExperience": false,
+  "hasSpace": false,
+  "hasTime": false,
+  "livingSpace": "apartamento",
+  "hasOtherPets": false,
+  "acceptsSterilization": false,
+  "acceptsFollowUp": false,
+  "submittedAt": "2024-12-02T15:00:00Z"
+}',
+15,
+'Motivación inapropiada y rechaza esterilización. Score 15/100.',
+ARRAY['Rechaza Esterilización', 'Primer Gato'],
+NOW() - INTERVAL '5 days');
+
+-- Cleo (cat_id=2) - 2 solicitudes adicionales
+INSERT INTO adoption_applications (cat_id, applicant_id, status, form_responses, ai_score, ai_feedback, ai_flags, ai_evaluated_at) VALUES
+(2, 5, 'revision_pendiente',
+'{
+  "whyAdopt": "Me encantan los gatos negros y quiero romper el estigma. Cleo merece un hogar amoroso.",
+  "hasExperience": true,
+  "hasSpace": true,
+  "hasTime": true,
+  "livingSpace": "casa",
+  "hasOtherPets": false,
+  "acceptsSterilization": true,
+  "acceptsFollowUp": true,
+  "submittedAt": "2024-12-01T10:00:00Z"
+}',
+93,
+'Excelente candidato con motivación genuina para gato negro. Score 93/100.',
+ARRAY['Motivación Genuina', 'Pro-Esterilización', 'Espacio Adecuado', 'Experiencia Previa', 'Casa'],
+NOW() - INTERVAL '6 days'),
+
+(2, 8, 'procesando',
+'{
+  "whyAdopt": "Siempre quise un gato negro. Son elegantes y misteriosos.",
+  "hasExperience": false,
+  "hasSpace": true,
+  "hasTime": true,
+  "livingSpace": "apartamento",
+  "hasOtherPets": false,
+  "acceptsSterilization": true,
+  "acceptsFollowUp": true,
+  "submittedAt": "2024-12-06T14:00:00Z"
+}',
+NULL,
+NULL,
+NULL,
+NULL);
+
+-- Luna (cat_id=4) - 2 solicitudes adicionales
+INSERT INTO adoption_applications (cat_id, applicant_id, status, form_responses, ai_score, ai_feedback, ai_flags, ai_evaluated_at) VALUES
+(4, 7, 'revision_pendiente',
+'{
+  "whyAdopt": "Luna parece una gatita dulce. Tengo experiencia con gatos y un hogar preparado.",
+  "hasExperience": true,
+  "hasSpace": true,
+  "hasTime": true,
+  "livingSpace": "casa",
+  "hasOtherPets": false,
+  "acceptsSterilization": true,
+  "acceptsFollowUp": true,
+  "submittedAt": "2024-11-30T11:00:00Z"
+}',
+85,
+'Buen candidato con experiencia y espacio adecuado. Score 85/100.',
+ARRAY['Pro-Esterilización', 'Espacio Adecuado', 'Experiencia Previa', 'Casa'],
+NOW() - INTERVAL '7 days'),
+
+(4, 8, 'pendiente',
+'{
+  "whyAdopt": "Mi hija quiere un gato blanco. Luna es perfecta.",
+  "hasExperience": false,
+  "hasSpace": true,
+  "hasTime": true,
+  "livingSpace": "casa",
+  "hasOtherPets": true,
+  "otherPetsDetails": "Un perro labrador",
+  "acceptsSterilization": true,
+  "acceptsFollowUp": true,
+  "submittedAt": "2024-12-05T16:00:00Z"
+}',
+72,
+'Candidato acepta esterilización, tiene espacio y otras mascotas. Score 72/100.',
+ARRAY['Pro-Esterilización', 'Espacio Adecuado', 'Primer Gato', 'Casa'],
+NOW() - INTERVAL '2 days');
+
+-- Simba (cat_id=5) - 3 solicitudes
+INSERT INTO adoption_applications (cat_id, applicant_id, status, form_responses, ai_score, ai_feedback, ai_flags, ai_evaluated_at) VALUES
+(5, 6, 'aprobada',
+'{
+  "whyAdopt": "Simba es perfecto para mi familia. Tenemos niños y necesitamos un gato sociable y paciente.",
+  "hasExperience": true,
+  "hasSpace": true,
+  "hasTime": true,
+  "livingSpace": "casa",
+  "hasOtherPets": false,
+  "acceptsSterilization": true,
+  "acceptsFollowUp": true,
+  "submittedAt": "2024-11-25T09:00:00Z"
+}',
+94,
+'Excelente familia para gato sociable. Score 94/100.',
+ARRAY['Motivación Genuina', 'Pro-Esterilización', 'Espacio Adecuado', 'Experiencia Previa', 'Casa'],
+NOW() - INTERVAL '12 days'),
+
+(5, 7, 'revision_pendiente',
+'{
+  "whyAdopt": "Los gatos naranjas son amigables. Trabajo desde casa y puedo darle compañía.",
+  "hasExperience": false,
+  "hasSpace": true,
+  "hasTime": true,
+  "livingSpace": "apartamento",
+  "hasOtherPets": false,
+  "acceptsSterilization": true,
+  "acceptsFollowUp": true,
+  "submittedAt": "2024-12-03T12:00:00Z"
+}',
+78,
+'Candidato con tiempo y espacio. Primer gato. Score 78/100.',
+ARRAY['Pro-Esterilización', 'Espacio Adecuado', 'Primer Gato', 'Apartamento'],
+NOW() - INTERVAL '4 days');
+
+-- Garfield (cat_id=7) - 2 solicitudes adicionales
+INSERT INTO adoption_applications (cat_id, applicant_id, status, form_responses, ai_score, ai_feedback, ai_flags, ai_evaluated_at) VALUES
+(7, 8, 'revision_pendiente',
+'{
+  "whyAdopt": "Me gustan los gatos grandes y tranquilos como Garfield. Tengo un departamento espacioso.",
+  "hasExperience": false,
+  "hasSpace": true,
+  "hasTime": true,
+  "livingSpace": "apartamento",
+  "hasOtherPets": false,
+  "acceptsSterilization": true,
+  "acceptsFollowUp": true,
+  "submittedAt": "2024-12-04T10:00:00Z"
+}',
+76,
+'Candidato acepta esterilización y tiene buen espacio. Score 76/100.',
+ARRAY['Pro-Esterilización', 'Espacio Adecuado', 'Primer Gato', 'Apartamento'],
+NOW() - INTERVAL '3 days');
+
+-- Nala (cat_id=8) - 2 solicitudes adicionales
+INSERT INTO adoption_applications (cat_id, applicant_id, status, form_responses, ai_score, ai_feedback, ai_flags, ai_evaluated_at) VALUES
+(8, 5, 'revision_pendiente',
+'{
+  "whyAdopt": "Los siameses son inteligentes y comunicativos. Busco un gato con personalidad.",
+  "hasExperience": true,
+  "hasSpace": true,
+  "hasTime": true,
+  "livingSpace": "casa",
+  "hasOtherPets": false,
+  "acceptsSterilization": true,
+  "acceptsFollowUp": true,
+  "submittedAt": "2024-12-01T08:00:00Z"
+}',
+90,
+'Excelente candidato con experiencia para gato siamés. Score 90/100.',
+ARRAY['Pro-Esterilización', 'Espacio Adecuado', 'Experiencia Previa', 'Casa'],
+NOW() - INTERVAL '6 days'),
+
+(8, 7, 'rechazada_automaticamente',
+'{
+  "whyAdopt": "Quiero criar gatitos siameses para vender",
+  "hasExperience": false,
+  "hasSpace": true,
+  "hasTime": false,
+  "livingSpace": "casa",
+  "hasOtherPets": false,
+  "acceptsSterilization": false,
+  "acceptsFollowUp": false,
+  "submittedAt": "2024-11-29T14:00:00Z"
+}',
+10,
+'Intención comercial detectada. Rechaza esterilización. Score 10/100.',
+ARRAY['Rechaza Esterilización', 'Riesgo Venta'],
+NOW() - INTERVAL '8 days');
 
 -- ============================================
 -- 4. POSTS EDUCATIVOS

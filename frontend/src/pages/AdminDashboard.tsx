@@ -71,7 +71,7 @@ interface TrackingTask {
     sterilization_status?: string;
 }
 
-type TabType = 'cats' | 'education' | 'users' | 'tracking';
+type TabType = 'cats' | 'education' | 'users' | 'tracking' | 'applications';
 
 const AdminDashboard = () => {
     const { modalState, showAlert, showConfirm, showPrompt, closeModal } = useModal();
@@ -118,6 +118,28 @@ const AdminDashboard = () => {
     
     // Estado para modal de detalle de post
     const [selectedPost, setSelectedPost] = useState<EducationalPost | null>(null);
+    
+    // Estados para solicitudes de adopción
+    interface Application {
+        id: number;
+        cat_id: number;
+        cat_name: string;
+        cat_photos?: string[];
+        applicant_name: string;
+        applicant_email: string;
+        applicant_phone?: string;
+        status: string;
+        form_responses: any;
+        ai_score?: number;
+        ai_feedback?: string;
+        ai_flags?: string[];
+        created_at: string;
+        owner_name: string;
+    }
+    const [applications, setApplications] = useState<Application[]>([]);
+    const [loadingApplications, setLoadingApplications] = useState(false);
+    const [selectedApplication, setSelectedApplication] = useState<Application | null>(null);
+    const [applicationFilter, setApplicationFilter] = useState<string>('all');
     
     const { token } = useAuth();
 
@@ -397,6 +419,29 @@ const AdminDashboard = () => {
         }
     };
 
+    // Carga todas las solicitudes de adopción (admin puede ver todas)
+    const fetchApplications = async () => {
+        if (!token) return;
+        
+        try {
+            setLoadingApplications(true);
+            const API_URL = `${API_BASE_URL}/api/admin/applications`;
+            const response = await axios.get(API_URL, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            
+            const applicationsData = response.data.data?.applications || response.data.applications || response.data;
+            setApplications(applicationsData);
+        } catch (error) {
+            console.error('Error al cargar solicitudes:', error);
+            if (isAxiosError(error)) {
+                setError(error.response?.data?.message || 'Error al cargar solicitudes');
+            }
+        } finally {
+            setLoadingApplications(false);
+        }
+    };
+
     useEffect(() => {
         if (activeTab === 'cats') {
             fetchCats();
@@ -406,6 +451,8 @@ const AdminDashboard = () => {
             fetchUsers();
         } else if (activeTab === 'tracking') {
             fetchTrackingTasks();
+        } else if (activeTab === 'applications') {
+            fetchApplications();
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [token, activeTab]);
@@ -619,10 +666,203 @@ const AdminDashboard = () => {
                         </svg>
                         <span>Panel de Seguimiento</span>
                     </button>
+                    <button 
+                        className={`nav-item ${activeTab === 'applications' ? 'active' : ''}`}
+                        onClick={() => setActiveTab('applications')}
+                    >
+                        <svg viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
+                            <path fillRule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clipRule="evenodd" />
+                        </svg>
+                        <span>Solicitudes de Adopción</span>
+                    </button>
                 </nav>
             </aside>
 
             <main className="admin-main-content">
+            {/* Tab de Solicitudes de Adopción */}
+            {activeTab === 'applications' && (
+                <>
+                    {/* Filtros de solicitudes */}
+                    <div className="admin-filters">
+                        <div className="filter-group">
+                            <label>Estado:</label>
+                            <select 
+                                value={applicationFilter} 
+                                onChange={(e) => setApplicationFilter(e.target.value)}
+                                className="filter-select"
+                            >
+                                <option value="all">Todas las solicitudes</option>
+                                <option value="revision_pendiente">Pendiente de revisión</option>
+                                <option value="procesando">En procesamiento</option>
+                                <option value="aprobada">Aprobadas</option>
+                                <option value="rechazada">Rechazadas</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    {/* Resumen estadístico - Solicitudes */}
+                    <div className="admin-summary">
+                        <div className="summary-card">
+                            <h3>{applications.length}</h3>
+                            <p>Total Solicitudes</p>
+                        </div>
+                        <div className="summary-card">
+                            <h3>{applications.filter(app => app.application_status === 'revision_pendiente').length}</h3>
+                            <p>Pendientes</p>
+                        </div>
+                        <div className="summary-card">
+                            <h3>{applications.filter(app => app.application_status === 'procesando').length}</h3>
+                            <p>En Proceso</p>
+                        </div>
+                        <div className="summary-card">
+                            <h3>{applications.filter(app => app.application_status === 'aprobada').length}</h3>
+                            <p>Aprobadas</p>
+                        </div>
+                        <div className="summary-card">
+                            <h3>{applications.filter(app => app.application_status === 'rechazada').length}</h3>
+                            <p>Rechazadas</p>
+                        </div>
+                    </div>
+
+                    {loadingApplications ? (
+                        <div className="loading-spinner-container">
+                            <div className="loading-spinner"></div>
+                            <p>Cargando solicitudes...</p>
+                        </div>
+                    ) : (
+                        <div className="admin-cards-grid">
+                            {applications
+                                .filter(app => applicationFilter === 'all' || app.application_status === applicationFilter)
+                                .map(application => (
+                                    <div key={application.id} className="admin-card">
+                                        <div className="card-header">
+                                            <h3>{application.cat_name}</h3>
+                                            <span className={`status-badge status-${application.application_status}`}>
+                                                {application.application_status === 'revision_pendiente' && '⏳ Pendiente'}
+                                                {application.application_status === 'procesando' && '🔄 Procesando'}
+                                                {application.application_status === 'aprobada' && '✅ Aprobada'}
+                                                {application.application_status === 'rechazada' && '❌ Rechazada'}
+                                            </span>
+                                        </div>
+                                        <div className="card-content">
+                                            <p><strong>Solicitante:</strong> {application.applicant_name}</p>
+                                            <p><strong>Email:</strong> {application.applicant_email}</p>
+                                            <p><strong>Teléfono:</strong> {application.applicant_phone}</p>
+                                            <p><strong>Edad:</strong> {application.applicant_age} años</p>
+                                            <p><strong>Ocupación:</strong> {application.applicant_occupation}</p>
+                                            {application.ai_suitability_score !== null && (
+                                                <div className="ai-score">
+                                                    <strong>Puntuación IA:</strong>
+                                                    <span className={`score-badge score-${Math.floor(application.ai_suitability_score / 20)}`}>
+                                                        {application.ai_suitability_score}/100
+                                                    </span>
+                                                </div>
+                                            )}
+                                            <p className="date-info">
+                                                <small>📅 {new Date(application.created_at).toLocaleDateString('es-ES', {
+                                                    year: 'numeric',
+                                                    month: 'long',
+                                                    day: 'numeric'
+                                                })}</small>
+                                            </p>
+                                        </div>
+                                        <div className="card-actions">
+                                            <button 
+                                                className="btn-primary"
+                                                onClick={() => setSelectedApplication(application)}
+                                            >
+                                                Ver Detalles
+                                            </button>
+                                        </div>
+                                    </div>
+                                ))
+                            }
+                            {applications.filter(app => applicationFilter === 'all' || app.application_status === applicationFilter).length === 0 && (
+                                <div className="empty-state">
+                                    <p>No hay solicitudes con el filtro seleccionado</p>
+                                </div>
+                            )}
+                        </div>
+                    )}
+
+                    {/* Modal de detalles de solicitud */}
+                    {selectedApplication && (
+                        <div className="modal-overlay" onClick={() => setSelectedApplication(null)}>
+                            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                                <button className="modal-close" onClick={() => setSelectedApplication(null)}>×</button>
+                                <h2>Detalles de la Solicitud</h2>
+                                
+                                <div className="modal-section">
+                                    <h3>Información del Gato</h3>
+                                    <p><strong>Nombre:</strong> {selectedApplication.cat_name}</p>
+                                </div>
+
+                                <div className="modal-section">
+                                    <h3>Información del Solicitante</h3>
+                                    <p><strong>Nombre:</strong> {selectedApplication.applicant_name}</p>
+                                    <p><strong>Email:</strong> {selectedApplication.applicant_email}</p>
+                                    <p><strong>Teléfono:</strong> {selectedApplication.applicant_phone}</p>
+                                    <p><strong>Edad:</strong> {selectedApplication.applicant_age} años</p>
+                                    <p><strong>Ocupación:</strong> {selectedApplication.applicant_occupation}</p>
+                                </div>
+
+                                <div className="modal-section">
+                                    <h3>Detalles de la Vivienda</h3>
+                                    <p><strong>Tipo:</strong> {selectedApplication.living_situation}</p>
+                                    <p><strong>Mascotas actuales:</strong> {selectedApplication.has_other_pets ? 'Sí' : 'No'}</p>
+                                    <p><strong>Experiencia previa:</strong> {selectedApplication.experience_with_cats ? 'Sí' : 'No'}</p>
+                                </div>
+
+                                <div className="modal-section">
+                                    <h3>Razón de Adopción</h3>
+                                    <p>{selectedApplication.reason_for_adoption}</p>
+                                </div>
+
+                                {selectedApplication.ai_suitability_score !== null && (
+                                    <div className="modal-section">
+                                        <h3>Evaluación IA</h3>
+                                        <p><strong>Puntuación:</strong> <span className={`score-badge score-${Math.floor(selectedApplication.ai_suitability_score / 20)}`}>{selectedApplication.ai_suitability_score}/100</span></p>
+                                        {selectedApplication.ai_feedback && (
+                                            <div className="ai-feedback">
+                                                <strong>Análisis:</strong>
+                                                <p>{selectedApplication.ai_feedback}</p>
+                                            </div>
+                                        )}
+                                        {selectedApplication.ai_flags && selectedApplication.ai_flags.length > 0 && (
+                                            <div className="ai-flags">
+                                                <strong>Alertas:</strong>
+                                                <ul>
+                                                    {selectedApplication.ai_flags.map((flag, idx) => (
+                                                        <li key={idx}>⚠️ {flag}</li>
+                                                    ))}
+                                                </ul>
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+
+                                <div className="modal-section">
+                                    <h3>Estado y Fechas</h3>
+                                    <p><strong>Estado:</strong> 
+                                        <span className={`status-badge status-${selectedApplication.application_status}`}>
+                                            {selectedApplication.application_status === 'revision_pendiente' && '⏳ Pendiente de revisión'}
+                                            {selectedApplication.application_status === 'procesando' && '🔄 En procesamiento'}
+                                            {selectedApplication.application_status === 'aprobada' && '✅ Aprobada'}
+                                            {selectedApplication.application_status === 'rechazada' && '❌ Rechazada'}
+                                        </span>
+                                    </p>
+                                    <p><strong>Fecha de solicitud:</strong> {new Date(selectedApplication.created_at).toLocaleString('es-ES')}</p>
+                                    {selectedApplication.updated_at && (
+                                        <p><strong>Última actualización:</strong> {new Date(selectedApplication.updated_at).toLocaleString('es-ES')}</p>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </>
+            )}
+
             {/* Tab de Gestión de Gatos */}
             {activeTab === 'cats' && (
                 <>
