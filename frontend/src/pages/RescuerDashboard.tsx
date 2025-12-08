@@ -6,6 +6,7 @@ import axios, { isAxiosError } from 'axios';
 import { useAuth } from '../context/AuthContext';
 import { AIBadge, AIScoreBadge } from '../components/AIBadge';
 import './RescuerDashboard.css';
+import './AdminDashboard.css'; // Reutilizar estilos del admin dashboard
 import '../components/AIBadge.css';
 import { API_BASE_URL } from '../config/api';
 
@@ -35,7 +36,10 @@ interface CatApplicationGroup {
     applicationCount: number;
 }
 
+type TabType = 'cats' | 'applications' | 'tracking';
+
 const RescuerDashboard = () => {
+    const [activeTab, setActiveTab] = useState<TabType>('applications');
     const [groupedApplications, setGroupedApplications] = useState<CatApplicationGroup[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -175,93 +179,164 @@ const RescuerDashboard = () => {
     }
 
     return (
-        <div className="dashboard-container">
-            <div className="page-header">
-                <svg className="header-icon" viewBox="0 0 20 20" fill="currentColor">
-                    <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
-                </svg>
-                <h1>Panel de Rescatista</h1>
-            </div>
-            <div className="section-header">
-                <svg className="section-icon" viewBox="0 0 20 20" fill="currentColor">
-                    <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
-                    <path fillRule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clipRule="evenodd" />
-                </svg>
-                <h2>Solicitudes Pendientes</h2>
-            </div>
-            {groupedApplications.length === 0 ? (
-                <div className="empty-state">
-                    <svg className="empty-state-icon" viewBox="0 0 20 20" fill="currentColor">
-                        <path fillRule="evenodd" d="M2 5a2 2 0 012-2h12a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V5zm3.293 1.293a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 01-1.414-1.414L7.586 10 5.293 7.707a1 1 0 010-1.414zM11 12a1 1 0 100 2h3a1 1 0 100-2h-3z" clipRule="evenodd" />
-                    </svg>
-                    <p className="empty-state-text">No tienes solicitudes pendientes.</p>
+        <div className="admin-layout">
+            {/* Sidebar de navegación */}
+            <aside className="admin-sidebar">
+                <div className="admin-sidebar-header">
+                    <h1>
+                        <svg viewBox="0 0 20 20" fill="currentColor" style={{width: '28px', height: '28px', color: '#3b82f6'}}>
+                            <path fillRule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                        </svg>
+                        <span>Panel Rescatista</span>
+                    </h1>
                 </div>
-            ) : (
-                <div className="applications-grid">
-                    {groupedApplications.map((catGroup) => (
-                        <div 
-                            key={catGroup.cat_id} 
-                            className="cat-card-group"
-                            onClick={() => setSelectedCat(catGroup)}
-                        >
-                            {catGroup.cat_photos && catGroup.cat_photos.length > 0 && (
-                                <div className="cat-photo-preview">
-                                    <img 
-                                        src={catGroup.cat_photos[0]} 
-                                        alt={catGroup.cat_name}
-                                        onError={(e) => {
-                                            e.currentTarget.src = 'https://placehold.co/400x300/e0e0e0/666?text=Sin+Foto';
-                                        }}
-                                    />
-                                    {catGroup.applicationCount > 1 && (
-                                        <div className="application-count-badge">
-                                            <svg viewBox="0 0 20 20" fill="currentColor">
-                                                <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
-                                                <path fillRule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clipRule="evenodd" />
-                                            </svg>
-                                            {catGroup.applicationCount}
-                                        </div>
-                                    )}
-                                </div>
-                            )}
-                            <div className="card-header">
-                                <div className="cat-icon">
-                                    <svg viewBox="0 0 24 24" fill="currentColor">
-                                        <path d="M12 2C10.34 2 9 3.34 9 5c0 .35.07.69.18 1H6c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-3.18c.11-.31.18-.65.18-1 0-1.66-1.34-3-3-3zm0 2c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1z"/>
-                                    </svg>
-                                </div>
-                                <h3 className="cat-name">{catGroup.cat_name}</h3>
-                            </div>
-                            
-                            <div className="card-stats">
-                                <div className="stat-item">
-                                    <svg viewBox="0 0 20 20" fill="currentColor">
-                                        <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
-                                    </svg>
-                                    <span>{catGroup.applicationCount} {catGroup.applicationCount === 1 ? 'solicitud' : 'solicitudes'}</span>
-                                </div>
-                                {catGroup.applications.some(app => app.ai_score && app.ai_score >= 70) && (
-                                    <div className="stat-item highlight">
-                                        <svg viewBox="0 0 20 20" fill="currentColor">
-                                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                        </svg>
-                                        <span>Candidatos destacados</span>
-                                    </div>
-                                )}
-                            </div>
 
-                            <div className="card-footer">
-                                <button className="btn-view-details">
-                                    Ver solicitudes
-                                    <svg viewBox="0 0 20 20" fill="currentColor">
-                                        <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
-                                    </svg>
-                                </button>
-                            </div>
+                <nav className="admin-nav">
+                    <button 
+                        className={`nav-item ${activeTab === 'cats' ? 'active' : ''}`}
+                        onClick={() => setActiveTab('cats')}
+                    >
+                        <svg viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M10 3.5a1.5 1.5 0 013 0V4a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-.5a1.5 1.5 0 000 3h.5a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-.5a1.5 1.5 0 00-3 0v.5a1 1 0 01-1 1H6a1 1 0 01-1-1v-3a1 1 0 00-1-1h-.5a1.5 1.5 0 010-3H4a1 1 0 001-1V6a1 1 0 011-1h3a1 1 0 001-1v-.5z" />
+                        </svg>
+                        <span>Mis Gatos</span>
+                    </button>
+                    <button 
+                        className={`nav-item ${activeTab === 'applications' ? 'active' : ''}`}
+                        onClick={() => setActiveTab('applications')}
+                    >
+                        <svg viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
+                            <path fillRule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clipRule="evenodd" />
+                        </svg>
+                        <span>Solicitudes Recibidas</span>
+                    </button>
+                    <button 
+                        className={`nav-item ${activeTab === 'tracking' ? 'active' : ''}`}
+                        onClick={() => setActiveTab('tracking')}
+                    >
+                        <svg viewBox="0 0 20 20" fill="currentColor">
+                            <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
+                        </svg>
+                        <span>Seguimiento</span>
+                    </button>
+                </nav>
+            </aside>
+
+            <main className="admin-main-content">
+                {activeTab === 'applications' && (
+                    <div className="dashboard-container" style={{padding: 0, background: 'transparent', boxShadow: 'none'}}>
+                        <div className="section-header">
+                            <svg className="section-icon" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
+                                <path fillRule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clipRule="evenodd" />
+                            </svg>
+                            <h2>Solicitudes Pendientes</h2>
                         </div>
-                    ))}
-                </div>
-            )}
+                        {groupedApplications.length === 0 ? (
+                            <div className="empty-state">
+                                <svg className="empty-state-icon" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fillRule="evenodd" d="M2 5a2 2 0 012-2h12a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V5zm3.293 1.293a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 01-1.414-1.414L7.586 10 5.293 7.707a1 1 0 010-1.414zM11 12a1 1 0 100 2h3a1 1 0 100-2h-3z" clipRule="evenodd" />
+                                </svg>
+                                <p className="empty-state-text">No tienes solicitudes pendientes.</p>
+                            </div>
+                        ) : (
+                            <div className="applications-grid">
+                                {groupedApplications.map((catGroup) => (
+                                    <div 
+                                        key={catGroup.cat_id} 
+                                        className="cat-card-group"
+                                        onClick={() => setSelectedCat(catGroup)}
+                                    >
+                                        {catGroup.cat_photos && catGroup.cat_photos.length > 0 && (
+                                            <div className="cat-photo-preview">
+                                                <img 
+                                                    src={catGroup.cat_photos[0]} 
+                                                    alt={catGroup.cat_name}
+                                                    onError={(e) => {
+                                                        e.currentTarget.src = 'https://placehold.co/400x300/e0e0e0/666?text=Sin+Foto';
+                                                    }}
+                                                />
+                                                {catGroup.applicationCount > 1 && (
+                                                    <div className="application-count-badge">
+                                                        <svg viewBox="0 0 20 20" fill="currentColor">
+                                                            <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
+                                                            <path fillRule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clipRule="evenodd" />
+                                                        </svg>
+                                                        {catGroup.applicationCount}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        )}
+                                        <div className="card-header">
+                                            <div className="cat-icon">
+                                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                                    <path d="M12 2C10.34 2 9 3.34 9 5c0 .35.07.69.18 1H6c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-3.18c.11-.31.18-.65.18-1 0-1.66-1.34-3-3-3zm0 2c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1z"/>
+                                                </svg>
+                                            </div>
+                                            <h3 className="cat-name">{catGroup.cat_name}</h3>
+                                        </div>
+                                        
+                                        <div className="card-stats">
+                                            <div className="stat-item">
+                                                <svg viewBox="0 0 20 20" fill="currentColor">
+                                                    <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+                                                </svg>
+                                                <span>{catGroup.applicationCount} {catGroup.applicationCount === 1 ? 'solicitud' : 'solicitudes'}</span>
+                                            </div>
+                                            {catGroup.applications.some(app => app.ai_score && app.ai_score >= 70) && (
+                                                <div className="stat-item highlight">
+                                                    <svg viewBox="0 0 20 20" fill="currentColor">
+                                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                                    </svg>
+                                                    <span>Candidatos destacados</span>
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        <div className="card-footer">
+                                            <button className="btn-view-details">
+                                                Ver solicitudes
+                                                <svg viewBox="0 0 20 20" fill="currentColor">
+                                                    <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                )}
+
+                {activeTab === 'cats' && (
+                    <div className="dashboard-container" style={{padding: 0, background: 'transparent', boxShadow: 'none'}}>
+                        <div className="section-header">
+                            <svg className="section-icon" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M10 3.5a1.5 1.5 0 013 0V4a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-.5a1.5 1.5 0 000 3h.5a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-.5a1.5 1.5 0 00-3 0v.5a1 1 0 01-1 1H6a1 1 0 01-1-1v-3a1 1 0 00-1-1h-.5a1.5 1.5 0 010-3H4a1 1 0 001-1V6a1 1 0 011-1h3a1 1 0 001-1v-.5z" />
+                            </svg>
+                            <h2>Mis Gatos</h2>
+                        </div>
+                        <div className="empty-state">
+                            <p className="empty-state-text">Funcionalidad de gestión de gatos próximamente.</p>
+                        </div>
+                    </div>
+                )}
+
+                {activeTab === 'tracking' && (
+                    <div className="dashboard-container" style={{padding: 0, background: 'transparent', boxShadow: 'none'}}>
+                        <div className="section-header">
+                            <svg className="section-icon" viewBox="0 0 20 20" fill="currentColor">
+                                <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
+                            </svg>
+                            <h2>Seguimiento de Adopciones</h2>
+                        </div>
+                        <div className="empty-state">
+                            <p className="empty-state-text">Panel de seguimiento próximamente.</p>
+                        </div>
+                    </div>
+                )}
+            </main>
 
             {/* Modal para ver todas las solicitudes de un gato */}
             {selectedCat && !selectedApplication && (
