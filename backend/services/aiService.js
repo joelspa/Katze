@@ -17,12 +17,13 @@ class AIService {
         } else {
             this.genAI = new GoogleGenerativeAI(config.GEMINI_API_KEY);
             this.model = this.genAI.getGenerativeModel({ 
-                model: 'gemini-pro',
+                model: 'gemini-1.5-flash-001',
                 generationConfig: {
                     temperature: 0.2, // Bajo para decisiones consistentes
                     topP: 0.95,
                     topK: 40,
-                    maxOutputTokens: 512
+                    maxOutputTokens: 512,
+                    responseMimeType: 'application/json'
                 }
             });
             this.enabled = true;
