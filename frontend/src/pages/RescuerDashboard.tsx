@@ -502,6 +502,51 @@ const RescuerDashboard = () => {
                                         
                                         if (!isShortAnswer) return null; // Largo texto se maneja después
                                         
+                                        // Traducir claves al español
+                                        const translateKey = (key: string): string => {
+                                            const translations: Record<string, string> = {
+                                                'hasTime': 'Disponibilidad de Tiempo',
+                                                'hasSpace': 'Espacio Suficiente',
+                                                'livingSpace': 'Tipo de Vivienda',
+                                                'hasOtherPets': 'Otras Mascotas',
+                                                'otherPetsDetails': 'Detalles de Mascotas',
+                                                'hasExperience': 'Experiencia con Gatos',
+                                                'acceptsSterilization': 'Acepta Esterilización',
+                                                'acceptsFollowUp': 'Acepta Seguimiento',
+                                                'submittedAt': 'Fecha de Solicitud'
+                                            };
+                                            return translations[key] || key.replace(/_/g, ' ').replace(/([A-Z])/g, ' $1').trim();
+                                        };
+                                        
+                                        // Traducir valores al español
+                                        const translateValue = (key: string, value: any): string => {
+                                            if (typeof value === 'boolean') {
+                                                return value ? 'Sí' : 'No';
+                                            }
+                                            if (key === 'livingSpace') {
+                                                const livingSpaceTranslations: Record<string, string> = {
+                                                    'casa': 'Casa',
+                                                    'apartamento': 'Apartamento',
+                                                    'otro': 'Otro'
+                                                };
+                                                return livingSpaceTranslations[String(value)] || String(value);
+                                            }
+                                            if (key === 'submittedAt') {
+                                                try {
+                                                    return new Date(String(value)).toLocaleDateString('es-ES', {
+                                                        day: '2-digit',
+                                                        month: 'short',
+                                                        year: 'numeric',
+                                                        hour: '2-digit',
+                                                        minute: '2-digit'
+                                                    });
+                                                } catch {
+                                                    return String(value);
+                                                }
+                                            }
+                                            return String(value);
+                                        };
+                                        
                                         // SVG según tipo de pregunta
                                         const getIconSVG = (key: string) => {
                                             const k = key.toLowerCase();
@@ -527,10 +572,10 @@ const RescuerDashboard = () => {
                                         
                                         return (
                                             <div key={key} className="data-card">
-                                                <small className="data-label">{key.replace(/_/g, ' ').toUpperCase()}</small>
+                                                <small className="data-label">{translateKey(key)}</small>
                                                 <div className="data-value">
                                                     <span className="data-icon">{getIconSVG(key)}</span>
-                                                    <span>{strValue}</span>
+                                                    <span>{translateValue(key, value)}</span>
                                                 </div>
                                             </div>
                                         );
@@ -547,9 +592,18 @@ const RescuerDashboard = () => {
                                         
                                         if (!isLongAnswer) return null;
                                         
+                                        // Traducir claves para respuestas largas
+                                        const translateLongKey = (key: string): string => {
+                                            const translations: Record<string, string> = {
+                                                'whyAdopt': '¿Por qué eres el hogar perfecto para este gato?',
+                                                'reason': '¿Por qué eres el hogar perfecto para este gato?'
+                                            };
+                                            return translations[key] || key.replace(/_/g, ' ').replace(/([A-Z])/g, ' $1').trim();
+                                        };
+                                        
                                         return (
                                             <div key={key} className="narrative-block">
-                                                <h4 className="narrative-question">{key.replace(/_/g, ' ')}</h4>
+                                                <h4 className="narrative-question">{translateLongKey(key)}</h4>
                                                 <p className="narrative-answer">{strValue}</p>
                                             </div>
                                         );

@@ -16,14 +16,14 @@ class AIService {
             this.enabled = false;
         } else {
             this.genAI = new GoogleGenerativeAI(config.GEMINI_API_KEY);
-            // Usar gemini-1.5-pro - modelo estable compatible con SDK 0.24.1
+            // Usar gemini-1.5-flash para velocidad óptima (2-3 segundos)
             this.model = this.genAI.getGenerativeModel({ 
-                model: 'gemini-1.5-pro',
+                model: 'gemini-1.5-flash',
                 generationConfig: {
-                    temperature: 0.2, // Bajo para decisiones consistentes
-                    topP: 0.95,
-                    topK: 40,
-                    maxOutputTokens: 512,
+                    temperature: 0.1, // Muy bajo para consistencia y velocidad
+                    topP: 0.8,
+                    topK: 20,
+                    maxOutputTokens: 300, // Reducido para respuestas más rápidas
                     responseMimeType: 'application/json'
                 }
             });
@@ -39,7 +39,7 @@ class AIService {
     async analyzeApplication(formData) {
         // Si la API no está disponible, retornar evaluación por defecto
         if (!this.enabled) {
-            return this._getFallbackEvaluation();
+            return this._getFallbackEvaluation(formData);
         }
 
         try {
@@ -79,7 +79,7 @@ class AIService {
         } catch (error) {
             console.error('❌ Error en evaluación IA:', error.message);
             // En caso de error, retornar evaluación segura (requiere revisión humana)
-            return this._getFallbackEvaluation();
+            return this._getFallbackEvaluation(formData);
         }
     }
 
@@ -87,79 +87,64 @@ class AIService {
      * Construye el prompt del sistema con las reglas de evaluación
      */
     _buildSystemPrompt() {
-        return `Eres el oficial de seguridad de 'Katze', una aplicación de adopción responsable de gatos.
+        return `Eres evaluador de adopciones de gatos. Analiza RÁPIDAMENTE y devuelve JSON.
 
-Tu misión es FILTRAR solicitudes peligrosas o no viables, protegiendo el bienestar de los gatos.
+NUNCA apruebas. Solo: RECHAZAR_AUTO o REVISION_MANUAL
 
-IMPORTANTE: NUNCA apruebas solicitudes. Solo puedes:
-1. RECHAZAR_AUTO: Rechazar automáticamente si hay peligro claro
-2. REVISION_MANUAL: Marcar para revisión humana si es viable
+RECHAZAR_AUTO (0-40 puntos):
+- No acepta esterilización
+- Intención de criar/vender
+- Lenguaje violento/negligente
+- Riesgo evidente
 
-CRITERIOS ESTRICTOS DE EVALUACIÓN:
+REVISION_MANUAL (41-100):
+- Acepta esterilización: +20 puntos
+- Motivación genuina (LEE whyAdopt/reason): +15 puntos
+- Espacio adecuado: +10 puntos
+- Experiencia previa: +10 puntos
+- Disponibilidad de tiempo: +5 puntos
+- Vivienda segura: +5 puntos
 
-🚫 RECHAZAR_AUTO (Rechazo Automático):
+ANALIZA EL TEXTO DE MOTIVACIÓN:
+- ¿Menciona amor/cuidado genuino? → más puntos
+- ¿Habla de compañía/familia? → más puntos
+- ¿Es vago o poco serio? → menos puntos
+- ¿Menciona crianza/venta? → RECHAZAR_AUTO
 
-1. ESTERILIZACIÓN OBLIGATORIA:
-   - Si el adoptante está "en contra" de esterilizar
-   - Si menciona "criar", "tener gatitos", "vender crías"
-   - Si responde "no sé", "ya veremos", "depende"
-   → Razón: "Violación de política de esterilización obligatoria"
+FLAGS: "Pro-Esterilización", "Experiencia Previa", "Primer Gato", "Casa Segura", "Motivación Genuina", "Riesgo Venta", "Riesgo Negligencia"
 
-2. INDICIOS DE MALTRATO/PELIGRO:
-   - Lenguaje violento o agresivo
-   - Menciones de "vender", "regalar", "deshacerse"
-   - Quiere el gato para "peleas", "cebo", "experimentos"
-   - Acceso libre a la calle sin supervisión en zona urbana
-   - Respuestas que sugieran negligencia
-   → Razón: "Indicios de riesgo para el bienestar animal"
-
-3. FALTA DE SEGURIDAD CRÍTICA:
-   - Vive en piso alto SIN mallas de protección en ventanas/balcones
-   - No tiene forma de asegurar espacios peligrosos
-   → Razón: "Riesgo de caída o escape - falta de protección"
-
-✅ REVISION_MANUAL (Revisión Humana):
-   - Tiene mallas de seguridad o casa segura
-   - Acepta esterilización
-   - Tiene acceso a veterinario
-   - Respuestas coherentes y responsables
-   - Cualquier caso con dudas menores
-
-FLAGS (Etiquetas) que debes asignar:
-- "Casa Segura": Si tiene mallas o vive en casa baja
-- "Pro-Esterilización": Si acepta explícitamente esterilizar
-- "Primer Gato": Si nunca ha tenido gatos
-- "Experiencia Previa": Si ya tuvo gatos
-- "Riesgo Venta": Si detectas intención comercial
-- "Riesgo Negligencia": Si las respuestas son muy vagas o preocupantes
-- "Sin Veterinario": Si no tiene acceso a atención veterinaria
-
-SCORING (0-100):
-- 0-40: Candidato inadecuado (RECHAZAR_AUTO)
-- 41-69: Candidato cuestionable (REVISION_MANUAL con flags de alerta)
-- 70-100: Candidato prometedor (REVISION_MANUAL con flags positivos)
-
-FORMATO DE RESPUESTA (JSON estricto):
+JSON:
 {
-  "accion": "RECHAZAR_AUTO" o "REVISION_MANUAL",
-  "puntaje": número 0-100,
-  "razon_corta": "string de 1-2 oraciones explicando la decisión",
-  "banderas": ["array", "de", "strings en español"]
-}
-
-Sé objetivo, protector del gato y profesional.`;
+  "accion": "RECHAZAR_AUTO" | "REVISION_MANUAL",
+  "puntaje": 0-100,
+  "razon_corta": "1 oración con razón principal y score",
+  "banderas": ["strings"]
+}`;
     }
 
     /**
      * Construye el prompt del usuario con los datos del formulario
      */
     _buildUserPrompt(formData) {
-        return `Evalúa esta solicitud de adopción:
+        // Extraer y resaltar campos clave
+        const motivation = formData.whyAdopt || formData.reason || 'No proporcionado';
+        const acceptsSterilization = formData.acceptsSterilization;
+        const hasExperience = formData.hasExperience;
+        const hasSpace = formData.hasSpace;
+        const hasTime = formData.hasTime;
+        const livingSpace = formData.livingSpace;
 
-DATOS DEL ADOPTANTE:
-${JSON.stringify(formData, null, 2)}
+        return `SOLICITUD:
 
-Analiza cuidadosamente y responde SOLO con el JSON solicitado.`;
+MOTIVACIÓN (LEE ESTO PRIMERO): "${motivation}"
+
+Acepta esterilización: ${acceptsSterilization}
+Experiencia con gatos: ${hasExperience}
+Espacio suficiente: ${hasSpace}
+Tiempo disponible: ${hasTime}
+Vivienda: ${livingSpace}
+
+Responde SOLO JSON.`;
     }
 
     /**
@@ -185,14 +170,126 @@ Analiza cuidadosamente y responde SOLO con el JSON solicitado.`;
 
     /**
      * Retorna una evaluación por defecto cuando la API falla
+     * Realiza análisis básico de los datos del formulario
      */
-    _getFallbackEvaluation() {
+    _getFallbackEvaluation(formData = null) {
+        let score = 50;
+        let reason = 'Evaluación automática no disponible. Requiere revisión manual completa.';
+        let flags = ['Sistema en Mantenimiento'];
+
+        // Si tenemos datos del formulario, hacer análisis básico
+        if (formData) {
+            const analysis = this._basicAnalysis(formData);
+            score = analysis.score;
+            reason = analysis.reason;
+            flags = analysis.flags;
+        }
+
         return {
             action: 'REVISION_MANUAL',
-            score: 50,
-            short_reason: 'Evaluación automática no disponible. Requiere revisión manual completa.',
-            flags: ['Sistema en Mantenimiento']
+            score,
+            short_reason: reason,
+            flags
         };
+    }
+
+    /**
+     * Análisis básico de solicitud sin IA (fallback inteligente)
+     */
+    _basicAnalysis(formData) {
+        let score = 50; // Base neutral
+        const flags = [];
+        const issues = [];
+        const positives = [];
+
+        // Analizar motivación escrita
+        const motivation = (formData.whyAdopt || formData.reason || '').toLowerCase();
+        if (motivation.length > 50) {
+            // Verificar palabras clave positivas
+            const positiveWords = ['amor', 'cuidar', 'familia', 'compañía', 'rescate', 'hogar', 'responsable', 'cariño', 'adoptar'];
+            const negativeWords = ['criar', 'vender', 'regalar', 'crías', 'negocio', 'dinero'];
+            
+            let motivationScore = 0;
+            positiveWords.forEach(word => {
+                if (motivation.includes(word)) motivationScore += 3;
+            });
+            
+            negativeWords.forEach(word => {
+                if (motivation.includes(word)) {
+                    score = 15;
+                    issues.push('intención comercial detectada');
+                    flags.push('Riesgo Venta');
+                }
+            });
+            
+            if (motivationScore > 6) {
+                score += 15;
+                flags.push('Motivación Genuina');
+                positives.push('motivación clara y positiva');
+            } else if (motivationScore > 0) {
+                score += 8;
+                positives.push('motivación presente');
+            }
+        }
+
+        // Verificar esterilización (crítico)
+        if (formData.acceptsSterilization === true) {
+            score += 20;
+            flags.push('Pro-Esterilización');
+            positives.push('acepta esterilización');
+        } else if (formData.acceptsSterilization === false) {
+            score = 20;
+            flags.push('Rechaza Esterilización');
+            issues.push('no acepta esterilización obligatoria');
+        }
+
+        // Verificar espacio
+        if (formData.hasSpace === true) {
+            score += 10;
+            flags.push('Espacio Adecuado');
+            positives.push('espacio suficiente');
+        }
+
+        // Verificar tiempo
+        if (formData.hasTime === true) {
+            score += 5;
+            positives.push('disponibilidad de tiempo');
+        }
+
+        // Experiencia previa
+        if (formData.hasExperience === true) {
+            score += 10;
+            flags.push('Experiencia Previa');
+            positives.push('experiencia con gatos');
+        } else {
+            flags.push('Primer Gato');
+        }
+
+        // Tipo de vivienda
+        if (formData.livingSpace) {
+            if (formData.livingSpace === 'casa') {
+                flags.push('Casa');
+                score += 5;
+            } else if (formData.livingSpace === 'apartamento') {
+                flags.push('Apartamento');
+            }
+        }
+
+        // Construir razón basada en análisis
+        let reason = '';
+        if (issues.length > 0) {
+            reason = `Alerta: ${issues.join(', ')}. Score ${score}/100.`;
+        } else if (positives.length > 0) {
+            const topPositives = positives.slice(0, 2).join(', ');
+            reason = `Candidato con ${topPositives}. Score ${score}/100. Requiere revisión.`;
+        } else {
+            reason = `Información incompleta. Score ${score}/100. Revisión necesaria.`;
+        }
+
+        // Limitar score
+        score = Math.max(0, Math.min(100, score));
+
+        return { score, reason, flags };
     }
 
     /**

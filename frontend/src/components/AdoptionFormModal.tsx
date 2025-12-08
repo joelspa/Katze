@@ -259,30 +259,6 @@ const AdoptionFormModal: React.FC<AdoptionFormModalProps> = ({ catId, catName, o
                         </div>
                     </div>
 
-                    {/* Sección 4: Motivación */}
-                    <div className="form-section">
-                        <h3 className="section-title">¿Por qué quieres adoptar?</h3>
-                        
-                        <div className="form-group">
-                            <label className="form-label">
-                                Cuéntanos sobre ti y por qué {catName} sería perfecto para tu familia 
-                                <span className="required">*</span>
-                            </label>
-                            <textarea
-                                className="form-textarea"
-                                rows={4}
-                                placeholder="Háblanos sobre tu hogar, tu estilo de vida, experiencia con gatos, y por qué quieres adoptar..."
-                                value={formData.reason}
-                                onChange={(e) => setFormData({...formData, reason: e.target.value})}
-                                required
-                                minLength={20}
-                            />
-                            <small className="form-hint">
-                                {formData.reason.length}/20 caracteres mínimo
-                            </small>
-                        </div>
-                    </div>
-
                     {/* Sección 5: Compromisos (REQUERIDO) */}
                     <div className="form-section commitments-section">
                         <h3 className="section-title">Compromisos Importantes</h3>
