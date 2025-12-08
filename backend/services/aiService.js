@@ -17,13 +17,12 @@ class AIService {
         } else {
             this.genAI = new GoogleGenerativeAI(config.GEMINI_API_KEY);
             this.model = this.genAI.getGenerativeModel({ 
-                model: 'gemini-1.5-flash-latest',
+                model: 'gemini-pro',
                 generationConfig: {
                     temperature: 0.2, // Bajo para decisiones consistentes
                     topP: 0.95,
                     topK: 40,
-                    maxOutputTokens: 512,
-                    responseMimeType: 'application/json'
+                    maxOutputTokens: 512
                 }
             });
             this.enabled = true;
@@ -51,7 +50,13 @@ class AIService {
             ]);
 
             const response = result.response;
-            const text = response.text();
+            let text = response.text();
+            
+            // Extraer JSON si está envuelto en markdown o texto adicional
+            const jsonMatch = text.match(/\{[\s\S]*\}/);
+            if (jsonMatch) {
+                text = jsonMatch[0];
+            }
             
             // Parsear respuesta JSON
             const evaluation = JSON.parse(text);

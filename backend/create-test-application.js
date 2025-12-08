@@ -3,10 +3,13 @@
  * Para probar el worker de evaluación IA
  */
 
+require('dotenv').config();
 const { Pool } = require('pg');
-const config = require('./config/config');
 
-const pool = new Pool(config.DB_CONFIG);
+const pool = new Pool({
+    connectionString: process.env.DATABASE_URL,
+    ssl: { rejectUnauthorized: false }
+});
 
 async function createTestApplication() {
     try {
@@ -23,7 +26,7 @@ async function createTestApplication() {
         const values = [
             1, // cat_id (Veterano)
             1, // applicant_id (admin como adoptante de prueba)
-            'processing',
+            'procesando',
             JSON.stringify({
                 "¿Qué tipo de vivienda tienes?": "Casa con jardín",
                 "¿Estás de acuerdo con esterilizar al gato?": "Sí, completamente de acuerdo",
