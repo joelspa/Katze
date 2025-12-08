@@ -9,6 +9,9 @@ const authMiddleware = require('../middleware/authMiddleware');
 // Obtener todas las tareas de seguimiento pendientes
 router.get('/', authMiddleware, trackingController.getPendingTasks);
 
+// Obtener TODAS las tareas de seguimiento (solo admins)
+router.get('/all', authMiddleware, trackingController.getAllTasks);
+
 // Marcar una tarea como completada (con certificado opcional desde Firebase)
 router.put('/:id/complete', authMiddleware, trackingController.completeTask);
 

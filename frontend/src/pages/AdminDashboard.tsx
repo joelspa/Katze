@@ -312,12 +312,25 @@ const AdminDashboard = () => {
 
         try {
             setLoadingTasks(true);
-            const API_URL = `${API_BASE_URL}/api/tracking`;
+            // Admins fetch ALL tasks (including completed), rescuers only get pending
+            const API_URL = `${API_BASE_URL}/api/tracking/all`;
             const response = await axios.get(API_URL, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             const tasksData = response.data.data?.tasks || response.data.tasks || response.data;
-            console.log('Tracking Tasks Data:', tasksData);
+            
+            // Log detallado para verificar los datos
+            console.log('=== TRACKING TASKS LOADED ===');
+            console.log('Total tasks:', tasksData.length);
+            console.log('Sample task (first one):', tasksData[0]);
+            console.log('Fields check:', {
+                cat_name: tasksData[0]?.cat_name,
+                applicant_name: tasksData[0]?.applicant_name,
+                owner_name: tasksData[0]?.owner_name,
+                task_type: tasksData[0]?.task_type,
+                status: tasksData[0]?.status
+            });
+            
             setTrackingTasks(tasksData);
         } catch (error) {
             console.error('Error al cargar tareas de seguimiento:', error);

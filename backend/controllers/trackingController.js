@@ -25,6 +25,23 @@ class TrackingController {
         }
     }
 
+    // Obtiene TODAS las tareas de seguimiento (solo para administradores)
+    async getAllTasks(req, res) {
+        try {
+            // Valida que el usuario sea administrador
+            if (req.user.role !== config.USER_ROLES.ADMIN) {
+                return ErrorHandler.forbidden(res);
+            }
+
+            const tasks = await trackingService.getAllTasks();
+
+            return ErrorHandler.success(res, { tasks });
+
+        } catch (error) {
+            return ErrorHandler.serverError(res, 'Error al obtener todas las tareas', error);
+        }
+    }
+
     // Marca una tarea de seguimiento como completada
     async completeTask(req, res) {
         try {

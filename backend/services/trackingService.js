@@ -40,6 +40,27 @@ class TrackingService {
         return result.rows;
     }
 
+    // Lista TODAS las tareas de seguimiento (solo para administradores)
+    async getAllTasks() {
+        // Primero, marcar tareas atrasadas
+        await db.query("SELECT mark_overdue_tasks()");
+
+        const query = `
+            SELECT *
+            FROM v_tracking_tasks_details
+            ORDER BY 
+                CASE 
+                    WHEN status = 'atrasada' THEN 1
+                    WHEN status = 'pendiente' THEN 2
+                    WHEN status = 'completada' THEN 3
+                END,
+                due_date DESC
+        `;
+
+        const result = await db.query(query);
+        return result.rows;
+    }
+
     // Completa tarea con notas y certificado opcional
     async completeTask(taskId, notes, certificateUrl) {
         const result = await db.query(
