@@ -7,8 +7,10 @@
     "start": "node index.js",
     "dev": "nodemon index.js",
     "seed": "node seed-database.js",
+    "seed:demo": "node seed-demo.js",
     "migrate": "node run-migration.js",
     "setup": "node run-migration.js && node seed-database.js",
+    "setup:demo": "node run-migration.js && node seed-demo.js",
     "init-db": "node init-db.js",
     "generate-datasets": "node generate-datasets.js",
     "build": "node run-migration.js"
