@@ -2325,30 +2325,41 @@ const AdminDashboard = () => {
 
                     <div className="datasets-grid-uniform">
                         {/* Users CSV */}
-                        <div className="dataset-card">
-                            <div className="dataset-icon" style={{background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'}}>
-                                <svg viewBox="0 0 20 20" fill="currentColor" style={{width: '32px', height: '32px'}}>
-                                    <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" />
-                                </svg>
-                            </div>
-                            <div className="dataset-info">
-                                <h3>Usuarios</h3>
-                                <p>Todos los usuarios registrados con roles y fechas de creación</p>
-                                <div className="dataset-meta">
-                                    <span>users.csv</span>
+                        <div className="dataset-card-uniform">
+                            <div className="dataset-card-header">
+                                <div className="dataset-icon-large" style={{background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'}}>
+                                    <svg viewBox="0 0 20 20" fill="currentColor">
+                                        <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" />
+                                    </svg>
                                 </div>
+                                <h3>Usuarios</h3>
+                            </div>
+                            <p className="dataset-description">Todos los usuarios registrados con roles y fechas de creación</p>
+                            <div className="dataset-metadata">
+                                <span className="dataset-file-info">
+                                    <svg viewBox="0 0 20 20" fill="currentColor">
+                                        <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clipRule="evenodd" />
+                                    </svg>
+                                    users.csv
+                                </span>
+                                <span className="dataset-update-info">
+                                    <svg viewBox="0 0 20 20" fill="currentColor">
+                                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
+                                    </svg>
+                                    Actualizado hoy
+                                </span>
                             </div>
                             <a 
                                 href="https://storage.googleapis.com/katze-app.firebasestorage.app/datasets/users.csv"
                                 download="users.csv"
-                                className="btn-download"
+                                className="btn-download-dataset"
                                 target="_blank"
                                 rel="noopener noreferrer"
                             >
-                                <svg viewBox="0 0 20 20" fill="currentColor" style={{width: '20px', height: '20px'}}>
+                                <svg viewBox="0 0 20 20" fill="currentColor">
                                     <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd" />
                                 </svg>
-                                Descargar
+                                Descargar CSV
                             </a>
                         </div>
 
