@@ -2304,14 +2304,18 @@ const AdminDashboard = () => {
                                         'https://storage.googleapis.com/katze-app.firebasestorage.app/datasets/adoption_applications.csv',
                                         'https://storage.googleapis.com/katze-app.firebasestorage.app/datasets/tracking_tasks.csv'
                                     ];
-                                    urls.forEach(url => {
-                                        const a = document.createElement('a');
-                                        a.href = url;
-                                        a.download = url.split('/').pop() || 'dataset.csv';
-                                        a.target = '_blank';
-                                        document.body.appendChild(a);
-                                        a.click();
-                                        document.body.removeChild(a);
+                                    
+                                    // Usamos un delay entre descargas para evitar que el navegador las bloquee como popups
+                                    urls.forEach((url, index) => {
+                                        setTimeout(() => {
+                                            const a = document.createElement('a');
+                                            a.href = url;
+                                            a.download = url.split('/').pop() || 'dataset.csv';
+                                            a.target = '_blank';
+                                            document.body.appendChild(a);
+                                            a.click();
+                                            document.body.removeChild(a);
+                                        }, index * 800);
                                     });
                                 }}
                             >
