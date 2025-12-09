@@ -1,24 +1,24 @@
-# KATZE - DOCUMENTACIÓN PARA PRESENTACIÓN
-## Base de Datos Poblada - Listo para Demostración
+# KATZE - GUÍA DE DEMOSTRACIÓN
+## Sistema Completo con Base de Datos Poblada
 
 ---
 
 ## CREDENCIALES DE ACCESO
 
-**Todos los usuarios tienen la misma contraseña: `123`**
-**Todos los correos terminan en: `@katze.com`**
+**Contraseña universal para todos los usuarios: `123`**
+**Dominio de correos: `@katze.com`**
 
-### 👑 Administrador
+### Administrador
 - **Email:** admin@katze.com
 - **Password:** 123
 - **Nombre:** María Rodríguez
 
-### 🏠 Rescatistas
+### Rescatistas
 1. **Email:** ana.garcia@katze.com | **Nombre:** Ana García
 2. **Email:** carlos.lopez@katze.com | **Nombre:** Carlos López  
 3. **Email:** lucia.martinez@katze.com | **Nombre:** Lucía Martínez
 
-### 🐱 Adoptantes
+### Adoptantes
 1. **Email:** juan.perez@katze.com | **Nombre:** Juan Pérez
 2. **Email:** sofia.ramirez@katze.com | **Nombre:** Sofía Ramírez
 3. **Email:** miguel.torres@katze.com | **Nombre:** Miguel Torres
@@ -178,40 +178,40 @@
 
 ## FLUJO DE DEMOSTRACIÓN SUGERIDO
 
-### Demostración de 10 minutos:
+### Secuencia Recomendada (10 minutos):
 
-1. **Login como Rescatista** (ana.garcia@katze.com / 123)
-   - Mostrar publicación de gato (formulario completo)
-   - Subida de múltiples imágenes
+1. **Rol Rescatista** (ana.garcia@katze.com / 123)
+   - Publicación de gato con formulario completo
+   - Carga de múltiples imágenes
 
-2. **Login como Admin** (admin@katze.com / 123)
-   - Aprobar el gato recién publicado
-   - Ver panel de solicitudes pendientes
-   - Descargar un CSV
+2. **Rol Administrador** (admin@katze.com / 123)
+   - Aprobación del gato publicado
+   - Revisión del panel de solicitudes pendientes
+   - Descarga de dataset CSV
 
-3. **Login como Adoptante** (juan.perez@katze.com / 123)
-   - Navegar catálogo de gatos
-   - Ver carrusel de fotos
-   - Solicitar adopción de un gato
+3. **Rol Adoptante** (juan.perez@katze.com / 123)
+   - Navegación en catálogo de gatos
+   - Visualización de carrusel de fotos
+   - Envío de solicitud de adopción
 
-4. **Volver a Admin**
-   - Mostrar solicitud procesándose
-   - Ver evaluación de IA (score + feedback)
-   - Aprobar solicitud manualmente
+4. **Regreso a Administrador**
+   - Visualización de solicitud en procesamiento
+   - Análisis de evaluación de IA (score + feedback)
+   - Aprobación manual de solicitud
 
-5. **Sistema de Tracking**
-   - Mostrar tareas generadas automáticamente
-   - Marcar tarea como completada
-   - Ver tarea atrasada
+5. **Sistema de Seguimiento**
+   - Visualización de tareas generadas automáticamente
+   - Marcado de tarea como completada
+   - Identificación de tareas atrasadas
 
 6. **Plataforma Educativa**
-   - Navegar por categorías
-   - Mostrar posts informativos
+   - Navegación por categorías de contenido
+   - Visualización de posts informativos
 
-7. **Datasets CSV**
-   - Descargar CSV desde admin panel
-   - Abrir en Excel/Google Sheets
-   - Mostrar datos estructurados
+7. **Gestión de Datasets**
+   - Descarga de CSV desde panel administrativo
+   - Apertura en Excel/Google Sheets
+   - Verificación de estructura de datos
 
 ---
 
@@ -273,17 +273,17 @@ npm run preview        # Preview del build
 
 ---
 
-## NOTAS IMPORTANTES PARA LA PRESENTACIÓN
+## CARACTERÍSTICAS DEL SISTEMA DE DEMOSTRACIÓN
 
-1. **Password universal:** `123` para TODOS los usuarios
-2. **Emails:** Todos terminan en `@katze.com`
-3. **Imágenes:** Todas las fotos son de Unsplash (alta calidad)
-4. **Datos realistas:** Nombres, teléfonos, descripciones completas
-5. **Estados variados:** Muestra todos los escenarios posibles
-6. **IA funcional:** Google Gemini evalúa solicitudes automáticamente
-7. **CSVs actualizados:** Se regeneran automáticamente
-8. **Webhook Make.com:** Se dispara en cada publicación de gato
+1. **Password universal:** `123` para todos los usuarios del sistema
+2. **Dominio de correos:** Todos los usuarios utilizan el dominio `@katze.com`
+3. **Recursos multimedia:** Imágenes de alta calidad provenientes de Unsplash
+4. **Datos de prueba:** Información completa y realista (nombres, teléfonos, descripciones)
+5. **Escenarios completos:** El sistema incluye todos los estados posibles de los flujos
+6. **Evaluación por IA:** Google Gemini analiza solicitudes de forma automática
+7. **Datasets actualizados:** Los archivos CSV se regeneran automáticamente tras cada operación
+8. **Integración Make.com:** Webhook activado en cada publicación de gato
 
 ---
 
-**¡La aplicación está 100% funcional y lista para presentación!**
+**Sistema 100% funcional para demostración**
