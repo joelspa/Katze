@@ -164,6 +164,7 @@ const AdminDashboard = () => {
     const [loadingApplications, setLoadingApplications] = useState(false);
     const [selectedApplication, setSelectedApplication] = useState<Application | null>(null);
     const [selectedCatGroup, setSelectedCatGroup] = useState<CatApplicationGroup | null>(null);
+    const [applicationStatusFilter, setApplicationStatusFilter] = useState<string | null>(null);
     
     const { token } = useAuth();
 
@@ -805,24 +806,36 @@ const AdminDashboard = () => {
                 <>
                     {/* Resumen estadístico - Solicitudes */}
                     <div className="admin-summary">
-                        <div className="summary-card">
+                        <div 
+                            className={`summary-card ${applicationStatusFilter === null ? 'active' : ''}`}
+                            onClick={() => setApplicationStatusFilter(null)}
+                            style={{cursor: 'pointer'}}
+                        >
                             <h3>{applications.length}</h3>
                             <p>Total Solicitudes</p>
                         </div>
-                        <div className="summary-card">
+                        <div 
+                            className={`summary-card ${applicationStatusFilter === 'revision_pendiente' ? 'active' : ''}`}
+                            onClick={() => setApplicationStatusFilter('revision_pendiente')}
+                            style={{cursor: 'pointer'}}
+                        >
                             <h3>{applications.filter(app => app.application_status === 'revision_pendiente').length}</h3>
                             <p>Pendientes</p>
                         </div>
-                        <div className="summary-card">
-                            <h3>{applications.filter(app => app.application_status === 'procesando').length}</h3>
-                            <p>En Proceso</p>
-                        </div>
-                        <div className="summary-card">
+                        <div 
+                            className={`summary-card ${applicationStatusFilter === 'aprobada' ? 'active' : ''}`}
+                            onClick={() => setApplicationStatusFilter('aprobada')}
+                            style={{cursor: 'pointer'}}
+                        >
                             <h3>{applications.filter(app => app.application_status === 'aprobada').length}</h3>
                             <p>Aprobadas</p>
                         </div>
-                        <div className="summary-card">
-                            <h3>{applications.filter(app => app.application_status === 'rechazada').length}</h3>
+                        <div 
+                            className={`summary-card ${applicationStatusFilter === 'rechazada' ? 'active' : ''}`}
+                            onClick={() => setApplicationStatusFilter('rechazada')}
+                            style={{cursor: 'pointer'}}
+                        >
+                            <h3>{applications.filter(app => ['rechazada', 'rechazada_automaticamente'].includes(app.application_status)).length}</h3>
                             <p>Rechazadas</p>
                         </div>
                     </div>
@@ -834,7 +847,20 @@ const AdminDashboard = () => {
                         </div>
                     ) : (
                         <div className="applications-grid">
-                            {groupedApplications.map(group => {
+                            {groupedApplications
+                                .map(group => ({
+                                    ...group,
+                                    applications: applicationStatusFilter 
+                                        ? group.applications.filter(app => {
+                                            if (applicationStatusFilter === 'rechazada') {
+                                                return ['rechazada', 'rechazada_automaticamente'].includes(app.application_status);
+                                            }
+                                            return app.application_status === applicationStatusFilter;
+                                        })
+                                        : group.applications
+                                }))
+                                .filter(group => group.applications.length > 0)
+                                .map(group => {
                                     // Check if there's a top candidate (Score >= 80)
                                     const hasTopCandidate = group.applications.some(app => (app.ai_suitability_score || 0) >= 80);
                                     
@@ -938,6 +964,7 @@ const AdminDashboard = () => {
                                                                     {application.application_status === 'procesando' && 'Procesando'}
                                                                     {application.application_status === 'aprobada' && 'Aprobada'}
                                                                     {application.application_status === 'rechazada' && 'Rechazada'}
+                                                                    {application.application_status === 'rechazada_automaticamente' && 'Rechazada (Auto)'}
                                                                 </span>
                                                             </div>
                                                         </div>
