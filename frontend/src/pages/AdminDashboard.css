@@ -4794,153 +4794,271 @@
 }
 
 /* ===========================
-   DATASETS DOWNLOAD SECTION
+   DATASETS DOWNLOAD SECTION - REDISEÑO UX/UI
    =========================== */
 
 .datasets-section {
     padding: 32px;
-    max-width: 1200px;
+    max-width: 1400px;
     margin: 0 auto;
 }
 
+/* Header con botón de descarga total */
 .datasets-header {
-    text-align: center;
-    margin-bottom: 48px;
+    margin-bottom: 40px;
 }
 
-.datasets-header h2 {
+.datasets-title-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 24px;
+}
+
+.datasets-title-row h2 {
     font-size: 2rem;
     color: var(--color-gray-900);
-    margin-bottom: 12px;
+    margin: 0 0 8px 0;
     font-weight: 700;
 }
 
 .datasets-subtitle {
-    font-size: 1.1rem;
+    font-size: 1rem;
     color: var(--color-gray-600);
     margin: 0;
+    line-height: 1.5;
 }
 
-.datasets-download-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 24px;
-    margin-bottom: 40px;
-}
-
-.dataset-download-btn {
+/* Botón Descargar Todo */
+.btn-download-all {
     display: flex;
     align-items: center;
-    gap: 20px;
-    padding: 24px;
-    background: var(--surface-panel);
-    border: 2px solid var(--border-default);
-    border-radius: 16px;
-    text-decoration: none;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    cursor: pointer;
-}
-
-.dataset-download-btn:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
-    border-color: var(--color-primary);
-}
-
-.dataset-download-btn:active {
-    transform: translateY(-2px);
-}
-
-.dataset-btn-icon {
-    width: 56px;
-    height: 56px;
-    min-width: 56px;
+    gap: 10px;
+    padding: 14px 28px;
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    color: white;
+    border: none;
     border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-}
-
-.dataset-btn-icon svg {
-    width: 28px;
-    height: 28px;
-}
-
-.dataset-btn-content {
-    flex: 1;
-}
-
-.dataset-btn-content h3 {
-    font-size: 1.15rem;
-    color: var(--color-gray-900);
-    margin: 0 0 6px 0;
     font-weight: 600;
-}
-
-.dataset-btn-content p {
-    font-size: 0.875rem;
-    color: var(--color-gray-500);
-    margin: 0;
-    font-family: 'Courier New', monospace;
-}
-
-.dataset-btn-arrow {
-    width: 32px;
-    height: 32px;
-    min-width: 32px;
-    background: var(--color-primary);
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
+    font-size: 0.95rem;
+    cursor: pointer;
     transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    white-space: nowrap;
 }
 
-.dataset-download-btn:hover .dataset-btn-arrow {
-    background: var(--color-primary-dark);
-    transform: scale(1.1);
+.btn-download-all:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
 }
 
-.dataset-btn-arrow svg {
+.btn-download-all:active {
+    transform: translateY(0);
+}
+
+.btn-download-all svg {
     width: 20px;
     height: 20px;
 }
 
-.datasets-note {
+/* Grid 2x2 Uniforme */
+.datasets-grid-uniform {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+    margin-bottom: 32px;
+}
+
+/* Tarjeta Uniforme */
+.dataset-card-uniform {
+    background: var(--surface-panel);
+    border: 2px solid var(--border-default);
+    border-radius: 16px;
+    padding: 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.dataset-card-uniform::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, transparent, transparent);
+    transition: all 0.3s ease;
+}
+
+.dataset-card-uniform:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 16px 32px rgba(0, 0, 0, 0.12);
+}
+
+.dataset-card-uniform:nth-child(1):hover::before {
+    background: linear-gradient(90deg, #667eea, #764ba2);
+}
+
+.dataset-card-uniform:nth-child(2):hover::before {
+    background: linear-gradient(90deg, #f093fb, #f5576c);
+}
+
+.dataset-card-uniform:nth-child(3):hover::before {
+    background: linear-gradient(90deg, #4facfe, #00f2fe);
+}
+
+.dataset-card-uniform:nth-child(4):hover::before {
+    background: linear-gradient(90deg, #43e97b, #38f9d7);
+}
+
+/* Header de la Tarjeta */
+.dataset-card-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 4px;
+}
+
+.dataset-icon-large {
+    width: 56px;
+    height: 56px;
+    min-width: 56px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.dataset-icon-large svg {
+    width: 28px;
+    height: 28px;
+}
+
+.dataset-card-header h3 {
+    font-size: 1.25rem;
+    color: var(--color-gray-900);
+    margin: 0;
+    font-weight: 600;
+}
+
+/* Descripción */
+.dataset-description {
+    font-size: 0.925rem;
+    color: var(--color-gray-600);
+    line-height: 1.5;
+    margin: 0;
+}
+
+/* Metadata (Archivo + Actualización) */
+.dataset-metadata {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 12px 0;
+    border-top: 1px solid var(--border-default);
+    border-bottom: 1px solid var(--border-default);
+}
+
+.dataset-file-info,
+.dataset-update-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.85rem;
+    color: var(--color-gray-500);
+}
+
+.dataset-file-info svg,
+.dataset-update-info svg {
+    width: 16px;
+    height: 16px;
+    opacity: 0.7;
+}
+
+.dataset-file-info {
+    font-family: 'Courier New', monospace;
+    font-weight: 500;
+    color: var(--color-gray-600);
+}
+
+/* Botón de Descarga */
+.btn-download-dataset {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 14px 24px;
+    background: transparent;
+    color: var(--color-primary);
+    border: 2px solid var(--color-primary);
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    margin-top: auto;
+}
+
+.btn-download-dataset:hover {
+    background: var(--color-primary);
+    color: white;
+    transform: scale(1.02);
+    box-shadow: 0 6px 16px rgba(59, 130, 246, 0.3);
+}
+
+.btn-download-dataset:active {
+    transform: scale(0.98);
+}
+
+.btn-download-dataset svg {
+    width: 18px;
+    height: 18px;
+}
+
+/* Alert de Privacidad con Candado */
+.datasets-privacy-alert {
     display: flex;
     align-items: flex-start;
     gap: 16px;
     padding: 20px 24px;
-    background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
-    border: 2px solid #93c5fd;
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(220, 38, 38, 0.1) 100%);
+    border: 2px solid rgba(239, 68, 68, 0.3);
     border-radius: 12px;
-    margin-top: 32px;
+    backdrop-filter: blur(10px);
 }
 
-.datasets-note svg {
+.datasets-privacy-alert svg {
     width: 24px;
     height: 24px;
     min-width: 24px;
-    color: #2563eb;
+    color: #dc2626;
     margin-top: 2px;
 }
 
-.datasets-note p {
-    margin: 0;
-    font-size: 0.95rem;
-    color: #1e3a8a;
-    line-height: 1.6;
-}
-
-.datasets-note strong {
+.privacy-alert-content strong {
+    display: block;
+    font-size: 1rem;
     font-weight: 600;
-    color: #1e40af;
+    color: #991b1b;
+    margin-bottom: 6px;
 }
 
-/* Dark Mode para Datasets */
-[data-theme="dark"] .datasets-header h2 {
+.privacy-alert-content p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #7f1d1d;
+    line-height: 1.5;
+}
+
+/* Dark Mode */
+[data-theme="dark"] .datasets-title-row h2 {
     color: #e2e8f0;
 }
 
@@ -4948,72 +5066,102 @@
     color: #94a3b8;
 }
 
-[data-theme="dark"] .dataset-download-btn {
-    background: #1e293b;
+[data-theme="dark"] .dataset-card-uniform {
+    background: rgba(30, 41, 59, 0.6);
     border-color: #334155;
+    backdrop-filter: blur(10px);
 }
 
-[data-theme="dark"] .dataset-download-btn:hover {
-    border-color: #3b82f6;
-    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.4);
+[data-theme="dark"] .dataset-card-uniform:hover {
+    box-shadow: 0 16px 32px rgba(0, 0, 0, 0.4);
+    border-color: #475569;
 }
 
-[data-theme="dark"] .dataset-btn-content h3 {
+[data-theme="dark"] .dataset-card-header h3 {
     color: #e2e8f0;
 }
 
-[data-theme="dark"] .dataset-btn-content p {
+[data-theme="dark"] .dataset-description {
     color: #94a3b8;
 }
 
-[data-theme="dark"] .datasets-note {
-    background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
-    border-color: #3b82f6;
+[data-theme="dark"] .dataset-metadata {
+    border-color: #334155;
 }
 
-[data-theme="dark"] .datasets-note p {
-    color: #dbeafe;
+[data-theme="dark"] .dataset-file-info,
+[data-theme="dark"] .dataset-update-info {
+    color: #94a3b8;
 }
 
-[data-theme="dark"] .datasets-note strong {
-    color: #bfdbfe;
+[data-theme="dark"] .dataset-file-info {
+    color: #cbd5e1;
 }
 
-[data-theme="dark"] .datasets-note svg {
-    color: #60a5fa;
+[data-theme="dark"] .datasets-privacy-alert {
+    background: linear-gradient(135deg, rgba(185, 28, 28, 0.15) 0%, rgba(153, 27, 27, 0.15) 100%);
+    border-color: rgba(185, 28, 28, 0.4);
 }
 
-/* Responsive para Datasets */
+[data-theme="dark"] .privacy-alert-content strong {
+    color: #fca5a5;
+}
+
+[data-theme="dark"] .privacy-alert-content p {
+    color: #fecaca;
+}
+
+[data-theme="dark"] .datasets-privacy-alert svg {
+    color: #f87171;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+    .datasets-grid-uniform {
+        grid-template-columns: 1fr;
+    }
+
+    .datasets-title-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .btn-download-all {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
 @media (max-width: 768px) {
     .datasets-section {
         padding: 20px;
     }
 
-    .datasets-download-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .datasets-header h2 {
+    .datasets-title-row h2 {
         font-size: 1.5rem;
     }
 
     .datasets-subtitle {
-        font-size: 1rem;
+        font-size: 0.9rem;
     }
 
-    .dataset-download-btn {
+    .dataset-card-uniform {
         padding: 20px;
     }
 
-    .dataset-btn-icon {
+    .dataset-icon-large {
         width: 48px;
         height: 48px;
         min-width: 48px;
     }
 
-    .dataset-btn-icon svg {
+    .dataset-icon-large svg {
         width: 24px;
         height: 24px;
+    }
+
+    .dataset-card-header h3 {
+        font-size: 1.1rem;
     }
 }
 
