@@ -21,27 +21,27 @@ ALTER SEQUENCE educational_posts_id_seq RESTART WITH 1;
 
 -- 2. INSERTAR USUARIOS
 -- Nota: Password '123' hasheado con bcrypt (rounds=10)
--- Hash: $2b$10$rBV2kM5zIJVT7hFqG.5fKO9L8zXJZ.8sQJ0QqxN8YQ2X5nJ6ZYvQm
+-- Hash: $2b$10$JIXTltHsg5hsHKRVT.SdiupVTh.v1tWVQgg96uSh3J/R58DfjshbC
 
 -- Admin (ID: 1)
 INSERT INTO users (email, password_hash, full_name, phone, role) VALUES
-('admin@katze.com', '$2b$10$rBV2kM5zIJVT7hFqG.5fKO9L8zXJZ.8sQJ0QqxN8YQ2X5nJ6ZYvQm', 'María Rodríguez', '0999123456', 'admin');
+('admin@katze.com', '$2b$10$JIXTltHsg5hsHKRVT.SdiupVTh.v1tWVQgg96uSh3J/R58DfjshbC', 'María Rodríguez', '0999123456', 'admin');
 
 -- Rescatistas (IDs: 2, 3, 4)
 INSERT INTO users (email, password_hash, full_name, phone, role) VALUES
-('ana.garcia@katze.com', '$2b$10$rBV2kM5zIJVT7hFqG.5fKO9L8zXJZ.8sQJ0QqxN8YQ2X5nJ6ZYvQm', 'Ana García', '0998765432', 'rescatista'),
-('carlos.lopez@katze.com', '$2b$10$rBV2kM5zIJVT7hFqG.5fKO9L8zXJZ.8sQJ0QqxN8YQ2X5nJ6ZYvQm', 'Carlos López', '0987654321', 'rescatista'),
-('lucia.martinez@katze.com', '$2b$10$rBV2kM5zIJVT7hFqG.5fKO9L8zXJZ.8sQJ0QqxN8YQ2X5nJ6ZYvQm', 'Lucía Martínez', '0976543210', 'rescatista');
+('ana.garcia@katze.com', '$2b$10$JIXTltHsg5hsHKRVT.SdiupVTh.v1tWVQgg96uSh3J/R58DfjshbC', 'Ana García', '0998765432', 'rescatista'),
+('carlos.lopez@katze.com', '$2b$10$JIXTltHsg5hsHKRVT.SdiupVTh.v1tWVQgg96uSh3J/R58DfjshbC', 'Carlos López', '0987654321', 'rescatista'),
+('lucia.martinez@katze.com', '$2b$10$JIXTltHsg5hsHKRVT.SdiupVTh.v1tWVQgg96uSh3J/R58DfjshbC', 'Lucía Martínez', '0976543210', 'rescatista');
 
 -- Adoptantes (IDs: 5-11)
 INSERT INTO users (email, password_hash, full_name, phone, role) VALUES
-('juan.perez@katze.com', '$2b$10$rBV2kM5zIJVT7hFqG.5fKO9L8zXJZ.8sQJ0QqxN8YQ2X5nJ6ZYvQm', 'Juan Pérez', '0965432109', 'adoptante'),
-('sofia.ramirez@katze.com', '$2b$10$rBV2kM5zIJVT7hFqG.5fKO9L8zXJZ.8sQJ0QqxN8YQ2X5nJ6ZYvQm', 'Sofía Ramírez', '0954321098', 'adoptante'),
-('miguel.torres@katze.com', '$2b$10$rBV2kM5zIJVT7hFqG.5fKO9L8zXJZ.8sQJ0QqxN8YQ2X5nJ6ZYvQm', 'Miguel Torres', '0943210987', 'adoptante'),
-('valentina.castro@katze.com', '$2b$10$rBV2kM5zIJVT7hFqG.5fKO9L8zXJZ.8sQJ0QqxN8YQ2X5nJ6ZYvQm', 'Valentina Castro', '0932109876', 'adoptante'),
-('diego.morales@katze.com', '$2b$10$rBV2kM5zIJVT7hFqG.5fKO9L8zXJZ.8sQJ0QqxN8YQ2X5nJ6ZYvQm', 'Diego Morales', '0921098765', 'adoptante'),
-('daniela.vega@katze.com', '$2b$10$rBV2kM5zIJVT7hFqG.5fKO9L8zXJZ.8sQJ0QqxN8YQ2X5nJ6ZYvQm', 'Daniela Vega', '0910987654', 'adoptante'),
-('andres.silva@katze.com', '$2b$10$rBV2kM5zIJVT7hFqG.5fKO9L8zXJZ.8sQJ0QqxN8YQ2X5nJ6ZYvQm', 'Andrés Silva', '0909876543', 'adoptante');
+('juan.perez@katze.com', '$2b$10$JIXTltHsg5hsHKRVT.SdiupVTh.v1tWVQgg96uSh3J/R58DfjshbC', 'Juan Pérez', '0965432109', 'adoptante'),
+('sofia.ramirez@katze.com', '$2b$10$JIXTltHsg5hsHKRVT.SdiupVTh.v1tWVQgg96uSh3J/R58DfjshbC', 'Sofía Ramírez', '0954321098', 'adoptante'),
+('miguel.torres@katze.com', '$2b$10$JIXTltHsg5hsHKRVT.SdiupVTh.v1tWVQgg96uSh3J/R58DfjshbC', 'Miguel Torres', '0943210987', 'adoptante'),
+('valentina.castro@katze.com', '$2b$10$JIXTltHsg5hsHKRVT.SdiupVTh.v1tWVQgg96uSh3J/R58DfjshbC', 'Valentina Castro', '0932109876', 'adoptante'),
+('diego.morales@katze.com', '$2b$10$JIXTltHsg5hsHKRVT.SdiupVTh.v1tWVQgg96uSh3J/R58DfjshbC', 'Diego Morales', '0921098765', 'adoptante'),
+('daniela.vega@katze.com', '$2b$10$JIXTltHsg5hsHKRVT.SdiupVTh.v1tWVQgg96uSh3J/R58DfjshbC', 'Daniela Vega', '0910987654', 'adoptante'),
+('andres.silva@katze.com', '$2b$10$JIXTltHsg5hsHKRVT.SdiupVTh.v1tWVQgg96uSh3J/R58DfjshbC', 'Andrés Silva', '0909876543', 'adoptante');
 
 -- 3. INSERTAR GATOS CON MÚLTIPLES IMÁGENES
 INSERT INTO cats (name, description, age, breed, health_status, sterilization_status, photos_url, approval_status, owner_id, story, living_space_requirement) VALUES
