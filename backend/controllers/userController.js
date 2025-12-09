@@ -3,6 +3,7 @@
 
 const userService = require('../services/userService');
 const datasetService = require('../services/datasetService');
+const csvDatasetService = require('../services/csvDatasetService');
 const ErrorHandler = require('../utils/errorHandler');
 const config = require('../config/config');
 const Validator = require('../utils/validator');
@@ -62,6 +63,7 @@ class UserController {
             datasetService.updateUsersDataset().catch(err => 
                 console.error('Error updating dataset:', err.message)
             );
+            csvDatasetService.updateUsersDataset().catch(() => {});
             
             return ErrorHandler.success(res, { user: updatedUser }, 'Perfil actualizado exitosamente');
 
@@ -134,6 +136,7 @@ class UserController {
             datasetService.updateUsersDataset().catch(err => 
                 console.error('Error updating dataset:', err.message)
             );
+            csvDatasetService.updateUsersDataset().catch(() => {});
             
             return ErrorHandler.success(res, updatedUser, 'Rol actualizado correctamente');
 
@@ -206,6 +209,7 @@ class UserController {
             datasetService.updateUsersDataset().catch(err => 
                 console.error('Error updating dataset:', err.message)
             );
+            csvDatasetService.updateUsersDataset().catch(() => {});
             
             return ErrorHandler.created(res, newUser, 'Usuario creado exitosamente');
 

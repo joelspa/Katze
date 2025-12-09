@@ -75,6 +75,29 @@ El sistema utiliza **Google Gemini 1.5 Flash** para analizar las solicitudes de 
 
 ---
 
+## 📊 Datasets CSV (Firebase Storage)
+
+El sistema guarda automáticamente 4 archivos CSV en Firebase Storage cada vez que hay cambios:
+
+- **users.csv**: Todos los usuarios registrados (actualizados al registrar/editar/cambiar rol)
+- **cats.csv**: Todos los gatos publicados (actualizados al crear/editar/aprobar gatos)
+- **adoption_applications.csv**: Todas las solicitudes de adopción (actualizadas al crear/evaluar/aprobar solicitudes)
+- **tracking_tasks.csv**: Todas las tareas de seguimiento (actualizadas al crear/completar tareas)
+
+**Ubicación**: Firebase Storage > `datasets/`
+
+**Generar manualmente**:
+```bash
+# Backend
+cd backend
+npm run generate-csv
+
+# O vía API (solo admins)
+POST /api/admin/datasets/regenerate
+```
+
+---
+
 ## 📊 Panel de Administración
 
 El panel administrativo permite:

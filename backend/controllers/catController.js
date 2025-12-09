@@ -3,6 +3,7 @@
 
 const catService = require('../services/catService');
 const datasetService = require('../services/datasetService');
+const csvDatasetService = require('../services/csvDatasetService');
 const Validator = require('../utils/validator');
 const ErrorHandler = require('../utils/errorHandler');
 const config = require('../config/config');
@@ -36,7 +37,9 @@ class CatController {
             // Crea el gato en la DB
             const newCat = await catService.createCat(catData);
 
+            // Actualizar datasets (JSON y CSV) en background
             datasetService.updateCatsDataset().catch(() => {});
+            csvDatasetService.updateCatsDataset().catch(() => {});
 
             return ErrorHandler.created(res, { cat: newCat }, 'Gato enviado para revisión. Un administrador lo aprobará pronto.');
 

@@ -3,6 +3,7 @@
 
 const trackingService = require('../services/trackingService');
 const catService = require('../services/catService');
+const csvDatasetService = require('../services/csvDatasetService');
 const ErrorHandler = require('../utils/errorHandler');
 const config = require('../config/config');
 
@@ -77,6 +78,13 @@ class TrackingController {
                         dueDateBienestar,
                         'Verificar que el gato se haya adaptado bien después de la esterilización y esté recibiendo los cuidados necesarios.'
                     );
+                    
+                    // Actualizar datasets CSV (gatos y tracking)
+                    csvDatasetService.updateCatsDataset().catch(() => {});
+                    csvDatasetService.updateTrackingDataset().catch(() => {});
+                } else {
+                    // Solo actualizar tracking si no se pudo obtener el gato
+                    csvDatasetService.updateTrackingDataset().catch(() => {});
                 }
 
                 return ErrorHandler.success(
@@ -85,6 +93,9 @@ class TrackingController {
                     'Tarea de esterilización completada. Se creó automáticamente la tarea de seguimiento de bienestar.'
                 );
             }
+
+            // Actualizar tracking CSV
+            csvDatasetService.updateTrackingDataset().catch(() => {});
 
             return ErrorHandler.success(
                 res,

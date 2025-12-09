@@ -13,6 +13,7 @@
     "setup:demo": "node run-migration.js && node seed-demo.js",
     "init-db": "node init-db.js",
     "generate-datasets": "node generate-datasets.js",
+    "generate-csv": "node generate-csv-datasets.js",
     "build": "node run-migration.js"
   },
   "keywords": [

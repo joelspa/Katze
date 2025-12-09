@@ -14,6 +14,7 @@ const catService = require('../services/catService');
 const trackingService = require('../services/trackingService');
 const firebaseService = require('../services/firebaseService');
 const datasetService = require('../services/datasetService');
+const csvDatasetService = require('../services/csvDatasetService');
 const Validator = require('../utils/validator');
 const ErrorHandler = require('../utils/errorHandler');
 const config = require('../config/config');
@@ -63,6 +64,9 @@ async function processApprovedApplication(applicationId, catId) {
         }
 
         await applicationService.rejectOtherApplications(catId);
+
+        // Actualizar CSV de tareas de seguimiento
+        csvDatasetService.updateTrackingDataset().catch(() => {});
 
     } catch (error) {
         throw error;
@@ -135,6 +139,7 @@ class ApplicationController {
                 
                 await firebaseService.saveApplicationRecord(firestoreData);
                 datasetService.updateApplicationsDataset().catch(() => {});
+                csvDatasetService.updateApplicationsDataset().catch(() => {});
             } catch (firestoreError) {
                 console.error('Error guardando en Firestore:', firestoreError);
             }
@@ -222,9 +227,11 @@ class ApplicationController {
             }
 
             datasetService.updateApplicationsDataset().catch(() => {});
+            csvDatasetService.updateApplicationsDataset().catch(() => {});
             
             if (status === config.APPLICATION_STATUS.APROBADA) {
                 datasetService.updateCatsDataset().catch(() => {});
+                csvDatasetService.updateCatsDataset().catch(() => {});
             }
 
             return ErrorHandler.success(

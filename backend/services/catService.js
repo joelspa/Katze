@@ -4,6 +4,24 @@
 const db = require('../db');
 
 class CatService {
+    // Helper: Parsear photos_url de PostgreSQL array a JavaScript array
+    _parsePhotosUrl(cat) {
+        if (!cat) return cat;
+        
+        // Si photos_url es un string (formato PostgreSQL {url1,url2})
+        if (typeof cat.photos_url === 'string') {
+            // Remover llaves y dividir por comas
+            const cleaned = cat.photos_url.replace(/^\{|\}$/g, '');
+            cat.photos_url = cleaned ? cleaned.split(',') : [];
+        }
+        
+        // Asegurar que sea un array
+        if (!Array.isArray(cat.photos_url)) {
+            cat.photos_url = [];
+        }
+        
+        return cat;
+    }
     // Crea una nueva publicación de gato
     async createCat(catData) {
         const { name, description, age, health_status, sterilization_status, photos_url, owner_id, approval_status, story, breed, living_space_requirement } = catData;
@@ -18,7 +36,7 @@ class CatService {
             [name, description, age, health_status, sterilization_status, photosArray, owner_id, approval_status, story, breed || 'Mestizo', living_space_requirement || 'cualquiera']
         );
         
-        return result.rows[0];
+        return this._parsePhotosUrl(result.rows[0]);
     }
 
     // Obtiene gatos aprobados y disponibles con filtros opcionales (esterilización, edad, tipo de vivienda)
@@ -71,7 +89,7 @@ class CatService {
         query += ` ORDER BY created_at ASC`;
         
         const result = await db.query(query, params);
-        return result.rows;
+        return result.rows.map(cat => this._parsePhotosUrl(cat));
     }
 
     // Obtiene un gato por ID si está aprobado
@@ -80,7 +98,7 @@ class CatService {
             "SELECT * FROM cats WHERE id = $1 AND approval_status = 'aprobado'",
             [catId]
         );
-        return result.rows.length > 0 ? result.rows[0] : null;
+        return result.rows.length > 0 ? this._parsePhotosUrl(result.rows[0]) : null;
     }
 
     // Cambia el estado de adopción (en_adopcion, adoptado, etc)
@@ -89,7 +107,7 @@ class CatService {
             "UPDATE cats SET adoption_status = $1 WHERE id = $2 RETURNING *",
             [status, catId]
         );
-        return result.rows[0];
+        return this._parsePhotosUrl(result.rows[0]);
     }
 
     // Obtiene el estado de esterilización de un gato
@@ -126,7 +144,7 @@ class CatService {
                 c.created_at ASC
         `;
         const result = await db.query(query);
-        return result.rows;
+        return result.rows.map(cat => this._parsePhotosUrl(cat));
     }
 
     // Actualiza el estado de aprobación de un gato
@@ -135,7 +153,7 @@ class CatService {
             "UPDATE cats SET approval_status = $1 WHERE id = $2 RETURNING *",
             [status, catId]
         );
-        return result.rows.length > 0 ? result.rows[0] : null;
+        return result.rows.length > 0 ? this._parsePhotosUrl(result.rows[0]) : null;
     }
 
     // Obtiene un gato por ID sin restricción de aprobación (para admin)
@@ -144,7 +162,7 @@ class CatService {
             "SELECT * FROM cats WHERE id = $1",
             [catId]
         );
-        return result.rows.length > 0 ? result.rows[0] : null;
+        return result.rows.length > 0 ? this._parsePhotosUrl(result.rows[0]) : null;
     }
 
     // Actualiza los detalles de un gato (para admin)
@@ -164,7 +182,7 @@ class CatService {
             [name, description, age, health_status, sterilization_status, story, catId]
         );
         
-        return result.rows.length > 0 ? result.rows[0] : null;
+        return result.rows.length > 0 ? this._parsePhotosUrl(result.rows[0]) : null;
     }
 
     // Elimina un gato (para admin)
@@ -173,7 +191,7 @@ class CatService {
             "DELETE FROM cats WHERE id = $1 RETURNING *",
             [catId]
         );
-        return result.rows.length > 0 ? result.rows[0] : null;
+        return result.rows.length > 0 ? this._parsePhotosUrl(result.rows[0]) : null;
     }
 
     // Obtiene información de contacto del rescatista si el usuario tiene solicitud

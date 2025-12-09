@@ -3,6 +3,7 @@
 
 const authService = require('../services/authService');
 const datasetService = require('../services/datasetService');
+const csvDatasetService = require('../services/csvDatasetService');
 const Validator = require('../utils/validator');
 const ErrorHandler = require('../utils/errorHandler');
 
@@ -48,6 +49,7 @@ class AuthController {
             const newUser = await authService.createUser(email, passwordHash, fullName, role, phone);
 
             datasetService.updateUsersDataset().catch(() => {});
+            csvDatasetService.updateUsersDataset().catch(() => {});
 
             return ErrorHandler.created(res, { user: newUser }, 'Usuario registrado con éxito');
 

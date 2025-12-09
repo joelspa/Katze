@@ -9,6 +9,7 @@
 require('dotenv').config();
 const db = require('../db');
 const aiService = require('../services/aiService');
+const csvDatasetService = require('../services/csvDatasetService');
 
 // Configuración del worker
 const CONFIG = {
@@ -121,6 +122,9 @@ class ApplicationQueueWorker {
             const emoji = newStatus === 'rechazada_automaticamente' ? '❌' : '✅';
             console.log(`${emoji} Solicitud #${app.id} -> ${newStatus} (Score: ${evaluation.score})`);
 
+            // Actualizar CSV de aplicaciones en background
+            csvDatasetService.updateApplicationsDataset().catch(() => {});
+
             this.processedCount++;
 
         } catch (error) {
@@ -135,6 +139,9 @@ class ApplicationQueueWorker {
                 ai_evaluated_at: new Date(),
                 ai_error: error.message
             });
+
+            // Actualizar CSV incluso en caso de error
+            csvDatasetService.updateApplicationsDataset().catch(() => {});
 
             this.errorCount++;
         }
