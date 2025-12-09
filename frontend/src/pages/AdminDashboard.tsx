@@ -164,7 +164,6 @@ const AdminDashboard = () => {
     const [loadingApplications, setLoadingApplications] = useState(false);
     const [selectedApplication, setSelectedApplication] = useState<Application | null>(null);
     const [selectedCatGroup, setSelectedCatGroup] = useState<CatApplicationGroup | null>(null);
-    const [applicationFilter, setApplicationFilter] = useState<string>('all');
     
     const { token } = useAuth();
 
@@ -916,7 +915,6 @@ const AdminDashboard = () => {
                                 
                                 <div className="modal-scroll-body">
                                     {selectedCatGroup.applications
-                                        .filter(app => applicationFilter === 'all' || app.application_status === applicationFilter)
                                         .sort((a, b) => (b.ai_suitability_score || 0) - (a.ai_suitability_score || 0))
                                         .map(application => {
                                             // Determine border color based on score
