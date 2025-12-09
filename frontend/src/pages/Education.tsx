@@ -306,7 +306,7 @@ const Education = () => {
                                         <article key={post.id} className="news-card secondary" onClick={handleCardClick}>
                                             <div className="card-image-container">
                                                 <img 
-                                                    src={post.image_url || 'https://via.placeholder.com/160x160/1e293b/2dd4bf?text=📝'} 
+                                                    src={post.image_url || 'https://via.placeholder.com/160x160/1e293b/2dd4bf?text=Post'} 
                                                     alt={post.title}
                                                     className="secondary-image"
                                                 />

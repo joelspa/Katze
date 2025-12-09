@@ -114,5 +114,5 @@
 }
 
 .status-processing::before {
-    content: "⏳";
+    content: "...";
 }

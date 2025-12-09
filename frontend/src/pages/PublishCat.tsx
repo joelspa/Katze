@@ -241,9 +241,9 @@ const PublishCat = () => {
                                 onChange={handleChange} 
                                 value={formData.sterilization_status}
                             >
-                                <option value="pendiente">⏳ Pendiente</option>
-                                <option value="esterilizado">✅ Esterilizado</option>
-                                <option value="no_aplica">➖ No aplica</option>
+                                <option value="pendiente">Pendiente</option>
+                                <option value="esterilizado">Esterilizado</option>
+                                <option value="no_aplica">No aplica</option>
                             </select>
                             <small className="field-help">
                                 Indica si el gato está esterilizado o está programado para hacerlo

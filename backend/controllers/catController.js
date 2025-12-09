@@ -19,23 +19,56 @@ class CatController {
 
             const { name, description, age, health_status, sterilization_status, photos_url, story, breed, living_space_requirement } = req.body;
 
+            // Validaciones de campos requeridos
+            if (!name || name.trim() === '') {
+                return ErrorHandler.badRequest(res, 'El nombre del gato es requerido');
+            }
+
+            if (!description || description.trim() === '') {
+                return ErrorHandler.badRequest(res, 'La descripción es requerida');
+            }
+
+            if (!health_status || health_status.trim() === '') {
+                return ErrorHandler.badRequest(res, 'El estado de salud es requerido');
+            }
+
+            if (!photos_url || (Array.isArray(photos_url) && photos_url.length === 0)) {
+                return ErrorHandler.badRequest(res, 'Se requiere al menos una foto');
+            }
+
+            // Validar que age sea un número
+            if (age === undefined || age === null || isNaN(Number(age))) {
+                return ErrorHandler.badRequest(res, 'La edad debe ser un número válido');
+            }
+
+            // Validar sterilization_status (permitir también valores que el frontend convierte)
+            const validSterilizationStatuses = ['esterilizado', 'no_esterilizado', 'pendiente'];
+            if (!sterilization_status || !validSterilizationStatuses.includes(sterilization_status)) {
+                console.log(`[WARNING] Estado de esterilización inválido recibido: ${sterilization_status}`);
+                return ErrorHandler.badRequest(res, `Estado de esterilización inválido: debe ser uno de ${validSterilizationStatuses.join(', ')}`);
+            }
+
+            console.log(`[CREATE CAT] Creando gato: ${name}, Edad: ${age}, Fotos: ${Array.isArray(photos_url) ? photos_url.length : 1}`);
+
             // Prepara datos del gato (por defecto pendiente de aprobación)
             const catData = {
-                name,
-                description,
-                age,
-                health_status,
+                name: name.trim(),
+                description: description.trim(),
+                age: Number(age),
+                health_status: health_status.trim(),
                 sterilization_status,
-                photos_url,
-                story,
-                breed,
-                living_space_requirement,
+                photos_url: Array.isArray(photos_url) ? photos_url : [photos_url],
+                story: story || description,
+                breed: breed || 'Mestizo',
+                living_space_requirement: living_space_requirement || 'cualquiera',
                 owner_id: req.user.id,
                 approval_status: config.APPROVAL_STATUS.PENDIENTE
             };
 
             // Crea el gato en la DB
             const newCat = await catService.createCat(catData);
+
+            console.log(`[SUCCESS] Gato #${newCat.id} creado exitosamente por usuario #${req.user.id}`);
 
             // Actualizar datasets (JSON y CSV) en background
             datasetService.updateCatsDataset().catch(() => {});
@@ -44,6 +77,7 @@ class CatController {
             return ErrorHandler.created(res, { cat: newCat }, 'Gato enviado para revisión. Un administrador lo aprobará pronto.');
 
         } catch (error) {
+            console.error('[ERROR] Error al crear publicación:', error);
             return ErrorHandler.serverError(res, 'Error al crear publicación', error);
         }
     }
@@ -139,26 +173,50 @@ class CatController {
                 return ErrorHandler.notFound(res, 'Gato no encontrado');
             }
 
+            // Actualizar datasets en background
             datasetService.updateCatsDataset().catch(() => {});
+            csvDatasetService.updateCatsDataset().catch(() => {});
 
             // DISPARAR WEBHOOK A MAKE.COM solo cuando se APRUEBA el gato
             if (status === config.APPROVAL_STATUS.APROBADO) {
+                console.log(`[WEBHOOK] Disparando webhook a Make.com para gato #${updatedCat.id}`);
+                
+                const webhookPayload = {
+                    nombre: updatedCat.name,
+                    descripcion: updatedCat.description,
+                    foto_url: Array.isArray(updatedCat.photos_url) && updatedCat.photos_url.length > 0 
+                        ? updatedCat.photos_url[0] 
+                        : (typeof updatedCat.photos_url === 'string' ? updatedCat.photos_url : ''),
+                    edad: updatedCat.age,
+                    raza: updatedCat.breed || 'Mestizo',
+                    estado_salud: updatedCat.health_status,
+                    esterilizacion: updatedCat.sterilization_status,
+                    espacio_requerido: updatedCat.living_space_requirement || 'cualquiera',
+                    historia: updatedCat.story || updatedCat.description,
+                    fecha_aprobacion: new Date().toLocaleDateString('es-ES'),
+                    id_gato: updatedCat.id,
+                    enlace_adopcion: `https://katze-nwc0.onrender.com/catalog` // Link directo al catálogo
+                };
+                
                 // Disparamos la petición sin 'await' para que no bloquee la respuesta
                 fetch(config.MAKE_WEBHOOK_URL, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        nombre: updatedCat.name,
-                        descripcion: updatedCat.description,
-                        foto_url: Array.isArray(updatedCat.photos_url) ? updatedCat.photos_url[0] : updatedCat.photos_url,
-                        edad: updatedCat.age,
-                        raza: updatedCat.breed || 'Mestizo',
-                        estado_salud: updatedCat.health_status,
-                        esterilizacion: updatedCat.sterilization_status,
-                        fecha_aprobacion: new Date().toLocaleDateString('es-ES'),
-                        id_gato: updatedCat.id
-                    })
-                }).catch(() => {});
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'User-Agent': 'Katze-App/1.0'
+                    },
+                    body: JSON.stringify(webhookPayload)
+                })
+                .then(response => {
+                    if (response.ok) {
+                        console.log(`[WEBHOOK SUCCESS] Webhook enviado exitosamente para gato #${updatedCat.id}`);
+                    } else {
+                        console.error(`[WEBHOOK WARNING] Webhook respondió con status ${response.status} para gato #${updatedCat.id}`);
+                    }
+                })
+                .catch(error => {
+                    console.error(`[WEBHOOK ERROR] Error enviando webhook para gato #${updatedCat.id}:`, error.message);
+                });
             }
 
             let message;

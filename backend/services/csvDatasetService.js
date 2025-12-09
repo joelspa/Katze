@@ -20,7 +20,7 @@ class CSVDatasetService {
             this.storage = admin.storage();
             this.bucket = this.storage.bucket();
         } catch (error) {
-            console.error('❌ CSV Dataset Service initialization failed:', error.message);
+            console.error('[CSV ERROR] CSV Dataset Service initialization failed:', error.message);
             this.storage = null;
             this.bucket = null;
         }
@@ -78,7 +78,7 @@ class CSVDatasetService {
     async _uploadCSV(filename, csvContent) {
         try {
             if (!this.isAvailable()) {
-                console.log('⚠️ Firebase Storage not available, skipping CSV upload');
+                console.log('[CSV WARNING] Firebase Storage not available, skipping CSV upload');
                 return null;
             }
 
@@ -101,12 +101,12 @@ class CSVDatasetService {
             await file.makePublic();
 
             const publicUrl = `https://storage.googleapis.com/${this.bucket.name}/${filepath}`;
-            console.log(`✅ CSV uploaded: ${filename}`);
-            console.log(`🔗 Download URL: ${publicUrl}`);
+            console.log(`[CSV SUCCESS] CSV uploaded: ${filename}`);
+            console.log(`[CSV] Download URL: ${publicUrl}`);
             return publicUrl;
 
         } catch (error) {
-            console.error(`❌ Failed to upload CSV ${filename}:`, error.message);
+            console.error(`[CSV ERROR] Failed to upload CSV ${filename}:`, error.message);
             return null;
         }
     }
@@ -161,7 +161,7 @@ class CSVDatasetService {
             return await this._uploadCSV('cats.csv', csvContent);
 
         } catch (error) {
-            console.error('❌ Failed to update cats CSV:', error.message);
+            console.error('[CSV ERROR] Failed to update cats CSV:', error.message);
             return null;
         }
     }
@@ -243,7 +243,7 @@ class CSVDatasetService {
             return await this._uploadCSV('adoption_applications.csv', csvContent);
 
         } catch (error) {
-            console.error('❌ Failed to update applications CSV:', error.message);
+            console.error('[CSV ERROR] Failed to update applications CSV:', error.message);
             return null;
         }
     }
@@ -279,7 +279,7 @@ class CSVDatasetService {
             return await this._uploadCSV('users.csv', csvContent);
 
         } catch (error) {
-            console.error('❌ Failed to update users CSV:', error.message);
+            console.error('[CSV ERROR] Failed to update users CSV:', error.message);
             return null;
         }
     }
@@ -342,7 +342,7 @@ class CSVDatasetService {
             return await this._uploadCSV('tracking_tasks.csv', csvContent);
 
         } catch (error) {
-            console.error('❌ Failed to update tracking CSV:', error.message);
+            console.error('[CSV ERROR] Failed to update tracking CSV:', error.message);
             return null;
         }
     }
@@ -362,7 +362,7 @@ class CSVDatasetService {
         ]);
 
         const success = results.filter(r => r.status === 'fulfilled').length;
-        console.log(`✅ Updated ${success}/4 CSV datasets`);
+        console.log(`[CSV SUCCESS] Updated ${success}/4 CSV datasets`);
 
         return results;
     }

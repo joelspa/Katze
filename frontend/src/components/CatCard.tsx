@@ -219,12 +219,12 @@ const CatCard: React.FC<CatCardProps> = ({ cat }) => {
                         )}
                         {cat.sterilization_status === 'esterilizado' && (
                             <span className="chip">
-                                ✂️ Esterilizado
+                                Esterilizado
                             </span>
                         )}
                         {cat.health_status && (
                             <span className="chip">
-                                ❤️ Saludable
+                                Saludable
                             </span>
                         )}
                     </div>

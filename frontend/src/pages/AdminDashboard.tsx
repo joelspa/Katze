@@ -788,6 +788,15 @@ const AdminDashboard = () => {
                         </svg>
                         <span>Solicitudes de Adopción</span>
                     </button>
+                    <button 
+                        className={`nav-item ${activeTab === 'datasets' ? 'active' : ''}`}
+                        onClick={() => setActiveTab('datasets')}
+                    >
+                        <svg viewBox="0 0 20 20" fill="currentColor">
+                            <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd" />
+                        </svg>
+                        <span>Descargar Datasets</span>
+                    </button>
                 </nav>
             </aside>
 
@@ -2296,6 +2305,143 @@ const AdminDashboard = () => {
                                 Cerrar
                             </button>
                         </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Tab de Datasets CSV */}
+            {activeTab === 'datasets' && (
+                <div className="datasets-section">
+                    <div className="section-header">
+                        <h2>Descargar Datasets CSV</h2>
+                        <p className="section-description">
+                            Descarga archivos CSV con todos los datos del sistema. Los archivos se actualizan automáticamente.
+                        </p>
+                    </div>
+
+                    <div className="datasets-grid">
+                        {/* Users CSV */}
+                        <div className="dataset-card">
+                            <div className="dataset-icon" style={{background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'}}>
+                                <svg viewBox="0 0 20 20" fill="currentColor" style={{width: '32px', height: '32px'}}>
+                                    <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" />
+                                </svg>
+                            </div>
+                            <div className="dataset-info">
+                                <h3>Usuarios</h3>
+                                <p>Todos los usuarios registrados con roles y fechas de creación</p>
+                                <div className="dataset-meta">
+                                    <span>users.csv</span>
+                                </div>
+                            </div>
+                            <a 
+                                href="https://storage.googleapis.com/katze-app.firebasestorage.app/datasets/users.csv"
+                                download="users.csv"
+                                className="btn-download"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
+                                <svg viewBox="0 0 20 20" fill="currentColor" style={{width: '20px', height: '20px'}}>
+                                    <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd" />
+                                </svg>
+                                Descargar
+                            </a>
+                        </div>
+
+                        {/* Cats CSV */}
+                        <div className="dataset-card">
+                            <div className="dataset-icon" style={{background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)'}}>
+                                <svg viewBox="0 0 20 20" fill="currentColor" style={{width: '32px', height: '32px'}}>
+                                    <path d="M10 3.5a1.5 1.5 0 013 0V4a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-.5a1.5 1.5 0 000 3h.5a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-.5a1.5 1.5 0 00-3 0v.5a1 1 0 01-1 1H6a1 1 0 01-1-1v-3a1 1 0 00-1-1h-.5a1.5 1.5 0 010-3H4a1 1 0 001-1V6a1 1 0 011-1h3a1 1 0 001-1v-.5z" />
+                                </svg>
+                            </div>
+                            <div className="dataset-info">
+                                <h3>Gatos</h3>
+                                <p>Todos los gatos publicados con información completa y estado</p>
+                                <div className="dataset-meta">
+                                    <span>cats.csv</span>
+                                </div>
+                            </div>
+                            <a 
+                                href="https://storage.googleapis.com/katze-app.firebasestorage.app/datasets/cats.csv"
+                                download="cats.csv"
+                                className="btn-download"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
+                                <svg viewBox="0 0 20 20" fill="currentColor" style={{width: '20px', height: '20px'}}>
+                                    <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd" />
+                                </svg>
+                                Descargar
+                            </a>
+                        </div>
+
+                        {/* Applications CSV */}
+                        <div className="dataset-card">
+                            <div className="dataset-icon" style={{background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)'}}>
+                                <svg viewBox="0 0 20 20" fill="currentColor" style={{width: '32px', height: '32px'}}>
+                                    <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
+                                    <path fillRule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clipRule="evenodd" />
+                                </svg>
+                            </div>
+                            <div className="dataset-info">
+                                <h3>Solicitudes de Adopción</h3>
+                                <p>Todas las solicitudes con evaluación de IA y respuestas de formularios</p>
+                                <div className="dataset-meta">
+                                    <span>adoption_applications.csv</span>
+                                </div>
+                            </div>
+                            <a 
+                                href="https://storage.googleapis.com/katze-app.firebasestorage.app/datasets/adoption_applications.csv"
+                                download="adoption_applications.csv"
+                                className="btn-download"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
+                                <svg viewBox="0 0 20 20" fill="currentColor" style={{width: '20px', height: '20px'}}>
+                                    <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd" />
+                                </svg>
+                                Descargar
+                            </a>
+                        </div>
+
+                        {/* Tracking Tasks CSV */}
+                        <div className="dataset-card">
+                            <div className="dataset-icon" style={{background: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)'}}>
+                                <svg viewBox="0 0 20 20" fill="currentColor" style={{width: '32px', height: '32px'}}>
+                                    <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
+                                </svg>
+                            </div>
+                            <div className="dataset-info">
+                                <h3>Tareas de Seguimiento</h3>
+                                <p>Todas las tareas de bienestar y esterilización post-adopción</p>
+                                <div className="dataset-meta">
+                                    <span>tracking_tasks.csv</span>
+                                </div>
+                            </div>
+                            <a 
+                                href="https://storage.googleapis.com/katze-app.firebasestorage.app/datasets/tracking_tasks.csv"
+                                download="tracking_tasks.csv"
+                                className="btn-download"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
+                                <svg viewBox="0 0 20 20" fill="currentColor" style={{width: '20px', height: '20px'}}>
+                                    <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd" />
+                                </svg>
+                                Descargar
+                            </a>
+                        </div>
+                    </div>
+
+                    <div className="datasets-info-box">
+                        <h3>Información sobre los Datasets</h3>
+                        <ul>
+                            <li><strong>Actualización Automática:</strong> Los archivos se actualizan automáticamente cada vez que hay cambios en el sistema.</li>
+                            <li><strong>Formato:</strong> Archivos CSV compatibles con Excel, Google Sheets y herramientas de análisis de datos.</li>
+                            <li><strong>Codificación:</strong> UTF-8 para soporte completo de caracteres especiales y acentos.</li>
+                            <li><strong>Privacidad:</strong> Los archivos contienen información sensible. Manéjalos con confidencialidad.</li>
+                        </ul>
                     </div>
                 </div>
             )}

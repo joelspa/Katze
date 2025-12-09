@@ -29,8 +29,8 @@ class ApplicationQueueWorker {
      * Inicia el worker (loop infinito)
      */
     async start() {
-        console.log('🚀 Worker de procesamiento iniciado');
-        console.log(`⚙️ Procesando ${CONFIG.BATCH_SIZE} solicitudes cada ${CONFIG.INTERVAL_MS/1000}s`);
+        console.log('[WORKER] Worker de procesamiento iniciado');
+        console.log(`[WORKER] Procesando ${CONFIG.BATCH_SIZE} solicitudes cada ${CONFIG.INTERVAL_MS/1000}s`);
 
         // Loop infinito con intervalo
         setInterval(async () => {
@@ -66,10 +66,10 @@ class ApplicationQueueWorker {
                 await this.processApplication(app);
             }
 
-            console.log(`\n✨ Lote completado. Total procesado: ${this.processedCount} | Errores: ${this.errorCount}`);
+            console.log(`\n[WORKER] Lote completado. Total procesado: ${this.processedCount} | Errores: ${this.errorCount}`);
 
         } catch (error) {
-            console.error('❌ Error en processQueue:', error);
+            console.error('[WORKER ERROR] Error en processQueue:', error);
         } finally {
             this.isProcessing = false;
         }
@@ -180,7 +180,7 @@ class ApplicationQueueWorker {
     async runOnce() {
         console.log('🔧 Ejecutando procesamiento único...');
         await this.processQueue();
-        console.log('✅ Procesamiento completado.');
+        console.log('[WORKER] Procesamiento completado.');
         
         // Esperar un poco para que se completen las queries
         setTimeout(() => {
@@ -208,12 +208,12 @@ if (require.main === module) {
         
         // Manejo de señales para shutdown graceful
         process.on('SIGINT', () => {
-            console.log('\n🛑 Worker detenido por usuario');
+            console.log('\n[WORKER] Worker detenido por usuario');
             process.exit(0);
         });
 
-        process.on('SIGTERM', () => {
-            console.log('\n🛑 Worker detenido');
+        process.on('SIGTERM', async () => {
+            console.log('\n[WORKER] Worker detenido');
             process.exit(0);
         });
     }

@@ -8,6 +8,7 @@
     "dev": "nodemon index.js",
     "seed": "node seed-database.js",
     "seed:demo": "node seed-demo.js",
+    "seed:production": "node seed-production.js",
     "migrate": "node run-migration.js",
     "setup": "node run-migration.js && node seed-database.js",
     "setup:demo": "node run-migration.js && node seed-demo.js",
