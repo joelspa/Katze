@@ -43,7 +43,12 @@ const seedProduction = async () => {
         console.log('\n=== DATOS INSERTADOS ===');
         console.log('11 usuarios');
         console.log('11 gatos (8 aprobados, 2 pendientes, 1 rechazado)');
-        console.log('10 solicitudes de adopción (varios estados)');
+        console.log('22 solicitudes de adopción con scores de IA variados:');
+        console.log('  - 3 aprobadas (scores 75-90)');
+        console.log('  - 3 procesando (sin evaluar)');
+        console.log('  - 9 en revisión pendiente (scores 45-92)');
+        console.log('  - 5 rechazadas automáticamente (scores 20-30)');
+        console.log('  - 2 rechazadas manualmente (scores 58-60)');
         console.log('10 tareas de seguimiento');
         console.log('12 posts educativos');
         

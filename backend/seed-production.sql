@@ -114,20 +114,56 @@ INSERT INTO adoption_applications (applicant_id, cat_id, form_responses, status,
 (10, 6, '{"message": "Familia con niños, queremos enseñarles responsabilidad. Garfield parece perfecto.", "housing_type": "casa", "has_experience": false}'::jsonb, 
  'procesando', NULL, NULL, NULL),
 
--- Revisión pendiente (ID: 7)
+-- Revisión pendiente - Diferentes scores de IA (IDs: 7-15)
 (11, 7, '{"message": "Trabajo de noche y estoy en casa de día. Shadow me haría compañía. Tengo experiencia con gatos negros.", "housing_type": "departamento", "has_experience": true}'::jsonb, 
  'revision_pendiente', NOW() - INTERVAL '2 days', 68, 'Horario compatible pero espacio limitado. Revisar condiciones'),
 
--- Rechazadas automáticamente (IDs: 8-9)
+(5, 4, '{"message": "He tenido gatos bengalíes antes, conozco sus necesidades de actividad. Casa con patio cerrado.", "housing_type": "casa", "has_experience": true}'::jsonb, 
+ 'revision_pendiente', NOW() - INTERVAL '1 day', 92, 'Excelente match, experiencia específica con la raza y espacio adecuado'),
+
+(6, 5, '{"message": "Trabajo desde casa, ambiente tranquilo. Dispuesta a administrar medicación para artritis.", "housing_type": "departamento", "has_experience": true}'::jsonb, 
+ 'revision_pendiente', NOW() - INTERVAL '3 days', 88, 'Muy buena compatibilidad con gato senior, compromiso con cuidados médicos'),
+
+(7, 6, '{"message": "Casa grande, familia responsable. Garfield necesita control de peso, tenemos veterinario de confianza.", "housing_type": "casa", "has_experience": true}'::jsonb, 
+ 'revision_pendiente', NOW() - INTERVAL '1 day', 80, 'Familia comprometida, conscientes de necesidades especiales de salud'),
+
+(11, 8, '{"message": "Primera vez con gatos pero muy motivado. He investigado sobre cuidados de cachorros.", "housing_type": "casa", "has_experience": false}'::jsonb, 
+ 'revision_pendiente', NOW() - INTERVAL '2 days', 65, 'Falta experiencia pero muestra compromiso. Requiere orientación y seguimiento'),
+
+(5, 7, '{"message": "Departamento pequeño pero acogedor. Shadow parece adaptable a espacios reducidos.", "housing_type": "departamento", "has_experience": false}'::jsonb, 
+ 'revision_pendiente', NOW() - INTERVAL '4 days', 55, 'Espacio limitado y sin experiencia. Requiere evaluación presencial'),
+
+(6, 4, '{"message": "Vivo sola, trabajo medio tiempo. Tigre necesita mucha atención que no sé si pueda darle.", "housing_type": "departamento", "has_experience": false}'::jsonb, 
+ 'revision_pendiente', NOW() - INTERVAL '2 days', 45, 'Dudas sobre disponibilidad de tiempo y espacio inadecuado para gato activo'),
+
+(9, 6, '{"message": "Familia con 2 niños pequeños. Garfield es grande y tranquilo, ideal para ellos.", "housing_type": "casa", "has_experience": true}'::jsonb, 
+ 'revision_pendiente', NOW() - INTERVAL '3 days', 78, 'Buena experiencia familiar, espacio adecuado. Verificar interacción con niños'),
+
+(10, 3, '{"message": "Casa con jardín, experiencia con gatos de pelo largo. Dispuestos a cepillado diario de Pelusa.", "housing_type": "casa", "has_experience": true}'::jsonb, 
+ 'revision_pendiente', NOW() - INTERVAL '1 day', 82, 'Conocimiento de cuidados específicos de persa, compromiso con mantenimiento de pelaje'),
+
+-- Rechazadas automáticamente - Scores bajos (IDs: 16-20)
 (8, 8, '{"message": "Quiero un gato"}'::jsonb, 
  'rechazada_automaticamente', NOW() - INTERVAL '1 day', 25, 'Mensaje muy breve, falta información sobre experiencia y hogar'),
 
 (10, 1, '{"message": "Viajo mucho por trabajo pero quiero un gato en casa", "housing_type": "departamento"}'::jsonb, 
  'rechazada_automaticamente', NOW() - INTERVAL '2 days', 30, 'No puede proporcionar cuidado constante debido a viajes frecuentes'),
 
--- Rechazada manualmente (ID: 10)
+(11, 5, '{"message": "Gato senior, no requiere mucho cuidado supongo. Departamento estudio.", "housing_type": "departamento", "has_experience": false}'::jsonb, 
+ 'rechazada_automaticamente', NOW() - INTERVAL '1 day', 28, 'Desconocimiento de necesidades de gato senior y espacio muy reducido'),
+
+(8, 2, '{"message": "Siamés bonito, lo quiero ya.", "housing_type": "departamento"}'::jsonb, 
+ 'rechazada_automaticamente', NOW() - INTERVAL '3 days', 20, 'Falta información crítica y actitud impulsiva sin preparación'),
+
+(9, 4, '{"message": "Tigre se ve cool, tengo departamento pequeño pero está bien.", "housing_type": "departamento", "has_experience": false}'::jsonb, 
+ 'rechazada_automaticamente', NOW() - INTERVAL '2 days', 22, 'Espacio totalmente inadecuado para gato bengalí activo, sin experiencia'),
+
+-- Rechazadas manualmente - Scores medios pero otras razones (IDs: 21-22)
 (9, 2, '{"message": "Mi departamento es pequeño pero tengo buenas intenciones. No tengo experiencia.", "housing_type": "departamento", "has_experience": false}'::jsonb, 
- 'rechazada', NOW() - INTERVAL '4 days', 60, 'Espacio reducido para las necesidades del gato');
+ 'rechazada', NOW() - INTERVAL '4 days', 60, 'Espacio reducido para las necesidades del gato'),
+
+(10, 7, '{"message": "Shadow es hermoso, trabajo 12 horas al día pero mi pareja está en casa.", "housing_type": "departamento", "has_experience": false}'::jsonb, 
+ 'rechazada', NOW() - INTERVAL '3 days', 58, 'Tiempo limitado del solicitante principal, dependencia de terceros para cuidado');
 
 -- 5. INSERTAR TAREAS DE SEGUIMIENTO  
 INSERT INTO tracking_tasks (application_id, task_type, due_date, status, description) VALUES
