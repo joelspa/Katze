@@ -17,7 +17,7 @@ class AIService {
         } else {
             this.genAI = new GoogleGenerativeAI(config.GEMINI_API_KEY);
             // Usar gemini-1.5-flash para velocidad óptima (2-3 segundos)
-            this.model = this.genAI.getGenerativeModel({ 
+            this.model = this.genAI.getGenerativeModel({
                 model: 'gemini-1.5-flash',
                 generationConfig: {
                     temperature: 0.1, // Muy bajo para consistencia y velocidad
@@ -53,16 +53,16 @@ class AIService {
 
             const response = result.response;
             let text = response.text();
-            
+
             // Extraer JSON si está envuelto en markdown o texto adicional
             const jsonMatch = text.match(/\{[\s\S]*\}/);
             if (jsonMatch) {
                 text = jsonMatch[0];
             }
-            
+
             // Parsear respuesta JSON
             const evaluation = JSON.parse(text);
-            
+
             // Normalizar a estructura interna en español
             const normalized = {
                 action: evaluation.accion || evaluation.action,
@@ -70,10 +70,10 @@ class AIService {
                 short_reason: evaluation.razon_corta || evaluation.short_reason,
                 flags: evaluation.banderas || evaluation.flags
             };
-            
+
             // Validar estructura
             this._validateEvaluation(normalized);
-            
+
             return normalized;
 
         } catch (error) {
@@ -208,12 +208,12 @@ Responde SOLO JSON.`;
             // Verificar palabras clave positivas
             const positiveWords = ['amor', 'cuidar', 'familia', 'compañía', 'rescate', 'hogar', 'responsable', 'cariño', 'adoptar'];
             const negativeWords = ['criar', 'vender', 'regalar', 'crías', 'negocio', 'dinero'];
-            
+
             let motivationScore = 0;
             positiveWords.forEach(word => {
                 if (motivation.includes(word)) motivationScore += 3;
             });
-            
+
             negativeWords.forEach(word => {
                 if (motivation.includes(word)) {
                     score = 15;
@@ -221,7 +221,7 @@ Responde SOLO JSON.`;
                     flags.push('Riesgo Venta');
                 }
             });
-            
+
             if (motivationScore > 6) {
                 score += 15;
                 flags.push('Motivación Genuina');
@@ -297,7 +297,7 @@ Responde SOLO JSON.`;
      */
     async analyzeBatch(applications, delayMs = 1000) {
         const results = [];
-        
+
         for (const app of applications) {
             try {
                 const evaluation = await this.analyzeApplication(app.form_responses);
