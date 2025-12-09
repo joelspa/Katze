@@ -2305,17 +2305,21 @@ const AdminDashboard = () => {
                                         'https://storage.googleapis.com/katze-app.firebasestorage.app/datasets/tracking_tasks.csv'
                                     ];
                                     
-                                    // Usamos un delay entre descargas para evitar que el navegador las bloquee como popups
+                                    // Descarga secuencial con delay de 1 segundo entre archivos
+                                    // Esto evita que el navegador bloquee las descargas múltiples
                                     urls.forEach((url, index) => {
                                         setTimeout(() => {
+                                            const filename = url.split('/').pop() || 'dataset.csv';
                                             const a = document.createElement('a');
                                             a.href = url;
-                                            a.download = url.split('/').pop() || 'dataset.csv';
-                                            a.target = '_blank';
+                                            a.download = filename;
+                                            a.style.display = 'none';
                                             document.body.appendChild(a);
                                             a.click();
-                                            document.body.removeChild(a);
-                                        }, index * 800);
+                                            setTimeout(() => {
+                                                document.body.removeChild(a);
+                                            }, 100);
+                                        }, index * 1000);
                                     });
                                 }}
                             >
