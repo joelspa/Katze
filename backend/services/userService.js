@@ -108,6 +108,18 @@ class UserService {
         const result = await db.query(query, params);
         return result.rows[0].exists;
     }
+
+    // Eliminar un usuario (solo para admin)
+    async deleteUser(userId) {
+        const query = 'DELETE FROM users WHERE id = $1 RETURNING id';
+        const result = await db.query(query, [userId]);
+        
+        if (result.rows.length === 0) {
+            throw new Error('Usuario no encontrado');
+        }
+        
+        return result.rows[0];
+    }
 }
 
 module.exports = new UserService();

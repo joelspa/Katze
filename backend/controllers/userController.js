@@ -218,6 +218,46 @@ class UserController {
             return ErrorHandler.serverError(res, 'Error al crear usuario', error);
         }
     }
+
+    // DELETE /api/admin/users/:id - Eliminar un usuario (solo admin)
+    async deleteUser(req, res) {
+        try {
+            if (req.user.role !== config.USER_ROLES.ADMIN) {
+                return ErrorHandler.forbidden(res, 'Solo los administradores pueden eliminar usuarios');
+            }
+
+            const { id } = req.params;
+            const userId = parseInt(id);
+
+            // No permitir que el admin se elimine a sí mismo
+            if (userId === req.user.id) {
+                return ErrorHandler.badRequest(res, 'No puedes eliminar tu propia cuenta');
+            }
+
+            // Verificar que el usuario existe
+            const user = await userService.getUserById(userId);
+            if (!user) {
+                return ErrorHandler.notFound(res, 'Usuario no encontrado');
+            }
+
+            // Eliminar el usuario
+            await userService.deleteUser(userId);
+
+            // Actualizar datasets
+            datasetService.updateUsersDataset().catch(err => 
+                console.error('Error updating dataset:', err.message)
+            );
+            csvDatasetService.updateUsersDataset().catch(err =>
+                console.error('Error updating CSV dataset:', err.message)
+            );
+
+            return ErrorHandler.success(res, null, `Usuario ${user.email} eliminado exitosamente`);
+
+        } catch (error) {
+            console.error('[deleteUser] Error:', error.message, error.stack);
+            return ErrorHandler.serverError(res, 'Error al eliminar usuario', error);
+        }
+    }
 }
 
 module.exports = new UserController();

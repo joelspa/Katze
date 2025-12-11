@@ -50,6 +50,9 @@ router.get('/users/:id', userController.getUserById);
 // Actualiza el rol de un usuario
 router.put('/users/:id/role', userController.updateUserRole);
 
+// Elimina un usuario
+router.delete('/users/:id', userController.deleteUser);
+
 // Obtiene estadísticas de usuarios por rol
 router.get('/users/stats/by-role', userController.getUserStatsByRole);
 
