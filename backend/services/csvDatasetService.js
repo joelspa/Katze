@@ -145,13 +145,20 @@ class CSVDatasetService {
 
             console.log(`[CSV] Subiendo ${filename} (${csvSize} bytes) usando API REST...`);
 
-            // Obtener access token
-            const accessToken = await admin.credential.applicationDefault().getAccessToken();
+            // Obtener access token de la app de Firebase ya inicializada
+            const app = admin.app();
+            const accessToken = await app.options.credential.getAccessToken();
             
+            if (!accessToken || !accessToken.access_token) {
+                throw new Error('No se pudo obtener access token de Firebase Admin');
+            }
+
+            console.log(`[CSV] Access token obtenido correctamente`);
+
             // Subir usando Google Cloud Storage REST API
             const uploadUrl = `https://storage.googleapis.com/upload/storage/v1/b/${this.bucket.name}/o?uploadType=media&name=${encodeURIComponent(filepath)}`;
             
-            await axios.post(uploadUrl, csvContent, {
+            const response = await axios.post(uploadUrl, csvContent, {
                 headers: {
                     'Authorization': `Bearer ${accessToken.access_token}`,
                     'Content-Type': 'text/csv; charset=utf-8',
@@ -160,10 +167,19 @@ class CSVDatasetService {
 
             console.log(`[CSV SUCCESS] Archivo subido vía REST API`);
 
-            // Hacer el archivo público
-            const file = this.bucket.file(filepath);
-            await file.makePublic().catch(err => {
-                console.log(`[CSV WARNING] No se pudo hacer público:`, err.message);
+            // Hacer el archivo público usando la REST API
+            const makePublicUrl = `https://storage.googleapis.com/storage/v1/b/${this.bucket.name}/o/${encodeURIComponent(filepath)}/acl`;
+            
+            await axios.post(makePublicUrl, {
+                entity: 'allUsers',
+                role: 'READER'
+            }, {
+                headers: {
+                    'Authorization': `Bearer ${accessToken.access_token}`,
+                    'Content-Type': 'application/json',
+                },
+            }).catch(err => {
+                console.log(`[CSV WARNING] No se pudo hacer público (puede que ya lo sea):`, err.message);
             });
 
             const publicUrl = `https://storage.googleapis.com/${this.bucket.name}/${filepath}`;
@@ -177,7 +193,7 @@ class CSVDatasetService {
             
             if (error.response) {
                 console.error(`[CSV ERROR] Response status:`, error.response.status);
-                console.error(`[CSV ERROR] Response data:`, error.response.data);
+                console.error(`[CSV ERROR] Response data:`, JSON.stringify(error.response.data));
             }
             
             console.error(`[CSV ERROR] Bucket name:`, this.bucket?.name || 'undefined');
