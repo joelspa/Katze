@@ -62,6 +62,8 @@ Plataforma web para adopción responsable de gatos con evaluación inteligente y
 4. Completa el formulario (la IA evaluará tu compatibilidad automáticamente)
 5. Espera unos segundos a que la IA analice tu solicitud y te dé un puntaje
 
+**Nota:** Se recomienda utilizar los escenarios de ejemplo que se encuentran más adelante para demostrar diferentes rangos de puntuación
+
 ### Paso 3: Publicar un Gato para Adopción
 1. Cierra sesión y entra como **ana.garcia@katze.com** / `123`
 2. Ve a "Mis Gatos" → "Publicar Nuevo Gato"
@@ -82,6 +84,80 @@ Plataforma web para adopción responsable de gatos con evaluación inteligente y
 - **Carrusel de fotos:** Cada gato tiene múltiples imágenes
 - **Dashboard rescatista:** Ve tus gatos publicados y solicitudes recibidas
 - **Sistema de seguimiento:** Marca tareas como completadas o ve tareas atrasadas
+
+---
+
+## Escenarios de Prueba para Evaluación IA
+
+### Escenario 1: Score Alto (85-95 puntos)
+
+**Candidato ideal con alta compatibilidad:**
+
+**Razón de adopción:**
+```
+Llevo dos años viviendo en mi casa propia con jardín amplio y busco un compañero felino. Tengo experiencia previa cuidando gatos, ya que crecí con tres gatos en casa de mis padres y aprendí sobre su alimentación, vacunas y comportamiento. Trabajo desde casa 4 días a la semana, lo que me permite dedicarle tiempo y atención. He preparado un espacio seguro con rascadores, juguetes y una zona tranquila para descansar. Cuento con un veterinario de confianza y presupuesto destinado para cuidados preventivos, alimentación de calidad y emergencias. Me comprometo a brindarle cuidados de por vida y cumplir con la esterilización si es necesario.
+```
+
+**Configuración del formulario:**
+- Tipo de vivienda: **Casa**
+- ¿Tienes experiencia con gatos?: **Sí**
+- ¿Tienes otras mascotas?: **No** (o Sí, con explicación de convivencia)
+- ¿Aceptas esterilización obligatoria?: **Sí**
+
+**Mensaje adicional:**
+```
+Adjunto fotos del espacio que he preparado. Estoy emocionado de darle un hogar amoroso y seguro.
+```
+
+**Resultado esperado:** Score 85-95, recomendación "manual_review", flags positivas como "Casa Segura", "Experiencia Confirmada", "Pro-Esterilización"
+
+---
+
+### Escenario 2: Score Bajo (20-35 puntos)
+
+**Candidato con múltiples factores de riesgo - rechazo automático:**
+
+**Razón de adopción:**
+```
+Quiero un gato para mi hija de 4 años como regalo de cumpleaños. Sería lindo tener fotos para Instagram. Vivo en un departamento pequeño pero creo que estará bien. No tengo mucho tiempo pero mi hija lo cuidará. Lo de la esterilización lo vemos después.
+```
+
+**Configuración del formulario:**
+- Tipo de vivienda: **Departamento**
+- ¿Tienes experiencia con gatos?: **No**
+- ¿Tienes otras mascotas?: **No**
+- ¿Aceptas esterilización obligatoria?: **No**
+
+**Mensaje adicional:**
+```
+Es para sorpresa, ojalá sea pronto.
+```
+
+**Resultado esperado:** Score 20-35, recomendación "auto_reject", flags negativas como "Regalo para Niños", "Contenido Redes Sociales", "No Acepta Esterilización", "Disponibilidad Limitada"
+
+---
+
+### Escenario 3: Score Medio (60-75 puntos)
+
+**Candidato con potencial que requiere evaluación humana:**
+
+**Razón de adopción:**
+```
+Me gustaría adoptar un gato porque siempre me han gustado. Vivo en un departamento con balcón. No he tenido gatos antes pero he investigado en internet sobre sus cuidados. Trabajo 8 horas al día fuera de casa pero los fines de semana estoy libre. Acepto la esterilización porque sé que es importante.
+```
+
+**Configuración del formulario:**
+- Tipo de vivienda: **Departamento**
+- ¿Tienes experiencia con gatos?: **No**
+- ¿Tienes otras mascotas?: **No**
+- ¿Aceptas esterilización obligatoria?: **Sí**
+
+**Mensaje adicional:**
+```
+Me comprometo a aprender y darle buenos cuidados.
+```
+
+**Resultado esperado:** Score 60-75, recomendación "manual_review", flags mixtas, requiere que rescatista/admin evalúe caso por caso
 
 ---
 
