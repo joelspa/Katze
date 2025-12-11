@@ -150,35 +150,16 @@ class CSVDatasetService {
 
             console.log(`[CSV] Subiendo ${filename} (${csvSize} bytes) a ${filepath}...`);
 
-            // Usar promesa para manejar el stream de forma más controlada
-            await new Promise((resolve, reject) => {
-                const file = this.bucket.file(filepath);
-                const stream = file.createWriteStream({
-                    metadata: {
-                        contentType: 'text/csv; charset=utf-8',
-                        cacheControl: 'public, max-age=300',
-                    },
-                    resumable: false,
-                    validation: false, // Deshabilitar validación de hash para evitar stream issues
-                });
-
-                stream.on('error', (error) => {
-                    console.error(`[CSV ERROR] Stream error:`, error.message);
-                    reject(error);
-                });
-
-                stream.on('finish', () => {
-                    console.log(`[CSV SUCCESS] Stream finished successfully`);
-                    resolve();
-                });
-
-                // Escribir el contenido y cerrar el stream
-                stream.end(csvContent);
+            const file = this.bucket.file(filepath);
+            
+            // Usar file.save() con opciones mínimas y sin validación
+            await file.save(csvContent, {
+                resumable: false,
+                validation: false,
+                contentType: 'text/csv; charset=utf-8',
             });
 
             console.log(`[CSV SUCCESS] Archivo guardado, estableciendo permisos públicos...`);
-
-            const file = this.bucket.file(filepath);
             
             // Hacer el archivo público para descarga directa
             await file.makePublic().catch(err => {
