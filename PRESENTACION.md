@@ -286,4 +286,3 @@ npm run preview        # Preview del build
 
 ---
 
-**Sistema 100% funcional para demostración**

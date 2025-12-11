@@ -51,9 +51,26 @@ class DatasetService {
                 console.log('[DATASET] Firebase Admin ya está inicializado');
             }
             
+            // Obtener Storage y Bucket con mejor manejo de errores
             this.storage = admin.storage();
-            this.bucket = this.storage.bucket('katze-app.firebasestorage.app');
+            
+            // Verificar que storage esté disponible
+            if (!this.storage) {
+                throw new Error('Storage no pudo ser inicializado');
+            }
+            
+            // Obtener bucket con nombre explícito
+            const bucketName = 'katze-app.firebasestorage.app';
+            this.bucket = this.storage.bucket(bucketName);
+            
+            // Verificar que bucket esté correctamente inicializado
+            if (!this.bucket || !this.bucket.name) {
+                throw new Error('Bucket no pudo ser inicializado correctamente');
+            }
+            
             console.log('[DATASET SUCCESS] Storage y Bucket obtenidos correctamente');
+            console.log('[DATASET] Bucket name:', this.bucket.name);
+            
         } catch (error) {
             console.error('[DATASET ERROR] Dataset Service initialization failed:', error.message);
             console.error('[DATASET ERROR] Error completo:', error);

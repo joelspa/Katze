@@ -52,10 +52,26 @@ class CSVDatasetService {
                 console.log('[CSV] Firebase Admin ya está inicializado');
             }
             
+            // Obtener Storage y Bucket con mejor manejo de errores
             this.storage = admin.storage();
-            this.bucket = this.storage.bucket();
+            
+            // Verificar que storage esté disponible
+            if (!this.storage) {
+                throw new Error('Storage no pudo ser inicializado');
+            }
+            
+            // Obtener bucket con nombre explícito
+            const bucketName = 'katze-app.firebasestorage.app';
+            this.bucket = this.storage.bucket(bucketName);
+            
+            // Verificar que bucket esté correctamente inicializado
+            if (!this.bucket || !this.bucket.name) {
+                throw new Error('Bucket no pudo ser inicializado correctamente');
+            }
+            
             console.log('[CSV SUCCESS] Storage y Bucket obtenidos correctamente');
             console.log('[CSV] Bucket name:', this.bucket.name);
+            
         } catch (error) {
             console.error('[CSV ERROR] CSV Dataset Service initialization failed:', error.message);
             console.error('[CSV ERROR] Error completo:', error);
@@ -123,26 +139,37 @@ class CSVDatasetService {
                 return null;
             }
 
+            // Verificar que bucket esté disponible
+            if (!this.bucket || typeof this.bucket.file !== 'function') {
+                console.error('[CSV ERROR] Bucket no está correctamente inicializado');
+                return null;
+            }
+
             const filepath = `datasets/${filename}`;
-            const file = this.bucket.file(filepath);
             const csvSize = Buffer.byteLength(csvContent, 'utf8');
 
             console.log(`[CSV] Subiendo ${filename} (${csvSize} bytes) a ${filepath}...`);
 
-            await file.save(csvContent, {
+            // Usar Buffer para asegurar codificación correcta
+            const buffer = Buffer.from(csvContent, 'utf8');
+            const file = this.bucket.file(filepath);
+
+            // Intentar upload con configuración simplificada
+            await file.save(buffer, {
+                contentType: 'text/csv; charset=utf-8',
+                resumable: false,
                 metadata: {
-                    contentType: 'text/csv',
-                    metadata: {
-                        lastUpdated: new Date().toISOString(),
-                        encoding: 'utf-8'
-                    }
-                },
-                public: true, // Hacer públicos los CSVs
-                resumable: false
+                    contentType: 'text/csv; charset=utf-8',
+                    cacheControl: 'public, max-age=300',
+                }
             });
 
+            console.log(`[CSV SUCCESS] Archivo guardado, estableciendo permisos públicos...`);
+
             // Hacer el archivo público para descarga directa
-            await file.makePublic();
+            await file.makePublic().catch(err => {
+                console.log(`[CSV WARNING] No se pudo hacer público (puede que ya lo sea):`, err.message);
+            });
 
             const publicUrl = `https://storage.googleapis.com/${this.bucket.name}/${filepath}`;
             console.log(`[CSV SUCCESS] CSV uploaded: ${filename} (${csvSize} bytes)`);
@@ -151,7 +178,13 @@ class CSVDatasetService {
 
         } catch (error) {
             console.error(`[CSV ERROR] Failed to upload CSV ${filename}:`, error.message);
+            console.error(`[CSV ERROR] Error code:`, error.code);
             console.error(`[CSV ERROR] Stack:`, error.stack);
+            
+            // Logging adicional para diagnóstico
+            console.error(`[CSV ERROR] Bucket name:`, this.bucket?.name || 'undefined');
+            console.error(`[CSV ERROR] Storage available:`, this.storage !== null);
+            
             return null;
         }
     }
