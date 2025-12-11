@@ -107,13 +107,14 @@
 
 /* Instagram */
 .social-link.instagram {
-    background: #f09433;
+    background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
     color: white;
 }
 
 .social-link.instagram:hover {
     transform: translateY(-4px) scale(1.05);
-    box-shadow: 0 4px 16px rgba(240, 148, 51, 0.4);
+    box-shadow: 0 4px 16px rgba(240, 148, 51, 0.5), 0 4px 16px rgba(188, 24, 136, 0.3);
+    filter: brightness(1.1);
 }
 
 /* Facebook */
