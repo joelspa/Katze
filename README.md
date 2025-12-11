@@ -6,15 +6,38 @@ Sistema web completo para gestionar adopciones de gatos con evaluación por inte
 
 ## Tabla de Contenidos
 
-1. [Arquitectura del Sistema](#arquitectura-del-sistema)
-2. [Flujo de Adopción](#flujo-de-adopción)
-3. [Sistema de Evaluación por IA](#sistema-de-evaluación-por-ia)
-4. [Gestión de Usuarios y Roles](#gestión-de-usuarios-y-roles)
-5. [Sistema de Seguimiento Post-Adopción](#sistema-de-seguimiento-post-adopción)
-6. [Gestión de Datasets CSV](#gestión-de-datasets-csv)
-7. [Panel de Administración](#panel-de-administración)
-8. [Configuración y Despliegue](#configuración-y-despliegue)
-9. [API Endpoints](#api-endpoints)
+1. [Documentación Complementaria](#documentación-complementaria)
+2. [Arquitectura del Sistema](#arquitectura-del-sistema)
+3. [Flujo de Adopción](#flujo-de-adopción)
+4. [Sistema de Evaluación por IA](#sistema-de-evaluación-por-ia)
+5. [Gestión de Usuarios y Roles](#gestión-de-usuarios-y-roles)
+6. [Sistema de Seguimiento Post-Adopción](#sistema-de-seguimiento-post-adopción)
+7. [Gestión de Datasets CSV](#gestión-de-datasets-csv)
+8. [Panel de Administración](#panel-de-administración)
+9. [Configuración y Despliegue](#configuración-y-despliegue)
+10. [API Endpoints](#api-endpoints)
+11. [Credenciales de Demostración](#credenciales-de-demostración)
+
+---
+
+## Documentación Complementaria
+
+### Archivos de Referencia
+
+- **[DEMO.md](DEMO.md)**: Guía rápida de prueba con credenciales y flujo de demostración paso a paso
+- **[FUNCIONALIDADES.md](FUNCIONALIDADES.md)**: Explicación técnica detallada de cada funcionalidad del sistema
+- **[DB.md](DB.md)**: Documentación completa de la base de datos (tablas, relaciones, índices, migraciones)
+- **[DB.sql](DB.sql)**: Script PostgreSQL ejecutable para recrear la base de datos completa
+- **[API_ROUTES.md](API_ROUTES.md)**: Documentación de todos los endpoints de la API REST
+
+### Base de Datos
+
+Para una comprensión detallada de la estructura de base de datos:
+
+1. **Documentación**: Lee [DB.md](DB.md) para ver el diseño completo con diagramas ERD
+2. **Script SQL**: Ejecuta [DB.sql](DB.sql) en PostgreSQL para crear toda la estructura
+3. **Schema Base**: Revisa [backend/schema.sql](backend/schema.sql) para el schema inicial
+4. **Migraciones**: Ver carpeta [backend/migrations/](backend/migrations/) para cambios incrementales
 
 ---
 
@@ -611,7 +634,10 @@ cp .env.example .env
 # 4. Crear base de datos
 createdb katze
 
-# 5. Ejecutar schema y seed
+# 5. Ejecutar schema (opción A: script completo)
+psql -U postgres -d katze -f DB.sql
+
+# O ejecutar schema (opción B: comandos individuales)
 npm run init-db
 npm run seed:demo
 
@@ -669,7 +695,21 @@ npm run seed:demo        # Poblar DB con datos de demostración
 ```bash
 npm start                # Iniciar servidor Express (puerto 5000)
 node init-db.js          # Ejecutar schema.sql
+node seed-database.js    # Poblar base de datos con datos de demostración
 node generate-datasets.js # Regenerar todos los datasets CSV
+node run-migration.js    # Ejecutar migraciones pendientes
+```
+
+**Base de Datos**:
+```bash
+# Crear base de datos completa desde script SQL
+psql -U postgres -d katze -f DB.sql
+
+# O ejecutar schema y migraciones por separado
+psql -U postgres -d katze -f backend/schema.sql
+psql -U postgres -d katze -f backend/migrations/add_living_space_and_breed.sql
+psql -U postgres -d katze -f backend/migrations/add_ai_async_evaluation.sql
+psql -U postgres -d katze -f backend/migrations/translate_status_to_spanish.sql
 ```
 
 **Frontend**:
@@ -859,21 +899,67 @@ Regenerar todos los datasets CSV (Admin)
 
 ## Credenciales de Demostración
 
-Después de ejecutar `npm run seed:demo`, puedes acceder con:
+**Contraseña universal para TODOS los usuarios: `123`**
 
-**Admin**:
-- Email: `admin@katze.com`
-- Password: `123`
+Después de ejecutar `npm run seed:demo`, la base de datos incluye:
 
-**Rescatistas**:
-- `ana.garcia@katze.com` / `123`
-- `carlos.lopez@katze.com` / `123`
-- `lucia.martinez@katze.com` / `123`
+### Usuarios (11 totales)
 
-**Adoptantes**:
-- `juan.perez@katze.com` / `123`
-- `sofia.ramirez@katze.com` / `123`
-- `miguel.torres@katze.com` / `123`
+#### Administrador (1)
+| Email | Nombre | Rol |
+|-------|--------|-----|
+| admin@katze.com | María Rodríguez | admin |
+
+**Permisos**: Control total del sistema
+
+#### Rescatistas (3)
+| Email | Nombre | Rol |
+|-------|--------|-----|
+| ana.garcia@katze.com | Ana García | rescatista |
+| carlos.lopez@katze.com | Carlos López | rescatista |
+| lucia.martinez@katze.com | Lucía Martínez | rescatista |
+
+**Permisos**: Publicar gatos, gestionar solicitudes recibidas, ver seguimiento de sus adopciones
+
+#### Adoptantes (7)
+| Email | Nombre | Rol |
+|-------|--------|-----|
+| juan.perez@katze.com | Juan Pérez | adoptante |
+| sofia.ramirez@katze.com | Sofía Ramírez | adoptante |
+| miguel.torres@katze.com | Miguel Torres | adoptante |
+| valentina.castro@katze.com | Valentina Castro | adoptante |
+| diego.morales@katze.com | Diego Morales | adoptante |
+| daniela.vega@katze.com | Daniela Vega | adoptante |
+| andres.silva@katze.com | Andrés Silva | adoptante |
+
+**Permisos**: Ver catálogo, solicitar adopciones, ver estado de solicitudes
+
+### Datos Precargados
+
+- **11 gatos**: 8 aprobados (con 3 fotos cada uno), 2 pendientes, 1 rechazado
+- **10 solicitudes**: 3 aprobadas, 3 procesando, 1 en revisión, 3 rechazadas (2 por IA, 1 manual)
+- **10 tareas de seguimiento**: Distribuidas entre completadas, pendientes y atrasadas
+- **12 posts educativos**: Categorizados en cuidados básicos, salud, comportamiento y adopción responsable
+
+**Para guía completa de prueba**: Ver [DEMO.md](DEMO.md)
+
+---
+
+## Documentación de Base de Datos
+
+Para entender la estructura completa de la base de datos:
+
+- **Documentación completa**: [DB.md](DB.md) - Tablas, relaciones, índices, vistas, funciones
+- **Script ejecutable**: [DB.sql](DB.sql) - Crea toda la estructura desde cero
+- **Diagrama ERD**: Disponible en [DB.md](DB.md#diagrama-de-relaciones-erd-simplificado)
+- **Historial de migraciones**: Ver [DB.md](DB.md#historial-de-migraciones)
+
+**Estructura resumida**:
+- 5 tablas: users, cats, adoption_applications, tracking_tasks, educational_posts
+- 1 vista: v_tracking_tasks_details
+- 1 función: mark_overdue_tasks()
+- 12 índices optimizados
+- 4 migraciones aplicadas
 
 ---
 
