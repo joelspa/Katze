@@ -150,22 +150,36 @@ class CSVDatasetService {
 
             console.log(`[CSV] Subiendo ${filename} (${csvSize} bytes) a ${filepath}...`);
 
-            // Usar Buffer para asegurar codificación correcta
-            const buffer = Buffer.from(csvContent, 'utf8');
-            const file = this.bucket.file(filepath);
+            // Usar promesa para manejar el stream de forma más controlada
+            await new Promise((resolve, reject) => {
+                const file = this.bucket.file(filepath);
+                const stream = file.createWriteStream({
+                    metadata: {
+                        contentType: 'text/csv; charset=utf-8',
+                        cacheControl: 'public, max-age=300',
+                    },
+                    resumable: false,
+                    validation: false, // Deshabilitar validación de hash para evitar stream issues
+                });
 
-            // Intentar upload con configuración simplificada
-            await file.save(buffer, {
-                contentType: 'text/csv; charset=utf-8',
-                resumable: false,
-                metadata: {
-                    contentType: 'text/csv; charset=utf-8',
-                    cacheControl: 'public, max-age=300',
-                }
+                stream.on('error', (error) => {
+                    console.error(`[CSV ERROR] Stream error:`, error.message);
+                    reject(error);
+                });
+
+                stream.on('finish', () => {
+                    console.log(`[CSV SUCCESS] Stream finished successfully`);
+                    resolve();
+                });
+
+                // Escribir el contenido y cerrar el stream
+                stream.end(csvContent);
             });
 
             console.log(`[CSV SUCCESS] Archivo guardado, estableciendo permisos públicos...`);
 
+            const file = this.bucket.file(filepath);
+            
             // Hacer el archivo público para descarga directa
             await file.makePublic().catch(err => {
                 console.log(`[CSV WARNING] No se pudo hacer público (puede que ya lo sea):`, err.message);
