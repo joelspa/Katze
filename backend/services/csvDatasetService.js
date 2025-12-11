@@ -4,6 +4,7 @@
 
 const admin = require('firebase-admin');
 const db = require('../db');
+const axios = require('axios');
 
 class CSVDatasetService {
     constructor() {
@@ -124,7 +125,7 @@ class CSVDatasetService {
     }
 
     /**
-     * Upload CSV to Firebase Storage
+     * Upload CSV to Firebase Storage usando API REST
      * @param {string} filename - Name of CSV file
      * @param {string} csvContent - CSV content as string
      * @returns {Promise<string|null>} Public URL or null
@@ -139,31 +140,30 @@ class CSVDatasetService {
                 return null;
             }
 
-            // Verificar que bucket esté disponible
-            if (!this.bucket || typeof this.bucket.file !== 'function') {
-                console.error('[CSV ERROR] Bucket no está correctamente inicializado');
-                return null;
-            }
-
             const filepath = `datasets/${filename}`;
             const csvSize = Buffer.byteLength(csvContent, 'utf8');
 
-            console.log(`[CSV] Subiendo ${filename} (${csvSize} bytes) a ${filepath}...`);
+            console.log(`[CSV] Subiendo ${filename} (${csvSize} bytes) usando API REST...`);
 
-            const file = this.bucket.file(filepath);
+            // Obtener access token
+            const accessToken = await admin.credential.applicationDefault().getAccessToken();
             
-            // Usar file.save() con opciones mínimas y sin validación
-            await file.save(csvContent, {
-                resumable: false,
-                validation: false,
-                contentType: 'text/csv; charset=utf-8',
+            // Subir usando Google Cloud Storage REST API
+            const uploadUrl = `https://storage.googleapis.com/upload/storage/v1/b/${this.bucket.name}/o?uploadType=media&name=${encodeURIComponent(filepath)}`;
+            
+            await axios.post(uploadUrl, csvContent, {
+                headers: {
+                    'Authorization': `Bearer ${accessToken.access_token}`,
+                    'Content-Type': 'text/csv; charset=utf-8',
+                },
             });
 
-            console.log(`[CSV SUCCESS] Archivo guardado, estableciendo permisos públicos...`);
-            
-            // Hacer el archivo público para descarga directa
+            console.log(`[CSV SUCCESS] Archivo subido vía REST API`);
+
+            // Hacer el archivo público
+            const file = this.bucket.file(filepath);
             await file.makePublic().catch(err => {
-                console.log(`[CSV WARNING] No se pudo hacer público (puede que ya lo sea):`, err.message);
+                console.log(`[CSV WARNING] No se pudo hacer público:`, err.message);
             });
 
             const publicUrl = `https://storage.googleapis.com/${this.bucket.name}/${filepath}`;
@@ -174,11 +174,13 @@ class CSVDatasetService {
         } catch (error) {
             console.error(`[CSV ERROR] Failed to upload CSV ${filename}:`, error.message);
             console.error(`[CSV ERROR] Error code:`, error.code);
-            console.error(`[CSV ERROR] Stack:`, error.stack);
             
-            // Logging adicional para diagnóstico
+            if (error.response) {
+                console.error(`[CSV ERROR] Response status:`, error.response.status);
+                console.error(`[CSV ERROR] Response data:`, error.response.data);
+            }
+            
             console.error(`[CSV ERROR] Bucket name:`, this.bucket?.name || 'undefined');
-            console.error(`[CSV ERROR] Storage available:`, this.storage !== null);
             
             return null;
         }
