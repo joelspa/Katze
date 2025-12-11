@@ -15,26 +15,34 @@ class DatasetService {
                 console.log('[DATASET] Firebase no está inicializado, inicializando...');
                 
                 try {
-                    // Intentar cargar desde archivo local primero
                     let credential;
                     
-                    try {
-                        const serviceAccount = require('../serviceAccountKey.json');
-                        console.log('[DATASET] Usando serviceAccountKey.json local');
-                        credential = admin.credential.cert(serviceAccount);
-                    } catch (fileError) {
-                        // Si no existe el archivo, intentar con variable de entorno
-                        console.log('[DATASET] serviceAccountKey.json no encontrado, intentando variables de entorno...');
-                        
-                        if (process.env.GOOGLE_APPLICATION_CREDENTIALS) {
-                            console.log('[DATASET] Usando GOOGLE_APPLICATION_CREDENTIALS');
-                            credential = admin.credential.applicationDefault();
-                        } else if (process.env.FIREBASE_SERVICE_ACCOUNT) {
-                            console.log('[DATASET] Usando FIREBASE_SERVICE_ACCOUNT');
-                            const serviceAccountFromEnv = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
-                            credential = admin.credential.cert(serviceAccountFromEnv);
-                        } else {
-                            throw new Error('No se encontró credencial de Firebase (ni archivo ni variables de entorno)');
+                    // Prioridad 1: Variable de entorno FIREBASE_SERVICE_ACCOUNT
+                    if (process.env.FIREBASE_SERVICE_ACCOUNT) {
+                        console.log('[DATASET] Usando FIREBASE_SERVICE_ACCOUNT de variable de entorno');
+                        const serviceAccountFromEnv = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
+                        credential = admin.credential.cert(serviceAccountFromEnv);
+                    }
+                    // Prioridad 2: Variable de entorno GOOGLE_APPLICATION_CREDENTIALS
+                    else if (process.env.GOOGLE_APPLICATION_CREDENTIALS) {
+                        console.log('[DATASET] Usando GOOGLE_APPLICATION_CREDENTIALS de variable de entorno');
+                        try {
+                            const fs = require('fs');
+                            const serviceAccount = JSON.parse(fs.readFileSync(process.env.GOOGLE_APPLICATION_CREDENTIALS, 'utf8'));
+                            credential = admin.credential.cert(serviceAccount);
+                        } catch (err) {
+                            console.error('[DATASET ERROR] No se pudo leer archivo de GOOGLE_APPLICATION_CREDENTIALS:', err.message);
+                            throw err;
+                        }
+                    }
+                    // Prioridad 3: Archivo local (solo para desarrollo)
+                    else {
+                        try {
+                            const serviceAccount = require('../serviceAccountKey.json');
+                            console.log('[DATASET] Usando serviceAccountKey.json local (desarrollo)');
+                            credential = admin.credential.cert(serviceAccount);
+                        } catch (fileError) {
+                            throw new Error('No se encontró credencial de Firebase. Configure FIREBASE_SERVICE_ACCOUNT en variables de entorno.');
                         }
                     }
                     
