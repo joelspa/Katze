@@ -3,7 +3,7 @@
 
 ---
 
-## 1. 🔐 REGISTRO Y LOGIN DE USUARIOS
+## 1. REGISTRO Y LOGIN DE USUARIOS
 
 **¿Qué hace?** Permite crear cuentas y acceder a la plataforma.
 
@@ -21,7 +21,7 @@
 
 ---
 
-## 2. 🐱 PUBLICAR GATOS
+## 2. PUBLICAR GATOS
 
 **¿Qué hace?** Rescatistas suben fotos y datos de gatos para adopción.
 
@@ -52,7 +52,7 @@ Usuario → [Formulario] → Firebase Storage (fotos)
 
 ---
 
-## 3. ✅ APROBAR/RECHAZAR GATOS (Admin)
+## 3. APROBAR/RECHAZAR GATOS (Admin)
 
 **¿Qué hace?** El admin revisa y aprueba publicaciones de gatos.
 
@@ -69,7 +69,7 @@ Usuario → [Formulario] → Firebase Storage (fotos)
 
 ---
 
-## 4. 📝 SOLICITAR ADOPCIÓN
+## 4. SOLICITAR ADOPCIÓN
 
 **¿Qué hace?** Usuarios envían formularios para adoptar un gato.
 
@@ -109,7 +109,7 @@ Adoptante → [Formulario] → PostgreSQL (estado: procesando)
 
 ---
 
-## 5. 🤖 MODERACIÓN AUTOMÁTICA CON IA
+## 5. MODERACIÓN AUTOMÁTICA CON IA
 
 **¿Qué hace?** Detecta contenido inapropiado en publicaciones de gatos.
 
@@ -128,7 +128,7 @@ Adoptante → [Formulario] → PostgreSQL (estado: procesando)
 
 ---
 
-## 6. 📊 GENERAR DATASETS CSV
+## 6. GENERAR DATASETS CSV
 
 **¿Qué hace?** Crea archivos CSV con todos los datos del sistema.
 
@@ -174,7 +174,7 @@ Evento (crear gato) → csvDatasetService.updateCatsDataset()
 
 ---
 
-## 7. ⬇️ DESCARGAR DATASETS
+## 7. DESCARGAR DATASETS
 
 **¿Qué hace?** Admin descarga CSVs siempre actualizados.
 
@@ -192,7 +192,7 @@ Evento (crear gato) → csvDatasetService.updateCatsDataset()
 
 ---
 
-## 8. 📋 TAREAS DE SEGUIMIENTO POST-ADOPCIÓN
+## 8. TAREAS DE SEGUIMIENTO POST-ADOPCIÓN
 
 **¿Qué hace?** Crea tareas automáticas cuando se aprueba una adopción.
 
@@ -216,7 +216,7 @@ Evento (crear gato) → csvDatasetService.updateCatsDataset()
 
 ---
 
-## 9. 🎓 PLATAFORMA EDUCATIVA
+## 9. PLATAFORMA EDUCATIVA
 
 **¿Qué hace?** Admins publican artículos sobre cuidado de gatos.
 
@@ -233,7 +233,7 @@ Evento (crear gato) → csvDatasetService.updateCatsDataset()
 
 ---
 
-## 10. 🔄 WEBHOOK A MAKE.COM
+## 10. WEBHOOK A MAKE.COM
 
 **¿Qué hace?** Notifica a sistemas externos cuando se publica un gato.
 
@@ -261,7 +261,7 @@ Evento (crear gato) → csvDatasetService.updateCatsDataset()
 
 ---
 
-## 11. 👥 GESTIÓN DE USUARIOS (Admin)
+## 11. GESTIÓN DE USUARIOS (Admin)
 
 **¿Qué hace?** Admin controla usuarios y sus roles.
 
@@ -291,7 +291,7 @@ Evento (crear gato) → csvDatasetService.updateCatsDataset()
 
 ---
 
-## 12. 📈 ESTADÍSTICAS DEL DASHBOARD
+## 12. ESTADÍSTICAS DEL DASHBOARD
 
 **¿Qué hace?** Muestra métricas del sistema en tiempo real.
 
