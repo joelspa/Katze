@@ -166,6 +166,9 @@ const AdminDashboard = () => {
     const [selectedCatGroup, setSelectedCatGroup] = useState<CatApplicationGroup | null>(null);
     const [applicationStatusFilter, setApplicationStatusFilter] = useState<string | null>(null);
     
+    // Estado para regeneración de CSVs
+    const [regeneratingCSV, setRegeneratingCSV] = useState(false);
+    
     const { token } = useAuth();
 
     // Carga todos los artículos del blog
@@ -441,6 +444,78 @@ const AdminDashboard = () => {
             if (isAxiosError(error)) {
                 alert(error.response?.data?.message || 'Error al crear usuario');
             }
+        }
+    };
+
+    // ================ FUNCIONES PARA DATASETS CSV ================
+
+    // Regenera todos los CSVs y luego descarga uno específico
+    const handleDownloadCSV = async (filename: string) => {
+        try {
+            setRegeneratingCSV(true);
+            
+            // Primero, regenerar todos los CSVs
+            const API_URL = `${API_BASE_URL}/api/admin/datasets/regenerate`;
+            await axios.post(API_URL, {}, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+
+            // Esperar un momento para que se complete la subida a Firebase
+            await new Promise(resolve => setTimeout(resolve, 2000));
+
+            // Descargar el CSV solicitado con timestamp para evitar cache
+            const downloadUrl = `https://storage.googleapis.com/katze-app.firebasestorage.app/datasets/${filename}?t=${Date.now()}`;
+            const a = document.createElement('a');
+            a.href = downloadUrl;
+            a.download = filename;
+            a.style.display = 'none';
+            document.body.appendChild(a);
+            a.click();
+            setTimeout(() => document.body.removeChild(a), 100);
+
+        } catch (error) {
+            console.error('Error al regenerar/descargar CSV:', error);
+            await showAlert('Error al actualizar y descargar el archivo CSV. Por favor, inténtalo de nuevo.', 'Error');
+        } finally {
+            setRegeneratingCSV(false);
+        }
+    };
+
+    // Descarga todos los CSVs actualizados
+    const handleDownloadAllCSVs = async () => {
+        try {
+            setRegeneratingCSV(true);
+            
+            // Primero, regenerar todos los CSVs
+            const API_URL = `${API_BASE_URL}/api/admin/datasets/regenerate`;
+            await axios.post(API_URL, {}, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+
+            // Esperar para que se completen las subidas
+            await new Promise(resolve => setTimeout(resolve, 3000));
+
+            const filenames = ['users.csv', 'cats.csv', 'adoption_applications.csv', 'tracking_tasks.csv'];
+            
+            // Descarga secuencial con timestamp para evitar cache
+            filenames.forEach((filename, index) => {
+                setTimeout(() => {
+                    const downloadUrl = `https://storage.googleapis.com/katze-app.firebasestorage.app/datasets/${filename}?t=${Date.now()}`;
+                    const a = document.createElement('a');
+                    a.href = downloadUrl;
+                    a.download = filename;
+                    a.style.display = 'none';
+                    document.body.appendChild(a);
+                    a.click();
+                    setTimeout(() => document.body.removeChild(a), 100);
+                }, index * 1000);
+            });
+
+        } catch (error) {
+            console.error('Error al regenerar/descargar CSVs:', error);
+            await showAlert('Error al actualizar y descargar los archivos CSV. Por favor, inténtalo de nuevo.', 'Error');
+        } finally {
+            setRegeneratingCSV(false);
         }
     };
 
@@ -2324,36 +2399,13 @@ const AdminDashboard = () => {
                             </div>
                             <button 
                                 className="btn-download-all"
-                                onClick={() => {
-                                    const urls = [
-                                        'https://storage.googleapis.com/katze-app.firebasestorage.app/datasets/users.csv',
-                                        'https://storage.googleapis.com/katze-app.firebasestorage.app/datasets/cats.csv',
-                                        'https://storage.googleapis.com/katze-app.firebasestorage.app/datasets/adoption_applications.csv',
-                                        'https://storage.googleapis.com/katze-app.firebasestorage.app/datasets/tracking_tasks.csv'
-                                    ];
-                                    
-                                    // Descarga secuencial con delay de 1 segundo entre archivos
-                                    // Esto evita que el navegador bloquee las descargas múltiples
-                                    urls.forEach((url, index) => {
-                                        setTimeout(() => {
-                                            const filename = url.split('/').pop() || 'dataset.csv';
-                                            const a = document.createElement('a');
-                                            a.href = url;
-                                            a.download = filename;
-                                            a.style.display = 'none';
-                                            document.body.appendChild(a);
-                                            a.click();
-                                            setTimeout(() => {
-                                                document.body.removeChild(a);
-                                            }, 100);
-                                        }, index * 1000);
-                                    });
-                                }}
+                                onClick={handleDownloadAllCSVs}
+                                disabled={regeneratingCSV}
                             >
                                 <svg viewBox="0 0 20 20" fill="currentColor">
                                     <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd" />
                                 </svg>
-                                Descargar Todo
+                                {regeneratingCSV ? 'Actualizando...' : 'Descargar Todo'}
                             </button>
                         </div>
                     </div>
@@ -2384,18 +2436,16 @@ const AdminDashboard = () => {
                                     Actualizado hoy
                                 </span>
                             </div>
-                            <a 
-                                href="https://storage.googleapis.com/katze-app.firebasestorage.app/datasets/users.csv"
-                                download="users.csv"
+                            <button 
+                                onClick={() => handleDownloadCSV('users.csv')}
                                 className="btn-download-dataset"
-                                target="_blank"
-                                rel="noopener noreferrer"
+                                disabled={regeneratingCSV}
                             >
                                 <svg viewBox="0 0 20 20" fill="currentColor">
                                     <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd" />
                                 </svg>
-                                Descargar CSV
-                            </a>
+                                {regeneratingCSV ? 'Actualizando...' : 'Descargar CSV'}
+                            </button>
                         </div>
 
                         {/* Cats CSV */}
@@ -2423,18 +2473,16 @@ const AdminDashboard = () => {
                                     Actualizado hoy
                                 </span>
                             </div>
-                            <a 
-                                href="https://storage.googleapis.com/katze-app.firebasestorage.app/datasets/cats.csv"
-                                download="cats.csv"
+                            <button 
+                                onClick={() => handleDownloadCSV('cats.csv')}
                                 className="btn-download-dataset"
-                                target="_blank"
-                                rel="noopener noreferrer"
+                                disabled={regeneratingCSV}
                             >
                                 <svg viewBox="0 0 20 20" fill="currentColor">
                                     <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd" />
                                 </svg>
-                                Descargar CSV
-                            </a>
+                                {regeneratingCSV ? 'Actualizando...' : 'Descargar CSV'}
+                            </button>
                         </div>
 
                         {/* Applications CSV */}
@@ -2463,18 +2511,16 @@ const AdminDashboard = () => {
                                     Actualizado hoy
                                 </span>
                             </div>
-                            <a 
-                                href="https://storage.googleapis.com/katze-app.firebasestorage.app/datasets/adoption_applications.csv"
-                                download="adoption_applications.csv"
+                            <button 
+                                onClick={() => handleDownloadCSV('adoption_applications.csv')}
                                 className="btn-download-dataset"
-                                target="_blank"
-                                rel="noopener noreferrer"
+                                disabled={regeneratingCSV}
                             >
                                 <svg viewBox="0 0 20 20" fill="currentColor">
                                     <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd" />
                                 </svg>
-                                Descargar CSV
-                            </a>
+                                {regeneratingCSV ? 'Actualizando...' : 'Descargar CSV'}
+                            </button>
                         </div>
 
                         {/* Tracking Tasks CSV */}
@@ -2502,18 +2548,16 @@ const AdminDashboard = () => {
                                     Actualizado hoy
                                 </span>
                             </div>
-                            <a 
-                                href="https://storage.googleapis.com/katze-app.firebasestorage.app/datasets/tracking_tasks.csv"
-                                download="tracking_tasks.csv"
+                            <button 
+                                onClick={() => handleDownloadCSV('tracking_tasks.csv')}
                                 className="btn-download-dataset"
-                                target="_blank"
-                                rel="noopener noreferrer"
+                                disabled={regeneratingCSV}
                             >
                                 <svg viewBox="0 0 20 20" fill="currentColor">
                                     <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd" />
                                 </svg>
-                                Descargar CSV
-                            </a>
+                                {regeneratingCSV ? 'Actualizando...' : 'Descargar CSV'}
+                            </button>
                         </div>
                     </div>
 
