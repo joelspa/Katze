@@ -412,5 +412,3 @@ FIREBASE_SERVICE_ACCOUNT={"type":"service_account",...}
 7. **Moderación automática** con IA antes de aprobar publicaciones
 
 ---
-
-*Este documento explica el funcionamiento técnico de Katze de forma simplificada. Cada funcionalidad combina múltiples tecnologías trabajando en conjunto para ofrecer una experiencia completa.*

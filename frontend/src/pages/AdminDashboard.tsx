@@ -1262,54 +1262,43 @@ const AdminDashboard = () => {
                     {/* Resumen estadístico - Gatos */}
                     {summary && (
                         <div className="admin-summary">
-                            <div className="summary-card">
+                            <div 
+                                className={`summary-card ${filter === 'all' ? 'filter-active' : ''}`}
+                                onClick={() => setFilter('all')}
+                                style={{ cursor: 'pointer' }}
+                            >
                                 <h3>{summary.total}</h3>
                                 <p>Total Gatos</p>
                             </div>
-                            <div className="summary-card pending">
+                            <div 
+                                className={`summary-card pending ${filter === 'pendiente' ? 'filter-active' : ''}`}
+                                onClick={() => setFilter('pendiente')}
+                                style={{ cursor: 'pointer' }}
+                            >
                                 <h3>{summary.pendientes}</h3>
                                 <p>Pendientes</p>
                             </div>
-                            <div className="summary-card approved">
+                            <div 
+                                className={`summary-card approved ${filter === 'aprobado' ? 'filter-active' : ''}`}
+                                onClick={() => setFilter('aprobado')}
+                                style={{ cursor: 'pointer' }}
+                            >
                                 <h3>{summary.aprobados}</h3>
                                 <p>Aprobados</p>
                             </div>
-                            <div className="summary-card rejected">
+                            <div 
+                                className={`summary-card rejected ${filter === 'rechazado' ? 'filter-active' : ''}`}
+                                onClick={() => setFilter('rechazado')}
+                                style={{ cursor: 'pointer' }}
+                            >
                                 <h3>{summary.rechazados}</h3>
                                 <p>Rechazados</p>
                             </div>
                         </div>
                     )}
 
-            {/* Filtros y Toggle */}
-            <div className="admin-filters-bar" style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '16px'}}>
-                <div className="admin-filters">
-                    <button 
-                        className={filter === 'pendiente' ? 'filter-active' : ''}
-                        onClick={() => setFilter('pendiente')}
-                    >
-                        Pendientes ({summary?.pendientes || 0})
-                    </button>
-                    <button 
-                        className={filter === 'aprobado' ? 'filter-active' : ''}
-                        onClick={() => setFilter('aprobado')}
-                    >
-                        Aprobados ({summary?.aprobados || 0})
-                    </button>
-                    <button 
-                        className={filter === 'rechazado' ? 'filter-active' : ''}
-                        onClick={() => setFilter('rechazado')}
-                    >
-                        Rechazados ({summary?.rechazados || 0})
-                    </button>
-                    <button 
-                        className={filter === 'all' ? 'filter-active' : ''}
-                        onClick={() => setFilter('all')}
-                    >
-                        Todos ({summary?.total || 0})
-                    </button>
-                </div>
-                
+            {/* Toggle de vista */}
+            <div className="admin-filters-bar" style={{display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '16px'}}>
                 <div className="view-toggle">
                     <button 
                         className={`view-toggle-btn ${viewMode === 'grid' ? 'active' : ''}`}

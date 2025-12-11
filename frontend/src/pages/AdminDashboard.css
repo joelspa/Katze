@@ -89,6 +89,18 @@
     border-color: var(--color-primary);
 }
 
+.summary-card.filter-active {
+    border-color: var(--color-primary);
+    background: linear-gradient(135deg, rgba(255, 159, 64, 0.15) 0%, rgba(255, 159, 64, 0.05) 100%);
+    box-shadow: 0 6px 20px rgba(255, 159, 64, 0.4);
+    transform: translateY(-4px);
+}
+
+.summary-card.filter-active h3 {
+    color: var(--color-primary);
+    font-weight: var(--font-weight-bold);
+}
+
 .summary-card.active {
     border-color: var(--color-primary);
     background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
