@@ -77,13 +77,19 @@ class CSVDatasetService {
      */
     async _uploadCSV(filename, csvContent) {
         try {
+            console.log(`[CSV] Intentando subir ${filename}...`);
+            
             if (!this.isAvailable()) {
                 console.log('[CSV WARNING] Firebase Storage not available, skipping CSV upload');
+                console.log('[CSV WARNING] storage:', this.storage !== null, 'bucket:', this.bucket !== null);
                 return null;
             }
 
             const filepath = `datasets/${filename}`;
             const file = this.bucket.file(filepath);
+            const csvSize = Buffer.byteLength(csvContent, 'utf8');
+
+            console.log(`[CSV] Subiendo ${filename} (${csvSize} bytes) a ${filepath}...`);
 
             await file.save(csvContent, {
                 metadata: {
@@ -101,12 +107,13 @@ class CSVDatasetService {
             await file.makePublic();
 
             const publicUrl = `https://storage.googleapis.com/${this.bucket.name}/${filepath}`;
-            console.log(`[CSV SUCCESS] CSV uploaded: ${filename}`);
+            console.log(`[CSV SUCCESS] CSV uploaded: ${filename} (${csvSize} bytes)`);
             console.log(`[CSV] Download URL: ${publicUrl}`);
             return publicUrl;
 
         } catch (error) {
             console.error(`[CSV ERROR] Failed to upload CSV ${filename}:`, error.message);
+            console.error(`[CSV ERROR] Stack:`, error.stack);
             return null;
         }
     }
@@ -117,6 +124,8 @@ class CSVDatasetService {
      */
     async updateCatsDataset() {
         try {
+            console.log('[CSV] Iniciando actualización de cats.csv...');
+            
             const result = await db.query(`
                 SELECT 
                     c.id,
@@ -139,6 +148,8 @@ class CSVDatasetService {
                 ORDER BY c.created_at DESC
             `);
 
+            console.log(`[CSV] Obtenidos ${result.rows.length} gatos de la base de datos`);
+
             const cats = result.rows.map(cat => ({
                 id: cat.id,
                 name: cat.name,
@@ -158,10 +169,21 @@ class CSVDatasetService {
             }));
 
             const csvContent = this._arrayToCSV(cats);
-            return await this._uploadCSV('cats.csv', csvContent);
+            console.log(`[CSV] CSV generado con ${csvContent.split('\n').length - 1} registros`);
+            
+            const url = await this._uploadCSV('cats.csv', csvContent);
+            
+            if (url) {
+                console.log(`[CSV SUCCESS] cats.csv actualizado correctamente: ${url}`);
+            } else {
+                console.log('[CSV WARNING] cats.csv no se pudo subir (Firebase no disponible)');
+            }
+            
+            return url;
 
         } catch (error) {
             console.error('[CSV ERROR] Failed to update cats CSV:', error.message);
+            console.error('[CSV ERROR] Stack:', error.stack);
             return null;
         }
     }

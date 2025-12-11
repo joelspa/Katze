@@ -70,9 +70,14 @@ class CatController {
 
             console.log(`[SUCCESS] Gato #${newCat.id} creado exitosamente por usuario #${req.user.id}`);
 
-            // Actualizar datasets (JSON y CSV) en background
-            datasetService.updateCatsDataset().catch(() => {});
-            csvDatasetService.updateCatsDataset().catch(() => {});
+            // Actualizar datasets (JSON y CSV) en background con logs
+            datasetService.updateCatsDataset()
+                .then(() => console.log('[DATASET] JSON cats dataset actualizado'))
+                .catch(err => console.error('[DATASET ERROR] Error actualizando JSON cats:', err.message));
+            
+            csvDatasetService.updateCatsDataset()
+                .then(() => console.log('[DATASET] CSV cats dataset actualizado'))
+                .catch(err => console.error('[DATASET ERROR] Error actualizando CSV cats:', err.message));
 
             return ErrorHandler.created(res, { cat: newCat }, 'Gato enviado para revisión. Un administrador lo aprobará pronto.');
 
@@ -173,9 +178,14 @@ class CatController {
                 return ErrorHandler.notFound(res, 'Gato no encontrado');
             }
 
-            // Actualizar datasets en background
-            datasetService.updateCatsDataset().catch(() => {});
-            csvDatasetService.updateCatsDataset().catch(() => {});
+            // Actualizar datasets en background con logs
+            datasetService.updateCatsDataset()
+                .then(() => console.log('[DATASET] JSON cats dataset actualizado después de cambio de estado'))
+                .catch(err => console.error('[DATASET ERROR] Error actualizando JSON cats:', err.message));
+            
+            csvDatasetService.updateCatsDataset()
+                .then(() => console.log('[DATASET] CSV cats dataset actualizado después de cambio de estado'))
+                .catch(err => console.error('[DATASET ERROR] Error actualizando CSV cats:', err.message));
 
             // DISPARAR WEBHOOK A MAKE.COM solo cuando se APRUEBA el gato
             if (status === config.APPROVAL_STATUS.APROBADO) {
