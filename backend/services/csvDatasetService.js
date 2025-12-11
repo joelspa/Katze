@@ -8,19 +8,57 @@ const db = require('../db');
 class CSVDatasetService {
     constructor() {
         try {
+            console.log('[CSV] Inicializando CSV Dataset Service...');
+            console.log('[CSV] Firebase apps count:', admin.apps.length);
+            
             // Initialize Firebase Admin if not already initialized
             if (admin.apps.length === 0) {
-                const serviceAccount = require('../serviceAccountKey.json');
-                admin.initializeApp({
-                    credential: admin.credential.cert(serviceAccount),
-                    storageBucket: 'katze-app.firebasestorage.app'
-                });
+                console.log('[CSV] Inicializando Firebase Admin...');
+                
+                try {
+                    // Intentar cargar desde archivo local primero
+                    let credential;
+                    
+                    try {
+                        const serviceAccount = require('../serviceAccountKey.json');
+                        console.log('[CSV] Usando serviceAccountKey.json local');
+                        credential = admin.credential.cert(serviceAccount);
+                    } catch (fileError) {
+                        // Si no existe el archivo, intentar con variable de entorno
+                        console.log('[CSV] serviceAccountKey.json no encontrado, intentando GOOGLE_APPLICATION_CREDENTIALS...');
+                        
+                        if (process.env.GOOGLE_APPLICATION_CREDENTIALS) {
+                            console.log('[CSV] Usando GOOGLE_APPLICATION_CREDENTIALS de variable de entorno');
+                            credential = admin.credential.applicationDefault();
+                        } else if (process.env.FIREBASE_SERVICE_ACCOUNT) {
+                            console.log('[CSV] Usando FIREBASE_SERVICE_ACCOUNT de variable de entorno');
+                            const serviceAccountFromEnv = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
+                            credential = admin.credential.cert(serviceAccountFromEnv);
+                        } else {
+                            throw new Error('No se encontró credencial de Firebase (ni archivo ni variables de entorno)');
+                        }
+                    }
+                    
+                    admin.initializeApp({
+                        credential: credential,
+                        storageBucket: 'katze-app.firebasestorage.app'
+                    });
+                    console.log('[CSV SUCCESS] Firebase Admin inicializado correctamente');
+                } catch (initError) {
+                    console.error('[CSV ERROR] Error inicializando Firebase:', initError.message);
+                    throw initError;
+                }
+            } else {
+                console.log('[CSV] Firebase Admin ya está inicializado');
             }
             
             this.storage = admin.storage();
             this.bucket = this.storage.bucket();
+            console.log('[CSV SUCCESS] Storage y Bucket obtenidos correctamente');
+            console.log('[CSV] Bucket name:', this.bucket.name);
         } catch (error) {
             console.error('[CSV ERROR] CSV Dataset Service initialization failed:', error.message);
+            console.error('[CSV ERROR] Error completo:', error);
             this.storage = null;
             this.bucket = null;
         }

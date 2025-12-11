@@ -8,14 +8,55 @@ const { db } = require('../db');
 class DatasetService {
     constructor() {
         try {
-            if (admin.apps.length > 0) {
-                this.storage = admin.storage();
-                this.bucket = this.storage.bucket('katze-app.firebasestorage.app');
+            console.log('[DATASET] Inicializando Dataset Service (JSON)...');
+            console.log('[DATASET] Firebase apps count:', admin.apps.length);
+            
+            if (admin.apps.length === 0) {
+                console.log('[DATASET] Firebase no está inicializado, inicializando...');
+                
+                try {
+                    // Intentar cargar desde archivo local primero
+                    let credential;
+                    
+                    try {
+                        const serviceAccount = require('../serviceAccountKey.json');
+                        console.log('[DATASET] Usando serviceAccountKey.json local');
+                        credential = admin.credential.cert(serviceAccount);
+                    } catch (fileError) {
+                        // Si no existe el archivo, intentar con variable de entorno
+                        console.log('[DATASET] serviceAccountKey.json no encontrado, intentando variables de entorno...');
+                        
+                        if (process.env.GOOGLE_APPLICATION_CREDENTIALS) {
+                            console.log('[DATASET] Usando GOOGLE_APPLICATION_CREDENTIALS');
+                            credential = admin.credential.applicationDefault();
+                        } else if (process.env.FIREBASE_SERVICE_ACCOUNT) {
+                            console.log('[DATASET] Usando FIREBASE_SERVICE_ACCOUNT');
+                            const serviceAccountFromEnv = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
+                            credential = admin.credential.cert(serviceAccountFromEnv);
+                        } else {
+                            throw new Error('No se encontró credencial de Firebase (ni archivo ni variables de entorno)');
+                        }
+                    }
+                    
+                    admin.initializeApp({
+                        credential: credential,
+                        storageBucket: 'katze-app.firebasestorage.app'
+                    });
+                    console.log('[DATASET SUCCESS] Firebase Admin inicializado correctamente');
+                } catch (initError) {
+                    console.error('[DATASET ERROR] Error inicializando Firebase:', initError.message);
+                    throw initError;
+                }
             } else {
-                this.storage = null;
-                this.bucket = null;
+                console.log('[DATASET] Firebase Admin ya está inicializado');
             }
+            
+            this.storage = admin.storage();
+            this.bucket = this.storage.bucket('katze-app.firebasestorage.app');
+            console.log('[DATASET SUCCESS] Storage y Bucket obtenidos correctamente');
         } catch (error) {
+            console.error('[DATASET ERROR] Dataset Service initialization failed:', error.message);
+            console.error('[DATASET ERROR] Error completo:', error);
             this.storage = null;
             this.bucket = null;
         }
