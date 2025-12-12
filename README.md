@@ -36,7 +36,7 @@ Para una comprensión detallada de la estructura de base de datos:
 
 1. **Documentación**: Lee [DB.md](DB.md) para ver el diseño completo con diagramas ERD
 2. **Script SQL**: Ejecuta [DB.sql](DB.sql) en PostgreSQL para crear toda la estructura
-3. **Schema Base**: Revisa [backend/schema.sql](backend/schema.sql) para el schema completo
+3. **Schema Base**: Revisa [backend/database/schema.sql](backend/database/schema.sql) para el schema completo
 
 ---
 
@@ -45,7 +45,7 @@ Para una comprensión detallada de la estructura de base de datos:
 ### Stack Tecnológico
 
 **Backend**: Node.js 18+ con Express como framework web  
-**Base de Datos**: PostgreSQL 14+ con esquema relacional completo ([ver schema.sql](backend/schema.sql))  
+**Base de Datos**: PostgreSQL 14+ con esquema relacional completo ([ver schema.sql](backend/database/schema.sql))  
 **Frontend**: React 18 con TypeScript, Vite como bundler  
 **IA**: Google Gemini 1.5 Flash para análisis de solicitudes  
 **Almacenamiento**: Firebase Storage para imágenes de gatos y datasets CSV  
@@ -55,17 +55,24 @@ Para una comprensión detallada de la estructura de base de datos:
 
 ```
 backend/
+  ├── config/            # Configuración de DB, Firebase y servicios
   ├── controllers/       # Lógica de negocio por módulo
-  ├── services/          # Servicios reutilizables (IA, Firebase, etc)
-  ├── routes/            # Definición de endpoints REST
+  ├── database/          # Schema, scripts de inicialización y seed
   ├── middleware/        # Autenticación y autorización
-  └── config/            # Configuración de base de datos y servicios
+  ├── routes/            # Definición de endpoints REST
+  ├── scripts/           # Scripts de utilidad (datasets, etc)
+  ├── services/          # Servicios reutilizables (IA, Firebase, etc)
+  ├── utils/             # Validadores y utilidades generales
+  └── workers/           # Procesamiento asíncrono (IA evaluation)
 
 frontend/
-  ├── pages/             # Componentes de página
   ├── components/        # Componentes reutilizables
+  ├── config/            # Configuración de API
   ├── context/           # Context API (Auth, Theme)
-  └── config/            # Configuración de API
+  ├── hooks/             # Custom hooks
+  ├── pages/             # Componentes de página
+  ├── styles/            # Estilos globales y por página
+  └── utils/             # Utilidades y helpers
 ```
 
 ---
@@ -671,7 +678,7 @@ npm run dev
 2. **PostgreSQL (Managed Database)**:
    - Crear base de datos
    - Copiar `Internal Database URL` a `DATABASE_URL`
-   - Inicializar schema: `node backend/init-db.js`
+   - Inicializar schema: `node backend/database/init-db.js`
    - Seed inicial: `npm run seed:demo`
 
 3. **Frontend (Static Site)**:
@@ -691,10 +698,10 @@ npm run seed:demo        # Poblar DB con datos de demostración
 **Backend**:
 ```bash
 npm start                # Iniciar servidor Express (puerto 5000)
-node init-db.js          # Inicializar base de datos con schema.sql
-node seed-database.js    # Poblar base de datos con datos de demostración
-node seed-demo.js        # Poblar con datos de demo específicos
-node generate-datasets.js # Regenerar todos los datasets CSV
+node database/init-db.js          # Inicializar base de datos con schema.sql
+node database/seed-database.js    # Poblar base de datos con datos de demostración
+node database/seed-demo.js        # Poblar con datos de demo específicos
+node scripts/generate-datasets.js # Regenerar todos los datasets CSV
 ```
 
 **Base de Datos**:
@@ -703,10 +710,10 @@ node generate-datasets.js # Regenerar todos los datasets CSV
 psql -U postgres -d katze -f DB.sql
 
 # O ejecutar schema directamente
-psql -U postgres -d katze -f backend/schema.sql
+psql -U postgres -d katze -f backend/database/schema.sql
 
 # O usar el script de Node.js
-node backend/init-db.js
+node backend/database/init-db.js
 ```
 
 **Frontend**:

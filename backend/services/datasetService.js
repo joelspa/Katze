@@ -3,7 +3,7 @@
 // Auto-updates on changes to users, applications, cats, etc.
 
 const admin = require('firebase-admin');
-const { db } = require('../db');
+const { db } = require('../config/db');
 
 class DatasetService {
     constructor() {
@@ -38,7 +38,7 @@ class DatasetService {
                     // Prioridad 3: Archivo local (solo para desarrollo)
                     else {
                         try {
-                            const serviceAccount = require('../serviceAccountKey.json');
+                            const serviceAccount = require('../config/serviceAccountKey.json');
                             console.log('[DATASET] Usando serviceAccountKey.json local (desarrollo)');
                             credential = admin.credential.cert(serviceAccount);
                         } catch (fileError) {

@@ -1,7 +1,7 @@
 // Servicio de seguimiento post-adopción
 // Maneja la lógica de negocio para tareas de seguimiento
 
-const db = require('../db');
+const db = require('../config/db');
 
 class TrackingService {
     // Crea tarea de seguimiento post-adopción

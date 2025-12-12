@@ -1,7 +1,7 @@
 // Servicio de gestión de gatos
 // Maneja la lógica de negocio para operaciones con gatos
 
-const db = require('../db');
+const db = require('../config/db');
 
 class CatService {
     // Helper: Parsear photos_url de PostgreSQL array a JavaScript array

@@ -3,7 +3,7 @@
 // Updates on every new record: cats, applications, tracking tasks
 
 const admin = require('firebase-admin');
-const db = require('../db');
+const db = require('../config/db');
 const axios = require('axios');
 
 class CSVDatasetService {
@@ -40,7 +40,7 @@ class CSVDatasetService {
                     // Prioridad 3: Archivo local (solo para desarrollo)
                     else {
                         try {
-                            const serviceAccount = require('../serviceAccountKey.json');
+                            const serviceAccount = require('../config/serviceAccountKey.json');
                             console.log('[CSV] Usando serviceAccountKey.json local (desarrollo)');
                             credential = admin.credential.cert(serviceAccount);
                         } catch (fileError) {

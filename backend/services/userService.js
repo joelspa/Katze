@@ -1,7 +1,7 @@
 // Servicio de gestión de usuarios
 // Maneja la lógica de negocio para administración de usuarios
 
-const db = require('../db');
+const db = require('../config/db');
 
 class UserService {
     // Lista todos los usuarios (solo admin)

@@ -1,7 +1,7 @@
 // Servicio de solicitudes de adopción
 // Maneja la lógica de negocio para solicitudes de adopción
 
-const db = require('../db');
+const db = require('../config/db');
 
 class ApplicationService {
     // Crea solicitud de adopción con respuestas del formulario

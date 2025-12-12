@@ -7,7 +7,7 @@
  */
 
 require('dotenv').config();
-const db = require('../db');
+const db = require('../config/db');
 const aiService = require('../services/aiService');
 const csvDatasetService = require('../services/csvDatasetService');
 

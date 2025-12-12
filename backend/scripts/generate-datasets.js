@@ -7,7 +7,7 @@
 
 require('dotenv').config();
 const admin = require('firebase-admin');
-const db = require('./db');
+const db = require('../config/db');
 
 console.log('📊 Generando datasets en Firebase Storage...\n');
 

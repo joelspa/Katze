@@ -1,7 +1,7 @@
 // Servicio de estadísticas
 // Maneja consultas agregadas para el dashboard administrativo
 
-const db = require('../db');
+const db = require('../config/db');
 
 class StatisticsService {
     // Gatos con más días publicados sin adoptar

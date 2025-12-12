@@ -1,7 +1,7 @@
 // Servicio del módulo educativo
 // Maneja la lógica de negocio para artículos educativos
 
-const db = require('../db');
+const db = require('../config/db');
 
 class EducationService {
     // Lista todos los posts educativos con info del autor
