@@ -340,15 +340,6 @@ const Profile = () => {
                                         Ingresa solo números, entre 7 y 15 dígitos
                                     </small>
                                 </div>
-                                    <input
-                                        type="tel"
-                                        id="phone"
-                                        name="phone"
-                                        value={formData.phone}
-                                        onChange={handleChange}
-                                        placeholder="+57 300 123 4567"
-                                    />
-                                </div>
 
                                 <div className="form-actions">
                                     <button type="submit" className="btn-save">
