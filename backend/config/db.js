@@ -10,7 +10,7 @@ if (process.env.DATABASE_URL) {
     console.log('Using DB_CONFIG:', config.DB_CONFIG);
 }
 
-// Determinar si necesitamos SSL (para Render)
+// (para Render)
 const isProduction = process.env.NODE_ENV === 'production' || 
                      (config.DB_CONFIG.host && config.DB_CONFIG.host.includes('render.com'));
 
