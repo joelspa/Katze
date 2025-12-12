@@ -170,20 +170,18 @@ class Validator {
 
         if (!title || title.trim() === '') {
             errors.push('El título es requerido');
+        } else if (title.trim().length < 10) {
+            errors.push('El título debe tener al menos 10 caracteres');
+        } else if (title.trim().length > 200) {
+            errors.push('El título no puede exceder 200 caracteres');
         }
 
         if (!content || content.trim() === '') {
             errors.push('El contenido es requerido');
-        }
-
-        const titleResult = this.validateMinLength(title, 5, 'El título');
-        if (!titleResult.isValid) {
-            errors.push(titleResult.error);
-        }
-
-        const contentResult = this.validateMinLength(content, 20, 'El contenido');
-        if (!contentResult.isValid) {
-            errors.push(contentResult.error);
+        } else if (content.trim().length < 50) {
+            errors.push('El contenido debe tener al menos 50 caracteres');
+        } else if (content.trim().length > 2000) {
+            errors.push('El contenido no puede exceder 2000 caracteres');
         }
 
         return {

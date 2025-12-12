@@ -10,6 +10,7 @@ import CustomModal from '../components/CustomModal';
 import { storage } from '../firebase';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { v4 as uuidv4 } from 'uuid';
+import { validateEmail, validatePhone, validateFullName, validatePassword } from '../utils/validation';
 import './AdminDashboard.css';
 
 // Interfaz que define la estructura de un gato en el admin
@@ -187,8 +188,35 @@ const AdminDashboard = () => {
 
     // Crea una nueva charla educativa
     const handleCreatePost = async () => {
-        if (!postForm.title.trim() || !postForm.content.trim()) {
-            alert('Por favor completa todos los campos');
+        // Validar título
+        if (!postForm.title.trim()) {
+            alert('El título es requerido');
+            return;
+        }
+        
+        if (postForm.title.trim().length < 10) {
+            alert('El título debe tener al menos 10 caracteres');
+            return;
+        }
+
+        if (postForm.title.trim().length > 200) {
+            alert('El título no puede exceder 200 caracteres');
+            return;
+        }
+
+        // Validar contenido
+        if (!postForm.content.trim()) {
+            alert('El contenido es requerido');
+            return;
+        }
+
+        if (postForm.content.trim().length < 50) {
+            alert('El contenido debe tener al menos 50 caracteres');
+            return;
+        }
+
+        if (postForm.content.trim().length > 2000) {
+            alert('El contenido no puede exceder 2000 caracteres');
             return;
         }
 
@@ -231,6 +259,38 @@ const AdminDashboard = () => {
     // Actualiza una charla educativa
     const handleUpdatePost = async () => {
         if (!editingPost) return;
+
+        // Validar título
+        if (!editingPost.title.trim()) {
+            alert('El título es requerido');
+            return;
+        }
+        
+        if (editingPost.title.trim().length < 10) {
+            alert('El título debe tener al menos 10 caracteres');
+            return;
+        }
+
+        if (editingPost.title.trim().length > 200) {
+            alert('El título no puede exceder 200 caracteres');
+            return;
+        }
+
+        // Validar contenido
+        if (!editingPost.content.trim()) {
+            alert('El contenido es requerido');
+            return;
+        }
+
+        if (editingPost.content.trim().length < 50) {
+            alert('El contenido debe tener al menos 50 caracteres');
+            return;
+        }
+
+        if (editingPost.content.trim().length > 2000) {
+            alert('El contenido no puede exceder 2000 caracteres');
+            return;
+        }
 
         try {
             let imageUrl = editingPost.image_url || '';
@@ -436,14 +496,40 @@ const AdminDashboard = () => {
 
     // Crea un nuevo usuario (solo admin)
     const handleCreateUser = async () => {
+        // Validar campos requeridos
         if (!newUserForm.email || !newUserForm.password || !newUserForm.fullName || !newUserForm.role) {
             alert('Por favor completa todos los campos requeridos');
             return;
         }
 
-        if (newUserForm.password.length < 6) {
-            alert('La contraseña debe tener al menos 6 caracteres');
+        // Validar nombre completo
+        const fullNameValidation = validateFullName(newUserForm.fullName);
+        if (!fullNameValidation.isValid) {
+            alert(fullNameValidation.error);
             return;
+        }
+
+        // Validar email
+        const emailValidation = validateEmail(newUserForm.email);
+        if (!emailValidation.isValid) {
+            alert(emailValidation.error);
+            return;
+        }
+
+        // Validar contraseña
+        const passwordValidation = validatePassword(newUserForm.password);
+        if (!passwordValidation.isValid) {
+            alert(passwordValidation.error);
+            return;
+        }
+
+        // Validar teléfono si está presente
+        if (newUserForm.phone && newUserForm.phone.trim()) {
+            const phoneValidation = validatePhone(newUserForm.phone);
+            if (!phoneValidation.isValid) {
+                alert(phoneValidation.error);
+                return;
+            }
         }
 
         try {

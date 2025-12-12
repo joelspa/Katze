@@ -195,8 +195,17 @@ class UserController {
                 return ErrorHandler.badRequest(res, 'La contraseña debe tener al menos 6 caracteres');
             }
 
+            if (!Validator.isValidFullName(fullName)) {
+                return ErrorHandler.badRequest(res, 'Nombre completo inválido. Debe contener al menos nombre y apellido');
+            }
+
             if (!Validator.isValidRole(role)) {
                 return ErrorHandler.badRequest(res, 'Rol inválido');
+            }
+
+            // Validar teléfono si está presente
+            if (phone && phone.trim() && !Validator.isValidPhone(phone)) {
+                return ErrorHandler.badRequest(res, 'Teléfono inválido. Debe contener entre 7 y 15 dígitos');
             }
 
             // Verificar si el email ya existe
