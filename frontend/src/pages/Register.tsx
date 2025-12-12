@@ -126,7 +126,7 @@ const Register = () => {
             <div className="container">
                 <div className="logo-section">
                     <div className="logo-icon">K</div>
-                    <h1 className="logo-text">AdoptaUnGato</h1>
+                    <h1 className="logo-text">Katze</h1>
                 </div>
                 
                 <h2>Registro de Usuario</h2>
