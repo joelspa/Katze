@@ -2,7 +2,7 @@
 // Gestiona la conexión a la base de datos Katze
 
 const { Pool } = require('pg');
-const config = require('./config/config');
+const config = require('./config');
 
 if (process.env.DATABASE_URL) {
     console.log('Using DATABASE_URL:', process.env.DATABASE_URL);
