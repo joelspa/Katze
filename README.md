@@ -36,8 +36,7 @@ Para una comprensión detallada de la estructura de base de datos:
 
 1. **Documentación**: Lee [DB.md](DB.md) para ver el diseño completo con diagramas ERD
 2. **Script SQL**: Ejecuta [DB.sql](DB.sql) en PostgreSQL para crear toda la estructura
-3. **Schema Base**: Revisa [backend/schema.sql](backend/schema.sql) para el schema inicial
-4. **Migraciones**: Ver carpeta [backend/migrations/](backend/migrations/) para cambios incrementales
+3. **Schema Base**: Revisa [backend/schema.sql](backend/schema.sql) para el schema completo
 
 ---
 
@@ -672,15 +671,13 @@ npm run dev
 2. **PostgreSQL (Managed Database)**:
    - Crear base de datos
    - Copiar `Internal Database URL` a `DATABASE_URL`
-   - Ejecutar migraciones: `node backend/run-migration.js`
+   - Inicializar schema: `node backend/init-db.js`
    - Seed inicial: `npm run seed:demo`
 
 3. **Frontend (Static Site)**:
    - Build Command: `cd frontend && npm install && npm run build`
    - Publish Directory: `frontend/dist`
    - Variables de entorno: `VITE_API_URL=https://tu-backend.onrender.com`
-
-**Ver script de migración**: [run-migration.js](backend/run-migration.js)
 
 ### Scripts Disponibles
 
@@ -694,10 +691,10 @@ npm run seed:demo        # Poblar DB con datos de demostración
 **Backend**:
 ```bash
 npm start                # Iniciar servidor Express (puerto 5000)
-node init-db.js          # Ejecutar schema.sql
+node init-db.js          # Inicializar base de datos con schema.sql
 node seed-database.js    # Poblar base de datos con datos de demostración
+node seed-demo.js        # Poblar con datos de demo específicos
 node generate-datasets.js # Regenerar todos los datasets CSV
-node run-migration.js    # Ejecutar migraciones pendientes
 ```
 
 **Base de Datos**:
@@ -705,11 +702,11 @@ node run-migration.js    # Ejecutar migraciones pendientes
 # Crear base de datos completa desde script SQL
 psql -U postgres -d katze -f DB.sql
 
-# O ejecutar schema y migraciones por separado
+# O ejecutar schema directamente
 psql -U postgres -d katze -f backend/schema.sql
-psql -U postgres -d katze -f backend/migrations/add_living_space_and_breed.sql
-psql -U postgres -d katze -f backend/migrations/add_ai_async_evaluation.sql
-psql -U postgres -d katze -f backend/migrations/translate_status_to_spanish.sql
+
+# O usar el script de Node.js
+node backend/init-db.js
 ```
 
 **Frontend**:
