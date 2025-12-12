@@ -229,3 +229,25 @@
 [data-theme="dark"] .loading-overlay {
   background: rgba(1, 22, 39, 0.9);
 }
+/* Estilos para validaci\u00f3n de errores */
+.input-error {
+  border-color: #ef4444 !important;
+  background-color: rgba(239, 68, 68, 0.05);
+}
+
+.error-message {
+  display: block;
+  color: #dc2626;
+  font-size: 0.875rem;
+  margin-top: 6px;
+  font-weight: 500;
+}
+
+[data-theme="dark"] .input-error {
+  border-color: #f87171 !important;
+  background-color: rgba(248, 113, 113, 0.1);
+}
+
+[data-theme="dark"] .error-message {
+  color: #fca5a5;
+}

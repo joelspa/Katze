@@ -44,20 +44,27 @@ class UserController {
                 return ErrorHandler.badRequest(res, 'Debe proporcionar al menos un campo para actualizar');
             }
 
-            // Validar email si se proporciona
-            if (email && !Validator.isValidEmail(email)) {
-                return ErrorHandler.badRequest(res, 'Email inválido');
+            // Validar datos con validaciones mejoradas
+            const validation = Validator.validateProfileUpdate({ full_name, phone, email });
+            if (!validation.isValid) {
+                return ErrorHandler.badRequest(res, 'Errores de validación:\n' + validation.errors.join('\n'));
             }
 
             // Si se está cambiando el email, verificar que no exista
             if (email) {
-                const emailExists = await userService.isEmailTaken(email, userId);
+                const emailExists = await userService.isEmailTaken(email.trim().toLowerCase(), userId);
                 if (emailExists) {
                     return ErrorHandler.badRequest(res, 'El email ya está en uso');
                 }
             }
 
-            const updatedUser = await userService.updateProfile(userId, { full_name, phone, email });
+            // Limpiar y sanitizar datos
+            const updateData = {};
+            if (full_name) updateData.full_name = Validator.sanitizeText(full_name);
+            if (phone) updateData.phone = Validator.cleanPhone(phone);
+            if (email) updateData.email = email.trim().toLowerCase();
+
+            const updatedUser = await userService.updateProfile(userId, updateData);
             
             
             datasetService.updateUsersDataset().catch(err => 

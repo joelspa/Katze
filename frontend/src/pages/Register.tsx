@@ -7,6 +7,13 @@ import API_BASE_URL from '../config/api';
 import { useModal } from '../hooks/useModal';
 import CustomModal from '../components/CustomModal';
 import Footer from '../components/Footer';
+import { 
+    validateEmail, 
+    validatePassword, 
+    validatePhone, 
+    validateFullName,
+    FormValidator
+} from '../utils/validation';
 import './Register.css';
 
 const Register = () => {
@@ -20,6 +27,8 @@ const Register = () => {
     });
     
     const [showPassword, setShowPassword] = useState(false);
+    const [validator] = useState(() => new FormValidator());
+    const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
     // Scroll al inicio cuando se carga la página
     useEffect(() => {
@@ -27,14 +36,71 @@ const Register = () => {
     }, []);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+        const { name, value } = e.target;
+        
         setFormData({
             ...formData,
-            [e.target.name]: e.target.value,
+            [name]: value,
         });
+        
+        // Limpiar error del campo cuando el usuario empieza a escribir
+        if (fieldErrors[name]) {
+            const newErrors = { ...fieldErrors };
+            delete newErrors[name];
+            setFieldErrors(newErrors);
+            validator.clearError(name);
+        }
+    };
+
+    const validateForm = (): boolean => {
+        validator.clearAllErrors();
+        const errors: Record<string, string> = {};
+        
+        // Validar nombre completo
+        const nameResult = validateFullName(formData.fullName);
+        if (!nameResult.isValid && nameResult.error) {
+            errors.fullName = nameResult.error;
+            validator.addError('fullName', nameResult.error);
+        }
+        
+        // Validar email
+        const emailResult = validateEmail(formData.email);
+        if (!emailResult.isValid && emailResult.error) {
+            errors.email = emailResult.error;
+            validator.addError('email', emailResult.error);
+        }
+        
+        // Validar teléfono
+        const phoneResult = validatePhone(formData.phone);
+        if (!phoneResult.isValid && phoneResult.error) {
+            errors.phone = phoneResult.error;
+            validator.addError('phone', phoneResult.error);
+        }
+        
+        // Validar contraseña
+        const passwordResult = validatePassword(formData.password);
+        if (!passwordResult.isValid && passwordResult.error) {
+            errors.password = passwordResult.error;
+            validator.addError('password', passwordResult.error);
+        }
+        
+        setFieldErrors(errors);
+        return Object.keys(errors).length === 0;
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        
+        // Validar formulario antes de enviar
+        if (!validateForm()) {
+            await showAlert(
+                'Por favor corrige los errores en el formulario:\n\n' + 
+                validator.getAllErrors().join('\n'), 
+                'Errores de Validación'
+            );
+            return;
+        }
+        
         try {
             const API_URL = `${API_BASE_URL}/api/auth/register`;
             await axios.post(API_URL, formData);
@@ -78,53 +144,69 @@ const Register = () => {
                 
                 <form onSubmit={handleSubmit}>
                     <div className="formGroup">
-                        <label htmlFor="fullName" className="label">Nombre Completo</label>
+                        <label htmlFor="fullName" className="label">Nombre Completo *</label>
                         <input
                             type="text"
                             id="fullName"
                             name="fullName"
-                            className="input"
-                            placeholder="Ingresa tu nombre completo"
+                            className={`input ${fieldErrors.fullName ? 'input-error' : ''}`}
+                            placeholder="Ingresa tu nombre y apellido"
+                            value={formData.fullName}
                             onChange={handleChange}
                             required
                         />
+                        {fieldErrors.fullName && (
+                            <span className="error-message">⚠️ {fieldErrors.fullName}</span>
+                        )}
                     </div>
                     
                     <div className="formGroup">
-                        <label htmlFor="email" className="label">Email</label>
+                        <label htmlFor="email" className="label">Email *</label>
                         <input
                             type="email"
                             id="email"
                             name="email"
-                            className="input"
-                            placeholder="Ingresa tu correo electrónico"
+                            className={`input ${fieldErrors.email ? 'input-error' : ''}`}
+                            placeholder="usuario@ejemplo.com"
+                            value={formData.email}
                             onChange={handleChange}
                             required
                         />
+                        {fieldErrors.email && (
+                            <span className="error-message">⚠️ {fieldErrors.email}</span>
+                        )}
                     </div>
 
                     <div className="formGroup">
-                        <label htmlFor="phone" className="label">Teléfono</label>
+                        <label htmlFor="phone" className="label">Teléfono *</label>
                         <input
                             type="tel"
                             id="phone"
                             name="phone"
-                            className="input"
-                            placeholder="Ingresa tu número de teléfono"
+                            className={`input ${fieldErrors.phone ? 'input-error' : ''}`}
+                            placeholder="Solo números (ej: 3121234567)"
+                            value={formData.phone}
                             onChange={handleChange}
                             required
                         />
+                        {fieldErrors.phone && (
+                            <span className="error-message">⚠️ {fieldErrors.phone}</span>
+                        )}
+                        <small style={{color: '#666', fontSize: '0.85em', marginTop: '4px', display: 'block'}}>
+                            Ingresa solo números, entre 7 y 15 dígitos
+                        </small>
                     </div>
                     
                     <div className="formGroup">
-                        <label htmlFor="password" className="label">Contraseña</label>
+                        <label htmlFor="password" className="label">Contraseña *</label>
                         <div className="input-wrapper">
                             <input
                                 type={showPassword ? "text" : "password"}
                                 id="password"
                                 name="password"
-                                className="input"
-                                placeholder="Crea una contraseña segura"
+                                className={`input ${fieldErrors.password ? 'input-error' : ''}`}
+                                placeholder="Mínimo 6 caracteres"
+                                value={formData.password}
                                 onChange={handleChange}
                                 required
                             />
@@ -136,6 +218,9 @@ const Register = () => {
                                 {showPassword ? '○' : '●'}
                             </button>
                         </div>
+                        {fieldErrors.password && (
+                            <span className="error-message">⚠️ {fieldErrors.password}</span>
+                        )}
                     </div>
                     
                     {/* El rol siempre será adoptante en registro público */}

@@ -4,6 +4,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { API_BASE_URL } from '../config/api';
+import { validateEmail, validatePhone, validateFullName, FormValidator } from '../utils/validation';
 import './Profile.css';
 
 interface UserProfile {
@@ -24,6 +25,8 @@ const Profile = () => {
         email: '',
         phone: '',
     });
+    const [validator] = useState(() => new FormValidator());
+    const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
     // Scroll al inicio cuando se carga la página
     useEffect(() => {
@@ -73,14 +76,56 @@ const Profile = () => {
     };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
         setFormData({
             ...formData,
-            [e.target.name]: e.target.value,
+            [name]: value,
         });
+        
+        // Limpiar error cuando el usuario escribe
+        if (fieldErrors[name]) {
+            const newErrors = { ...fieldErrors };
+            delete newErrors[name];
+            setFieldErrors(newErrors);
+            validator.clearError(name);
+        }
+    };
+    
+    const validateForm = (): boolean => {
+        validator.clearAllErrors();
+        const errors: Record<string, string> = {};
+        
+        const nameResult = validateFullName(formData.full_name);
+        if (!nameResult.isValid && nameResult.error) {
+            errors.full_name = nameResult.error;
+            validator.addError('full_name', nameResult.error);
+        }
+        
+        const emailResult = validateEmail(formData.email);
+        if (!emailResult.isValid && emailResult.error) {
+            errors.email = emailResult.error;
+            validator.addError('email', emailResult.error);
+        }
+        
+        const phoneResult = validatePhone(formData.phone);
+        if (!phoneResult.isValid && phoneResult.error) {
+            errors.phone = phoneResult.error;
+            validator.addError('phone', phoneResult.error);
+        }
+        
+        setFieldErrors(errors);
+        return Object.keys(errors).length === 0;
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        
+        if (!validateForm()) {
+            alert('Por favor corrige los errores en el formulario:\n\n' + 
+                validator.getAllErrors().join('\n'));
+            return;
+        }
+        
         try {
             const token = localStorage.getItem('token');
             const response = await axios.put(
@@ -232,17 +277,21 @@ const Profile = () => {
                                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                                         </svg>
-                                        Nombre Completo
+                                        Nombre Completo *
                                     </label>
                                     <input
                                         type="text"
                                         id="full_name"
                                         name="full_name"
+                                        className={fieldErrors.full_name ? 'input-error' : ''}
                                         value={formData.full_name}
                                         onChange={handleChange}
                                         required
-                                        placeholder="Ingresa tu nombre completo"
+                                        placeholder="Ingresa tu nombre y apellido"
                                     />
+                                    {fieldErrors.full_name && (
+                                        <span className="error-message">⚠️ {fieldErrors.full_name}</span>
+                                    )}
                                 </div>
 
                                 <div className="form-group">
@@ -250,17 +299,21 @@ const Profile = () => {
                                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                                         </svg>
-                                        Email
+                                        Email *
                                     </label>
                                     <input
                                         type="email"
                                         id="email"
                                         name="email"
+                                        className={fieldErrors.email ? 'input-error' : ''}
                                         value={formData.email}
                                         onChange={handleChange}
                                         required
                                         placeholder="correo@ejemplo.com"
                                     />
+                                    {fieldErrors.email && (
+                                        <span className="error-message">⚠️ {fieldErrors.email}</span>
+                                    )}
                                 </div>
 
                                 <div className="form-group">
@@ -268,8 +321,25 @@ const Profile = () => {
                                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                                         </svg>
-                                        Teléfono
+                                        Teléfono *
                                     </label>
+                                    <input
+                                        type="tel"
+                                        id="phone"
+                                        name="phone"
+                                        className={fieldErrors.phone ? 'input-error' : ''}
+                                        value={formData.phone}
+                                        onChange={handleChange}
+                                        required
+                                        placeholder="Solo números (ej: 3121234567)"
+                                    />
+                                    {fieldErrors.phone && (
+                                        <span className="error-message">⚠️ {fieldErrors.phone}</span>
+                                    )}
+                                    <small style={{color: '#666', fontSize: '0.85em', marginTop: '4px', display: 'block'}}>
+                                        Ingresa solo números, entre 7 y 15 dígitos
+                                    </small>
+                                </div>
                                     <input
                                         type="tel"
                                         id="phone"

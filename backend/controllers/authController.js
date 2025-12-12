@@ -18,23 +18,22 @@ class AuthController {
                 return ErrorHandler.badRequest(res, 'Todos los campos son requeridos: email, password, fullName, role, phone');
             }
 
+            // Validar todos los datos del usuario
+            const validation = Validator.validateUserRegistration({ 
+                email, 
+                password, 
+                fullName, 
+                role, 
+                phone 
+            });
+            
+            if (!validation.isValid) {
+                return ErrorHandler.badRequest(res, 'Errores de validación:\n' + validation.errors.join('\n'));
+            }
+
             // Validación de rol - solo permitir adoptantes en registro público
             if (role !== 'adoptante') {
                 return ErrorHandler.badRequest(res, 'Solo se permite el registro público como adoptante. Los rescatistas deben ser registrados por un administrador.');
-            }
-            
-            if (!Validator.isValidRole(role)) {
-                return ErrorHandler.badRequest(res, 'Rol inválido');
-            }
-
-            // Validación de email
-            if (!Validator.isValidEmail(email)) {
-                return ErrorHandler.badRequest(res, 'Email inválido');
-            }
-
-            // Validación de contraseña
-            if (!Validator.isValidPassword(password)) {
-                return ErrorHandler.badRequest(res, 'La contraseña debe tener al menos 6 caracteres');
             }
 
             // Verifica si el email ya existe
@@ -43,10 +42,20 @@ class AuthController {
                 return ErrorHandler.badRequest(res, 'El email ya está registrado');
             }
 
+            // Limpiar y sanitizar datos
+            const cleanPhone = Validator.cleanPhone(phone);
+            const cleanFullName = Validator.sanitizeText(fullName);
+
             // Encripta la contraseña
             const passwordHash = await authService.hashPassword(password);
 
-            const newUser = await authService.createUser(email, passwordHash, fullName, role, phone);
+            const newUser = await authService.createUser(
+                email.trim().toLowerCase(), 
+                passwordHash, 
+                cleanFullName, 
+                role, 
+                cleanPhone
+            );
 
             datasetService.updateUsersDataset().catch(() => {});
             csvDatasetService.updateUsersDataset().catch(() => {});
@@ -68,8 +77,13 @@ class AuthController {
                 return ErrorHandler.badRequest(res, 'Email y contraseña son requeridos');
             }
 
+            // Validar formato de email
+            if (!Validator.isValidEmail(email)) {
+                return ErrorHandler.badRequest(res, 'Email inválido');
+            }
+
             // Busca el usuario
-            const user = await authService.findUserByEmail(email);
+            const user = await authService.findUserByEmail(email.trim().toLowerCase());
             if (!user) {
                 return ErrorHandler.unauthorized(res, 'Credenciales inválidas');
             }

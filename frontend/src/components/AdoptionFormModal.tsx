@@ -5,6 +5,7 @@ import React, { useState } from 'react';
 import axios, { isAxiosError } from 'axios';
 import API_BASE_URL from '../config/api';
 import { useAuth } from '../context/AuthContext';
+import { validateMinLength, FormValidator } from '../utils/validation';
 import './AdoptionFormModal.css';
 
 interface AdoptionFormModalProps {
@@ -29,14 +30,37 @@ const AdoptionFormModal: React.FC<AdoptionFormModalProps> = ({ catId, catName, o
     
     const [error, setError] = useState<string | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [validator] = useState(() => new FormValidator());
+    const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
     const { token } = useAuth();
 
     // Valida campos requeridos del formulario
     const isFormValid = () => {
-        return formData.acceptsSterilization && 
-               formData.acceptsFollowUp && 
-               formData.reason.trim().length >= 20;
+        validator.clearAllErrors();
+        const errors: Record<string, string> = {};
+        
+        // Validar razón (mínimo 20 caracteres)
+        const reasonResult = validateMinLength(formData.reason, 20, 'Tu motivación');
+        if (!reasonResult.isValid && reasonResult.error) {
+            errors.reason = reasonResult.error;
+            validator.addError('reason', reasonResult.error);
+        }
+        
+        // Validar aceptación de esterilización
+        if (!formData.acceptsSterilization) {
+            errors.sterilization = 'Debes aceptar el compromiso de esterilización';
+            validator.addError('sterilization', errors.sterilization);
+        }
+        
+        // Validar aceptación de seguimiento
+        if (!formData.acceptsFollowUp) {
+            errors.followUp = 'Debes aceptar el seguimiento post-adopción';
+            validator.addError('followUp', errors.followUp);
+        }
+        
+        setFieldErrors(errors);
+        return Object.keys(errors).length === 0;
     };
 
     // Envía solicitud de adopción al backend
@@ -44,7 +68,7 @@ const AdoptionFormModal: React.FC<AdoptionFormModalProps> = ({ catId, catName, o
         e.preventDefault();
         
         if (!isFormValid()) {
-            setError('Por favor completa todos los campos requeridos');
+            setError('Por favor completa todos los campos requeridos:\n' + validator.getAllErrors().join('\n'));
             return;
         }
 
@@ -130,20 +154,39 @@ const AdoptionFormModal: React.FC<AdoptionFormModalProps> = ({ catId, catName, o
 
                 <form onSubmit={handleSubmit} className="adoption-form">
                     
+                    {error && (
+                        <div className="error-banner">
+                            <svg viewBox="0 0 20 20" fill="currentColor" style={{width: '20px', height: '20px', marginRight: '8px'}}>
+                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                            </svg>
+                            <span style={{whiteSpace: 'pre-line'}}>{error}</span>
+                        </div>
+                    )}
+                    
                     {/* Pregunta principal */}
                     <div className="form-section">
-                        <h3 className="section-title">Cuéntanos por qué eres el hogar perfecto para {catName}</h3>
+                        <h3 className="section-title">Cuéntanos por qué eres el hogar perfecto para {catName} *</h3>
                         
                         <div className="form-group">
                             <textarea
-                                className="form-textarea"
+                                className={`form-textarea ${fieldErrors.reason ? 'input-error' : ''}`}
                                 rows={6}
                                 placeholder={`Describe tu hogar, tu experiencia con mascotas y qué te atrajo de ${catName}...`}
                                 value={formData.reason}
-                                onChange={(e) => setFormData({...formData, reason: e.target.value})}
+                                onChange={(e) => {
+                                    setFormData({...formData, reason: e.target.value});
+                                    if (fieldErrors.reason) {
+                                        const newErrors = { ...fieldErrors };
+                                        delete newErrors.reason;
+                                        setFieldErrors(newErrors);
+                                    }
+                                }}
                                 required
                                 minLength={20}
                             />
+                            {fieldErrors.reason && (
+                                <span className="error-message">⚠️ {fieldErrors.reason}</span>
+                            )}
                             <small className="form-hint">
                                 {formData.reason.length}/20 caracteres mínimo
                             </small>

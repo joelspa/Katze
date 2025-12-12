@@ -6,6 +6,7 @@ import { useAuth } from '../context/AuthContext';
 import { storage } from '../firebase'; // Importa el storage de Firebase
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { v4 as uuidv4 } from 'uuid'; // Para nombres de archivo únicos
+import { validateRequired, validateMinLength, FormValidator } from '../utils/validation';
 import './PublishCat.css'; // Crearemos este CSS
 import { API_BASE_URL } from '../config/api';
 
@@ -23,6 +24,8 @@ const PublishCat = () => {
     const [imagePreviews, setImagePreviews] = useState<string[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [validator] = useState(() => new FormValidator());
+    const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
     const { token } = useAuth();
     const navigate = useNavigate();
@@ -33,10 +36,54 @@ const PublishCat = () => {
     }, []);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+        const { name, value } = e.target;
         setFormData({
             ...formData,
-            [e.target.name]: e.target.value,
+            [name]: value,
         });
+        
+        // Limpiar error cuando el usuario escribe
+        if (fieldErrors[name]) {
+            const newErrors = { ...fieldErrors };
+            delete newErrors[name];
+            setFieldErrors(newErrors);
+            validator.clearError(name);
+        }
+    };
+    
+    const validateForm = (): boolean => {
+        validator.clearAllErrors();
+        const errors: Record<string, string> = {};
+        
+        // Validar nombre
+        const nameResult = validateRequired(formData.name, 'Nombre del gato');
+        if (!nameResult.isValid && nameResult.error) {
+            errors.name = nameResult.error;
+            validator.addError('name', nameResult.error);
+        }
+        
+        // Validar descripción (mínimo 20 caracteres)
+        const descResult = validateMinLength(formData.description, 20, 'Descripción');
+        if (!descResult.isValid && descResult.error) {
+            errors.description = descResult.error;
+            validator.addError('description', descResult.error);
+        }
+        
+        // Validar estado de salud
+        const healthResult = validateRequired(formData.health_status, 'Estado de salud');
+        if (!healthResult.isValid && healthResult.error) {
+            errors.health_status = healthResult.error;
+            validator.addError('health_status', healthResult.error);
+        }
+        
+        // Validar imágenes
+        if (imageFiles.length === 0) {
+            errors.images = 'Debes subir al menos una foto del gato';
+            validator.addError('images', errors.images);
+        }
+        
+        setFieldErrors(errors);
+        return Object.keys(errors).length === 0;
     };
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -102,8 +149,16 @@ const PublishCat = () => {
     // 3. FUNCIÓN PARA ENVIAR EL FORMULARIO
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setLoading(true);
         setError(null);
+        
+        // Validar formulario antes de enviar
+        if (!validateForm()) {
+            setError('Por favor corrige los siguientes errores:\n' + validator.getAllErrors().join('\n'));
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            return;
+        }
+        
+        setLoading(true);
 
         try {
             // Paso A: Subir las imágenes primero
@@ -167,18 +222,31 @@ const PublishCat = () => {
                 </div>
 
                 <form onSubmit={handleSubmit} className="publish-form">
+                    {error && (
+                        <div className="error-banner">
+                            <svg viewBox="0 0 20 20" fill="currentColor" style={{width: '20px', height: '20px', marginRight: '8px'}}>
+                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                            </svg>
+                            <span style={{whiteSpace: 'pre-line'}}>{error}</span>
+                        </div>
+                    )}
+                    
                     <div className="form-grid">
                         <div className="formGroup">
-                            <label htmlFor="name" className="label">Nombre</label>
+                            <label htmlFor="name" className="label">Nombre *</label>
                             <input 
                                 type="text" 
                                 id="name" 
                                 name="name" 
-                                className="input" 
+                                className={`input ${fieldErrors.name ? 'input-error' : ''}`}
                                 placeholder="Introduce el nombre del gato"
+                                value={formData.name}
                                 onChange={handleChange} 
                                 required 
                             />
+                            {fieldErrors.name && (
+                                <span className="error-message">⚠️ {fieldErrors.name}</span>
+                            )}
                         </div>
 
                         <div className="formGroup">
@@ -211,17 +279,21 @@ const PublishCat = () => {
                                 <svg viewBox="0 0 24 24" fill="currentColor" style={{width: '18px', height: '18px', marginRight: '6px', display: 'inline-block', verticalAlign: 'middle'}}>
                                     <path d="M19 3H5c-1.1 0-1.99.9-1.99 2L3 19c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.93 0 3.5 1.57 3.5 3.5 0 1.93-1.57 3.5-3.5 3.5s-3.5-1.57-3.5-3.5c0-1.93 1.57-3.5 3.5-3.5zm7 13H5v-.23c0-.62.28-1.2.76-1.58C7.47 15.82 9.64 15 12 15s4.53.82 6.24 2.19c.48.38.76.97.76 1.58V19z"/>
                                 </svg>
-                                Estado de Salud
+                                Estado de Salud *
                             </label>
                             <input 
                                 type="text" 
                                 id="health_status" 
                                 name="health_status" 
-                                className="input" 
+                                className={`input ${fieldErrors.health_status ? 'input-error' : ''}`}
                                 placeholder="Ej: Vacunado, desparasitado, sin problemas de salud"
+                                value={formData.health_status}
                                 onChange={handleChange} 
                                 required 
                             />
+                            {fieldErrors.health_status && (
+                                <span className="error-message">⚠️ {fieldErrors.health_status}</span>
+                            )}
                             <small className="field-help">
                                 Describe el estado de salud actual del gato
                             </small>
@@ -301,19 +373,27 @@ const PublishCat = () => {
                         </div>
 
                         <div className="formGroup form-grid-full">
-                            <label htmlFor="description" className="label">Descripción</label>
+                            <label htmlFor="description" className="label">Descripción *</label>
                             <textarea 
                                 id="description" 
                                 name="description" 
-                                className="textarea" 
-                                placeholder="Describe su personalidad, historia, y qué tipo de hogar necesita..."
+                                className={`textarea ${fieldErrors.description ? 'input-error' : ''}`}
+                                placeholder="Describe su personalidad, historia, y qué tipo de hogar necesita (mínimo 20 caracteres)..."
+                                value={formData.description}
                                 onChange={handleChange} 
                                 required 
+                                rows={6}
                             />
+                            {fieldErrors.description && (
+                                <span className="error-message">⚠️ {fieldErrors.description}</span>
+                            )}
+                            <small className="field-help">
+                                {formData.description.length}/20 caracteres mínimo
+                            </small>
                         </div>
 
                         <div className="formGroup form-grid-full">
-                            <label className="label">Fotografías del gato (hasta 5 fotos)</label>
+                            <label className="label">Fotografías del gato (hasta 5 fotos) *</label>
                             <div className="file-upload">
                                 <label htmlFor="image" className="file-upload-label">
                                     <div className="file-upload-icon">IMG</div>
@@ -357,11 +437,13 @@ const PublishCat = () => {
                                         {imageFiles.length} foto{imageFiles.length !== 1 ? 's' : ''} seleccionada{imageFiles.length !== 1 ? 's' : ''}
                                     </div>
                                 )}
+                                
+                                {fieldErrors.images && (
+                                    <span className="error-message">⚠️ {fieldErrors.images}</span>
+                                )}
                             </div>
                         </div>
                     </div>
-
-                    {error && <p className="publish-error">{error}</p>}
 
                     <button type="submit" className="publish-button" disabled={loading}>
                         {loading ? 'Publicando...' : 'Publicar Gato'}

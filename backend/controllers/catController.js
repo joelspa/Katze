@@ -19,21 +19,20 @@ class CatController {
 
             const { name, description, age, health_status, sterilization_status, photos_url, story, breed, living_space_requirement } = req.body;
 
-            // Validaciones de campos requeridos
-            if (!name || name.trim() === '') {
-                return ErrorHandler.badRequest(res, 'El nombre del gato es requerido');
-            }
+            // Validar datos del gato con validaciones mejoradas
+            const validation = Validator.validateCatData({
+                name,
+                description,
+                health_status,
+                sterilization_status
+            });
 
-            if (!description || description.trim() === '') {
-                return ErrorHandler.badRequest(res, 'La descripción es requerida');
-            }
-
-            if (!health_status || health_status.trim() === '') {
-                return ErrorHandler.badRequest(res, 'El estado de salud es requerido');
+            if (!validation.isValid) {
+                return ErrorHandler.badRequest(res, 'Errores de validación:\n' + validation.errors.join('\n'));
             }
 
             if (!photos_url || (Array.isArray(photos_url) && photos_url.length === 0)) {
-                return ErrorHandler.badRequest(res, 'Se requiere al menos una foto');
+                return ErrorHandler.badRequest(res, 'Se requiere al menos una foto del gato');
             }
 
             // Validar que age sea un número
@@ -52,13 +51,13 @@ class CatController {
 
             // Prepara datos del gato (por defecto pendiente de aprobación)
             const catData = {
-                name: name.trim(),
-                description: description.trim(),
+                name: Validator.sanitizeText(name),
+                description: Validator.sanitizeText(description),
                 age: Number(age),
-                health_status: health_status.trim(),
+                health_status: Validator.sanitizeText(health_status),
                 sterilization_status,
                 photos_url: Array.isArray(photos_url) ? photos_url : [photos_url],
-                story: story || description,
+                story: story ? Validator.sanitizeText(story) : Validator.sanitizeText(description),
                 breed: breed || 'Mestizo',
                 living_space_requirement: living_space_requirement || 'cualquiera',
                 owner_id: req.user.id,

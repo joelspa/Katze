@@ -9,6 +9,7 @@ import { useAuth } from '../context/AuthContext';
 import { useModal } from '../hooks/useModal';
 import CustomModal from '../components/CustomModal';
 import Footer from '../components/Footer';
+import { validateEmail, validateRequired, FormValidator } from '../utils/validation';
 import './Login.css';
 
 const Login = () => {
@@ -20,6 +21,8 @@ const Login = () => {
         email: '',
         password: '',
     });
+    const [validator] = useState(() => new FormValidator());
+    const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
     // Scroll al inicio cuando se carga la página
     useEffect(() => {
@@ -27,14 +30,53 @@ const Login = () => {
     }, []);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
         setFormData({
             ...formData,
-            [e.target.name]: e.target.value,
+            [name]: value,
         });
+        
+        // Limpiar error cuando el usuario escribe
+        if (fieldErrors[name]) {
+            const newErrors = { ...fieldErrors };
+            delete newErrors[name];
+            setFieldErrors(newErrors);
+            validator.clearError(name);
+        }
+    };
+    
+    const validateForm = (): boolean => {
+        validator.clearAllErrors();
+        const errors: Record<string, string> = {};
+        
+        const emailResult = validateEmail(formData.email);
+        if (!emailResult.isValid && emailResult.error) {
+            errors.email = emailResult.error;
+            validator.addError('email', emailResult.error);
+        }
+        
+        const passwordResult = validateRequired(formData.password, 'Contraseña');
+        if (!passwordResult.isValid && passwordResult.error) {
+            errors.password = passwordResult.error;
+            validator.addError('password', passwordResult.error);
+        }
+        
+        setFieldErrors(errors);
+        return Object.keys(errors).length === 0;
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        
+        if (!validateForm()) {
+            await showAlert(
+                'Por favor corrige los errores en el formulario:\n\n' + 
+                validator.getAllErrors().join('\n'),
+                'Errores de Validación'
+            );
+            return;
+        }
+        
         setLoading(true);
         
         try {
@@ -92,29 +134,37 @@ const Login = () => {
                 
                 <form onSubmit={handleSubmit}>
                     <div className="formGroup">
-                        <label htmlFor="email" className="label">Email</label>
+                        <label htmlFor="email" className="label">Email *</label>
                         <input
                             type="email"
                             id="email"
                             name="email"
-                            className="input"
+                            className={`input ${fieldErrors.email ? 'input-error' : ''}`}
                             placeholder="ejemplo@correo.com"
+                            value={formData.email}
                             onChange={handleChange}
                             required
                         />
+                        {fieldErrors.email && (
+                            <span className="error-message">⚠️ {fieldErrors.email}</span>
+                        )}
                     </div>
                     
                     <div className="formGroup">
-                        <label htmlFor="password" className="label">Contraseña</label>
+                        <label htmlFor="password" className="label">Contraseña *</label>
                         <input
                             type="password"
                             id="password"
                             name="password"
-                            className="input"
+                            className={`input ${fieldErrors.password ? 'input-error' : ''}`}
                             placeholder="Ingresa tu contraseña"
+                            value={formData.password}
                             onChange={handleChange}
                             required
                         />
+                        {fieldErrors.password && (
+                            <span className="error-message">⚠️ {fieldErrors.password}</span>
+                        )}
                     </div>
                     
                     <div className="forgot-password">

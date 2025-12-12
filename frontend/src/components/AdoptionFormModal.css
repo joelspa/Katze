@@ -469,3 +469,46 @@
 [data-theme="dark"] .adoption-form::-webkit-scrollbar-thumb:hover {
   background: rgba(46, 196, 182, 0.7);
 }
+
+/* Estilos para validaci\u00f3n de errores */
+.input-error,
+.form-textarea.input-error {
+  border-color: #ef4444 !important;
+  background-color: rgba(239, 68, 68, 0.05);
+}
+
+.error-message {
+  display: block;
+  color: #dc2626;
+  font-size: 0.875rem;
+  margin-top: 6px;
+  font-weight: 500;
+}
+
+.error-banner {
+  display: flex;
+  align-items: flex-start;
+  background-color: #fee2e2;
+  border: 1px solid #ef4444;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 24px;
+  color: #dc2626;
+  font-weight: 500;
+}
+
+[data-theme="dark"] .input-error,
+[data-theme="dark"] .form-textarea.input-error {
+  border-color: #f87171 !important;
+  background-color: rgba(248, 113, 113, 0.1);
+}
+
+[data-theme="dark"] .error-message {
+  color: #fca5a5;
+}
+
+[data-theme="dark"] .error-banner {
+  background-color: rgba(248, 113, 113, 0.15);
+  border-color: #f87171;
+  color: #fca5a5;
+}
