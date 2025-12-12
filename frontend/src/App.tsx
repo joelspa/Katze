@@ -22,6 +22,7 @@ const PublishCat = lazy(() => import('./pages/PublishCat'));
 const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
 const Education = lazy(() => import('./pages/Education'));
 const Profile = lazy(() => import('./pages/Profile'));
+const NotFound = lazy(() => import('./pages/NotFound'));
 
 // Loading component reutilizable
 const PageLoader = () => (
@@ -91,6 +92,8 @@ function App() {
                     </ProtectedRoute>
                   }
                 />
+                {/* Ruta 404 - debe ir al final */}
+                <Route path="*" element={<NotFound />} />
               </Routes>
             </Suspense>
           </main>
