@@ -589,38 +589,60 @@ const filteredApplications = applications.filter(app => {
 - **Firebase Project**: Con Storage habilitado
 - **Google Cloud Project**: Con Gemini API habilitada
 
-### Variables de Entorno
+### 🔐 Variables de Entorno y Seguridad
+
+> ⚠️ **IMPORTANTE**: Las credenciales están protegidas en archivos `.env` que NO se suben al repositorio.
+> 
+> 📚 **Guías detalladas**:
+> - [ENV_SETUP.md](ENV_SETUP.md) - Configuración paso a paso de variables de entorno
+> - [SECURITY.md](SECURITY.md) - Guía completa de seguridad y mejores prácticas
 
 **Backend** (`backend/.env`):
 ```env
 # Servidor
 PORT=5000
-NODE_ENV=development
 
 # Base de datos PostgreSQL
 DB_USER=postgres
 DB_HOST=localhost
 DB_NAME=katze
-DB_PASSWORD=root
+DB_PASSWORD=tu_password_aqui
 DB_PORT=5432
 
-# Producción (Render)
-DATABASE_URL=postgresql://usuario:password@host:5432/database
-
 # Autenticación
-JWT_SECRET=clave_secreta_segura_minimo_32_caracteres
+JWT_SECRET=tu_jwt_secret_seguro_aqui
 
 # Google Gemini AI
 GEMINI_API_KEY=tu_api_key_de_google_cloud
 
-# Firebase Storage
-GOOGLE_APPLICATION_CREDENTIALS=./serviceAccountKey.json
-FIREBASE_STORAGE_BUCKET=tu-proyecto.appspot.com
+# Firebase Admin SDK
+GOOGLE_APPLICATION_CREDENTIALS=./config/serviceAccountKey.json
+FIREBASE_PROJECT_ID=tu_project_id
+
+# Producción (Render) - Opcional
+DATABASE_URL=postgresql://usuario:password@host:5432/database
+FIREBASE_SERVICE_ACCOUNT={"type":"service_account",...}
 ```
 
-**Obtener API Keys**:
-- Gemini: [Google AI Studio](https://ai.google.dev/)
-- Firebase: [Firebase Console](https://console.firebase.google.com/) → Project Settings → Service Accounts
+**Frontend** (`frontend/.env`):
+```env
+# API Backend
+VITE_API_URL=http://localhost:5000
+
+# Firebase Configuration
+VITE_FIREBASE_API_KEY=tu_api_key
+VITE_FIREBASE_AUTH_DOMAIN=tu_proyecto.firebaseapp.com
+VITE_FIREBASE_PROJECT_ID=tu_proyecto_id
+VITE_FIREBASE_STORAGE_BUCKET=tu_proyecto.firebasestorage.app
+VITE_FIREBASE_MESSAGING_SENDER_ID=tu_sender_id
+VITE_FIREBASE_APP_ID=tu_app_id
+```
+
+**Obtener Credenciales**:
+- Gemini: [Google AI Studio](https://aistudio.google.com/app/apikey)
+- Firebase: [Firebase Console](https://console.firebase.google.com/) → Project Settings
+  - Frontend: General → Your apps
+  - Backend: Service Accounts → Generate New Private Key
 
 ### Instalación Local
 
@@ -635,7 +657,11 @@ npm install
 
 # 3. Configurar variables de entorno
 cp .env.example .env
-# Editar .env con tus credenciales
+# Editar .env con tus credenciales (ver ENV_SETUP.md para detalles)
+# También necesitas obtener serviceAccountKey.json de Firebase Console
+
+# 3.1 Verificar configuración de variables de entorno (opcional)
+node scripts/check-env.js
 
 # 4. Crear base de datos
 createdb katze

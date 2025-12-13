@@ -8,9 +8,22 @@ class FirebaseService {
     constructor() {
         try {
             if (!admin.apps.length) {
+                // Intentar usar FIREBASE_SERVICE_ACCOUNT en producción (Render)
+                // o el archivo serviceAccountKey.json en desarrollo
+                let credential;
+                
+                if (process.env.FIREBASE_SERVICE_ACCOUNT) {
+                    // Producción: usar la variable de entorno JSON
+                    const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
+                    credential = admin.credential.cert(serviceAccount);
+                } else {
+                    // Desarrollo: usar el archivo local
+                    credential = admin.credential.applicationDefault();
+                }
+                
                 admin.initializeApp({
-                    credential: admin.credential.applicationDefault(),
-                    projectId: 'katze-app'
+                    credential: credential,
+                    projectId: process.env.FIREBASE_PROJECT_ID || 'katze-app'
                 });
             }
             

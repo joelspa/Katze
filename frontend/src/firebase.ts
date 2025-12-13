@@ -5,14 +5,14 @@ import { initializeApp } from 'firebase/app';
 import { getStorage } from 'firebase/storage';
 import { getFirestore } from 'firebase/firestore';
 
-// Configuración del proyecto Firebase
+// Configuración del proyecto Firebase desde variables de entorno
 const firebaseConfig = {
-    apiKey: "AIzaSyCLQKRTdZ6cSC0juOaY5zjwDhP9d-Cc5wQ",
-    authDomain: "katze-app.firebaseapp.com",
-    projectId: "katze-app",
-    storageBucket: "katze-app.firebasestorage.app",
-    messagingSenderId: "716332773584",
-    appId: "1:716332773584:web:b08d8fca3d7821a3c8de92"
+    apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+    authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+    projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+    storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+    messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+    appId: import.meta.env.VITE_FIREBASE_APP_ID
 };
 
 // Inicializa la app de Firebase

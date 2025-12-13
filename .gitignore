@@ -1,2 +1,11 @@
 Por Agregar.md
 node_modules/
+
+# Variables de entorno - NUNCA HACER COMMIT
+.env
+.env.local
+.env.production
+
+# Credenciales de Firebase - NUNCA HACER COMMIT
+**/serviceAccountKey.json
+serviceAccountKey.json
