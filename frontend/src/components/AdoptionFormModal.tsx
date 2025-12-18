@@ -35,7 +35,27 @@ const AdoptionFormModal: React.FC<AdoptionFormModalProps> = ({ catId, catName, o
 
     const { token } = useAuth();
 
-    // Valida campos requeridos del formulario
+    // Valida campos requeridos del formulario sin modificar estado
+    const checkFormValid = () => {
+        // Validar razón (mínimo 20 caracteres)
+        if (formData.reason.length < 20) {
+            return false;
+        }
+        
+        // Validar aceptación de esterilización
+        if (!formData.acceptsSterilization) {
+            return false;
+        }
+        
+        // Validar aceptación de seguimiento
+        if (!formData.acceptsFollowUp) {
+            return false;
+        }
+        
+        return true;
+    };
+
+    // Valida campos requeridos del formulario y actualiza errores
     const isFormValid = () => {
         validator.clearAllErrors();
         const errors: Record<string, string> = {};
@@ -365,7 +385,7 @@ const AdoptionFormModal: React.FC<AdoptionFormModalProps> = ({ catId, catName, o
                         <button 
                             type="submit" 
                             className="btn btn-primary" 
-                            disabled={isSubmitting || !isFormValid()}
+                            disabled={isSubmitting || !checkFormValid()}
                         >
                             {isSubmitting ? 'Enviando...' : 'Enviar Solicitud'}
                         </button>
