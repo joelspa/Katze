@@ -28,7 +28,8 @@ Sistema web completo para gestionar adopciones de gatos con evaluación por inte
 - **[FUNCIONALIDADES.md](FUNCIONALIDADES.md)**: Explicación técnica detallada de cada funcionalidad del sistema
 - **[DB.md](DB.md)**: Documentación completa de la base de datos (tablas, relaciones, índices, migraciones)
 - **[DB.sql](DB.sql)**: Script PostgreSQL ejecutable para recrear la base de datos completa
-- **[API_ROUTES.md](API_ROUTES.md)**: Documentación de todos los endpoints de la API REST
+- **[ENV_SETUP.md](ENV_SETUP.md)**: Configuración de variables de entorno y credenciales
+- **[SECURITY.md](SECURITY.md)**: Políticas de seguridad y mejores prácticas
 
 ### Base de Datos
 

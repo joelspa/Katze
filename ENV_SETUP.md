@@ -73,6 +73,8 @@ cp .env.example .env
 **Contenido del `.env` del frontend:**
 ```env
 VITE_API_URL=http://localhost:5000
+
+# Firebase Configuration
 VITE_FIREBASE_API_KEY=tu_firebase_api_key
 VITE_FIREBASE_AUTH_DOMAIN=tu_proyecto.firebaseapp.com
 VITE_FIREBASE_PROJECT_ID=tu_proyecto_id
@@ -80,7 +82,19 @@ VITE_FIREBASE_STORAGE_BUCKET=tu_proyecto.firebasestorage.app
 VITE_FIREBASE_MESSAGING_SENDER_ID=tu_sender_id
 VITE_FIREBASE_APP_ID=tu_app_id
 VITE_FIREBASE_MEASUREMENT_ID=tu_measurement_id
+
+# Redes Sociales (OPCIONAL - configurar según necesidad)
+VITE_INSTAGRAM_URL=
+VITE_FACEBOOK_URL=
+VITE_WHATSAPP_URL=
+VITE_WHATSAPP_ADOPT_TEXT=
+VITE_WHATSAPP_VOLUNTEER_TEXT=
 ```
+
+> **⚠️ Importante:** 
+> - Las URLs de redes sociales son **opcionales**. Si están vacías, los enlaces no se mostrarán en el sitio.
+> - **NO** incluyas URLs reales en `.env.example` - solo en tu archivo `.env` local.
+> - El formato de WhatsApp debe ser: `https://wa.me/NUMERO` (sin espacios ni caracteres especiales).
 
 ## 🔑 Cómo Obtener las Credenciales
 

@@ -196,6 +196,7 @@ const RescuerDashboard = () => {
 
                 <nav className="admin-nav">
                     <button 
+                        type="button"
                         className={`nav-item ${activeTab === 'applications' ? 'active' : ''}`}
                         onClick={() => setActiveTab('applications')}
                     >
@@ -206,6 +207,7 @@ const RescuerDashboard = () => {
                         <span>Solicitudes Recibidas</span>
                     </button>
                     <button 
+                        type="button"
                         className={`nav-item ${activeTab === 'tracking' ? 'active' : ''}`}
                         onClick={() => setActiveTab('tracking')}
                     >
@@ -308,9 +310,11 @@ const RescuerDashboard = () => {
                         <div className="modal-header-sticky">
                             <h2>Solicitudes para {selectedCat.cat_name}</h2>
                             <button 
+                                type="button"
                                 className="modal-close-btn"
                                 onClick={() => setSelectedCat(null)}
                                 style={{background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.5rem'}}
+                                aria-label="Cerrar modal"
                             >
                                 ×
                             </button>
@@ -370,6 +374,7 @@ const RescuerDashboard = () => {
                                             {/* Action Buttons */}
                                             <div className="action-buttons">
                                                 <button 
+                                                    type="button"
                                                     className="btn-approve-sm"
                                                     onClick={() => {
                                                         const index = selectedCat.applications.findIndex(a => a.id === app.id);
@@ -380,6 +385,7 @@ const RescuerDashboard = () => {
                                                     Revisar y Aprobar
                                                 </button>
                                                 <button 
+                                                    type="button"
                                                     className="btn-reject-sm"
                                                     onClick={(e) => {
                                                         e.stopPropagation();
@@ -404,8 +410,10 @@ const RescuerDashboard = () => {
                 <div className="modal-overlay" onClick={() => setSelectedApplication(null)}>
                     <div className="modal-content modal-detail-enhanced" onClick={(e) => e.stopPropagation()}>
                         <button 
+                            type="button"
                             className="modal-close"
                             onClick={() => setSelectedApplication(null)}
+                            aria-label="Cerrar modal"
                         >
                             <svg viewBox="0 0 20 20" fill="currentColor">
                                 <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
@@ -477,6 +485,7 @@ const RescuerDashboard = () => {
                         {selectedCat.applications.length > 1 && (
                             <div className="candidate-navigation">
                                 <button 
+                                    type="button"
                                     className="nav-btn"
                                     disabled={currentAppIndex === 0}
                                     onClick={() => {
@@ -494,6 +503,7 @@ const RescuerDashboard = () => {
                                     Candidato {currentAppIndex + 1} de {selectedCat.applications.length} para {selectedApplication.cat_name}
                                 </span>
                                 <button 
+                                    type="button"
                                     className="nav-btn"
                                     disabled={currentAppIndex === selectedCat.applications.length - 1}
                                     onClick={() => {
@@ -594,6 +604,7 @@ const RescuerDashboard = () => {
                         {/* Acciones */}
                         <div className="modal-footer-enhanced">
                             <button
+                                type="button"
                                 className="btn-action btn-reject"
                                 onClick={() => {
                                     if (confirm('¿Estás seguro de rechazar esta solicitud?')) {
@@ -609,6 +620,7 @@ const RescuerDashboard = () => {
                                 Rechazar Solicitud
                             </button>
                             <button
+                                type="button"
                                 className="btn-action btn-approve"
                                 onClick={() => {
                                     if (confirm(`¿Aprobar adopción de ${selectedApplication.cat_name} para ${selectedApplication.applicant_name}?`)) {

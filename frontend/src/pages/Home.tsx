@@ -4,7 +4,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import axios, { isAxiosError } from 'axios';
 import { Link } from 'react-router-dom';
-import API_BASE_URL from '../config/api';
+import API_BASE_URL, { getWhatsAppVolunteerUrl } from '../config/api';
 import CatCard, { type Cat } from '../components/CatCard';
 import AdoptionProcessModal from '../components/AdoptionProcessModal';
 import Footer from '../components/Footer';
@@ -411,15 +411,17 @@ const Home = () => {
                     Considera donar, ser voluntario o convertirte en un hogar temporal.
                 </p>
                 <div className="cant-adopt-buttons">
-                    <a 
-                        href="https://wa.me/59163567265?text=Hola,%20quiero%20ser%20voluntario" 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="volunteer-btn"
-                        style={{ textDecoration: 'none', display: 'inline-block', textAlign: 'center' }}
-                    >
-                        Ser Voluntario
-                    </a>
+                    {getWhatsAppVolunteerUrl() && (
+                        <a 
+                            href={getWhatsAppVolunteerUrl()} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="volunteer-btn"
+                            style={{ textDecoration: 'none', display: 'inline-block', textAlign: 'center' }}
+                        >
+                            Ser Voluntario
+                        </a>
+                    )}
                 </div>
             </section>
 
