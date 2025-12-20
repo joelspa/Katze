@@ -52,7 +52,9 @@ module.exports = {
     },
     
     // Configuración de Make.com Webhook
-    MAKE_WEBHOOK_URL: process.env.MAKE_WEBHOOK_URL || 'https://hook.us2.make.com/xmldtachada9xritidmmf6nl6gdgmefa',
+    // IMPORTANTE: Esta URL debe estar SIEMPRE en el archivo .env
+    // NO debe tener un valor por defecto hardcodeado por seguridad
+    MAKE_WEBHOOK_URL: process.env.MAKE_WEBHOOK_URL,
     
     // Configuración de Google Gemini API
     GEMINI_API_KEY: process.env.GEMINI_API_KEY || ''
