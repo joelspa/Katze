@@ -994,5 +994,5 @@ Para entender la estructura completa de la base de datos:
 
 ---
 
-Desarrollado para el curso de Desarrollo de Aplicaciones Web - Universidad del Istmo 2025.
+Desarrollado para la materia de Desarrollo de Aplicaciones Web - Universidad para el Desarrollo e Innovacion 2025
 
