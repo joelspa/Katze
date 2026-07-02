@@ -34,6 +34,7 @@ const TrackingDashboard = () => {
     const [uploadingCertificate, setUploadingCertificate] = useState<number | null>(null);
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [uploadProgress, setUploadProgress] = useState(0);
+    const [searchQuery, setSearchQuery] = useState('');
     const { token } = useAuth();
 
     // Scroll al inicio cuando se carga la página
@@ -187,10 +188,12 @@ const TrackingDashboard = () => {
                 </h1>
                 <div className="search-bar">
                     <span className="search-icon">◎</span>
-                    <input 
-                        type="text" 
-                        className="search-input" 
+                    <input
+                        type="text"
+                        className="search-input"
                         placeholder="Buscar por gato, adoptante o tipo de tarea..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
                     />
                 </div>
             </div>
@@ -204,28 +207,30 @@ const TrackingDashboard = () => {
                 </p>
             ) : (
                 <div className="tasks-list">
-                    {tasks.map((task) => (
+                    {tasks
+                        .filter((t) => {
+                            if (!searchQuery) return true;
+                            const q = searchQuery.toLowerCase();
+                            return (
+                                t.cat_name?.toLowerCase().includes(q) ||
+                                t.applicant_name?.toLowerCase().includes(q) ||
+                                t.task_type?.toLowerCase().includes(q)
+                            );
+                        })
+                        .sort((a, b) => {
+                            const aOverdue = a.status === 'atrasada' ? -1 : 0;
+                            const bOverdue = b.status === 'atrasada' ? -1 : 0;
+                            if (aOverdue !== bOverdue) return aOverdue - bOverdue;
+                            return new Date(a.due_date).getTime() - new Date(b.due_date).getTime();
+                        })
+                        .map((task) => (
                         <div key={task.id} className={`task-card ${task.status === 'atrasada' ? 'overdue' : ''}`}>
                             <div className="task-type-badge badge-sterilization">
                                 {task.task_type}
                             </div>
                             
                             <h3>{task.cat_name}</h3>
-                            
-                            <div className="task-info">
-                                <div className="task-info-item">
-                                    <span className="task-info-label">Adoptante:</span> {task.applicant_name}
-                                </div>
-                                {task.sterilization_status && (
-                                    <div className="task-info-item">
-                                        <span className="task-info-label">Estado:</span>
-                                        <span className={`status-badge ${task.sterilization_status}`}>
-                                            {task.sterilization_status}
-                                        </span>
-                                    </div>
-                                )}
-                            </div>
-                            
+
                             <div className={`due-date ${task.status === 'atrasada' ? 'overdue' : ''}`}>
                                 Vence: {formatDate(task.due_date)}
                             </div>

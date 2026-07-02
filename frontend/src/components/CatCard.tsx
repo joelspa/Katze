@@ -113,7 +113,13 @@ const CatCard: React.FC<CatCardProps> = ({ cat }) => {
 
     return (
         <>
-            <div className="cat-card" onClick={() => setIsModalOpen(true)}>
+            <div
+                className="cat-card"
+                role="button"
+                tabIndex={0}
+                onClick={() => setIsModalOpen(true)}
+                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setIsModalOpen(true); } }}
+            >
                 <div
                     className="cat-card-image-container"
                     onTouchStart={onTouchStart}

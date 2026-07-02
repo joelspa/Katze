@@ -120,7 +120,7 @@
 }
 
 .kpi-icon {
-    font-size: 1.8rem;
+    display: inline-flex;
 }
 
 .kpi-label {

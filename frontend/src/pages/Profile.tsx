@@ -5,6 +5,8 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { API_BASE_URL } from '../config/api';
 import { validateEmail, validatePhone, validateFullName, FormValidator } from '../utils/validation';
+import { useModal } from '../hooks/useModal';
+import CustomModal from '../components/CustomModal';
 import './Profile.css';
 
 interface UserProfile {
@@ -17,6 +19,7 @@ interface UserProfile {
 }
 
 const Profile = () => {
+    const { modalState, showAlert, closeModal } = useModal();
     const [profile, setProfile] = useState<UserProfile | null>(null);
     const [isEditing, setIsEditing] = useState(false);
     const [loading, setLoading] = useState(true);
@@ -43,11 +46,11 @@ const Profile = () => {
             const token = localStorage.getItem('token');
             
             if (!token) {
-                alert('No estás autenticado. Por favor inicia sesión.');
+                showAlert('No estás autenticado. Por favor inicia sesión.', 'error');
                 setLoading(false);
                 return;
             }
-            
+
             const response = await axios.get(`${API_BASE_URL}/api/users/profile`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -55,9 +58,9 @@ const Profile = () => {
             });
 
             const profileData = response.data.data?.user || response.data.user || response.data.data;
-            
+
             if (!profileData) {
-                alert('Error: No se pudo obtener la información del perfil');
+                showAlert('Error: No se pudo obtener la información del perfil', 'error');
                 setLoading(false);
                 return;
             }
@@ -70,7 +73,7 @@ const Profile = () => {
             });
             setLoading(false);
         } catch (error: any) {
-            alert(`Error al cargar perfil: ${error.response?.data?.message || error.message || 'Error desconocido'}`);
+            showAlert(`Error al cargar perfil: ${error.response?.data?.message || error.message || 'Error desconocido'}`, 'error');
             setLoading(false);
         }
     };
@@ -121,8 +124,7 @@ const Profile = () => {
         e.preventDefault();
         
         if (!validateForm()) {
-            alert('Por favor corrige los errores en el formulario:\n\n' + 
-                validator.getAllErrors().join('\n'));
+            showAlert('Por favor corrige los errores en el formulario:\n\n' + validator.getAllErrors().join('\n'), 'error');
             return;
         }
         
@@ -140,9 +142,9 @@ const Profile = () => {
 
             setProfile(response.data.data.user);
             setIsEditing(false);
-            alert('Perfil actualizado exitosamente');
+            showAlert('Perfil actualizado exitosamente', 'success');
         } catch (error: any) {
-            alert(error.response?.data?.message || 'Error al actualizar perfil');
+            showAlert(error.response?.data?.message || 'Error al actualizar perfil', 'error');
         }
     };
 
@@ -166,6 +168,7 @@ const Profile = () => {
     }
 
     return (
+        <>
         <div className="profile-page">
                 <div className="container">
                     <div className="profile-header">
@@ -371,6 +374,17 @@ const Profile = () => {
                     )}
                 </div>
             </div>
+            <CustomModal
+                isOpen={modalState.isOpen}
+                onClose={closeModal}
+                type={modalState.type}
+                title={modalState.title}
+                message={modalState.message}
+                onConfirm={modalState.onConfirm}
+                confirmText={modalState.confirmText}
+                cancelText={modalState.cancelText}
+            />
+        </>
     );
 };
 

@@ -3,14 +3,17 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios, { isAxiosError } from 'axios';
 import { useAuth } from '../context/AuthContext';
-import { storage } from '../firebase'; // Importa el storage de Firebase
+import { storage } from '../firebase';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { v4 as uuidv4 } from 'uuid'; // Para nombres de archivo únicos
+import { v4 as uuidv4 } from 'uuid';
 import { validateRequired, validateMinLength, FormValidator } from '../utils/validation';
-import './PublishCat.css'; // Crearemos este CSS
+import { useModal } from '../hooks/useModal';
+import CustomModal from '../components/CustomModal';
+import './PublishCat.css';
 import { API_BASE_URL } from '../config/api';
 
 const PublishCat = () => {
+    const { modalState, showAlert, closeModal } = useModal();
     const [formData, setFormData] = useState({
         name: '',
         description: '',
@@ -196,8 +199,8 @@ const PublishCat = () => {
                 }
             });
 
-            alert('¡Gato publicado con éxito! (o pendiente de revisión)');
-            navigate('/'); // Redirige al inicio
+            await showAlert('¡Gato publicado con éxito!', 'success');
+            navigate('/');
 
         } catch (error: unknown) {
             let errorMessage = 'Error al publicar';
@@ -450,6 +453,16 @@ const PublishCat = () => {
                     </button>
                 </form>
             </div>
+            <CustomModal
+                isOpen={modalState.isOpen}
+                onClose={closeModal}
+                type={modalState.type}
+                title={modalState.title}
+                message={modalState.message}
+                onConfirm={modalState.onConfirm}
+                confirmText={modalState.confirmText}
+                cancelText={modalState.cancelText}
+            />
         </div>
     );
 };

@@ -440,7 +440,14 @@ const RescuerDashboard = () => {
                             </div>
                             <div className="applicant-header-right">
                                 {selectedApplication.ai_score !== null && selectedApplication.ai_score !== undefined && (
-                                    <AIScoreBadge score={selectedApplication.ai_score} />
+                                    <>
+                                        <AIScoreBadge score={selectedApplication.ai_score} />
+                                        <div style={{ fontSize: '0.72rem', color: 'rgba(148, 163, 184, 0.85)', marginTop: '6px', lineHeight: 1.4, textAlign: 'right' }}>
+                                            <span style={{ color: '#34d399' }}>90+</span> Muy compatible&nbsp;&nbsp;
+                                            <span style={{ color: '#fbbf24' }}>70–89</span> Compatible&nbsp;&nbsp;
+                                            <span style={{ color: '#f87171' }}>&lt;70</span> Revisar
+                                        </div>
+                                    </>
                                 )}
                                 
                                 {/* AI Flags en modal */}
