@@ -900,18 +900,21 @@
   color: rgba(230, 241, 255, 0.85);
 }
 
-gap: 16px;
-}
+@media (max-width: 1024px) {
+    .priority-item {
+        grid-template-columns: 80px 1fr;
+        gap: 16px;
+    }
 
-.priority-actions {
-    grid-column: 1 / -1;
-    flex-direction: row;
-    margin-top: 16px;
-}
+    .priority-actions {
+        grid-column: 1 / -1;
+        flex-direction: row;
+        margin-top: 16px;
+    }
 
-.priority-recommendation {
-    grid-column: 1 / -1;
-}
+    .priority-recommendation {
+        grid-column: 1 / -1;
+    }
 }
 
 @media (max-width: 768px) {

@@ -91,8 +91,8 @@
   --gradient-accent: linear-gradient(135deg, var(--color-accent), var(--color-accent-dark));
 
   /* ===== TYPOGRAPHY - Google Fonts ===== */
-  --font-family-primary: 'Open Sans', 'Lato', system-ui, -apple-system, sans-serif;
-  --font-family-heading: 'Montserrat', 'Poppins', system-ui, sans-serif;
+  --font-family-primary: 'Nunito Sans', 'Open Sans', system-ui, -apple-system, sans-serif;
+  --font-family-heading: 'Varela Round', 'Nunito Sans', system-ui, sans-serif;
 
   /* ===== SHADOWS (Soft & Clean) ===== */
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
