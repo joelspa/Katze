@@ -1,6 +1,11 @@
 import { StrictMode, lazy, Suspense } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
+import { setupMockInterceptors } from './mocks/interceptors'
+
+if (import.meta.env.VITE_USE_MOCK_DATA === 'true') {
+    setupMockInterceptors();
+}
 
 // Lazy load the App component
 const App = lazy(() => import('./App.tsx'))
