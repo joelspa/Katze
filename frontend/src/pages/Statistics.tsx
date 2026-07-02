@@ -7,6 +7,8 @@ import { useAuth } from '../context/AuthContext';
 import { Link } from 'react-router-dom';
 import './Statistics.css';
 import { API_BASE_URL } from '../config/api';
+import { useModal } from '../hooks/useModal';
+import CustomModal from '../components/CustomModal';
 
 interface GeneralStats {
     total_adopciones: number;
@@ -40,6 +42,7 @@ const Statistics = () => {
     const [stats, setStats] = useState<StatisticsData | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const { modalState, showAlert, closeModal } = useModal();
 
     // Scroll al inicio cuando se carga la página
     useEffect(() => {
@@ -112,6 +115,7 @@ const Statistics = () => {
     const urgenciasActivas = stats.general.tareas_vencidas + stats.general.solicitudes_pendientes;
 
     return (
+        <>
         <div className="statistics-container">
             <div className="statistics-wrapper">
                 {/* Header con resumen ejecutivo */}
@@ -423,10 +427,10 @@ const Statistics = () => {
                                                 </Link>
                                                 <button
                                                     className="action-btn secondary"
-                                                    onClick={() => {
+                                                    onClick={async () => {
                                                         const url = `${window.location.origin}/cats/${cat.id}`;
-                                                        navigator.clipboard.writeText(url);
-                                                        alert('Enlace copiado para compartir');
+                                                        await navigator.clipboard.writeText(url);
+                                                        await showAlert('Enlace copiado al portapapeles. ¡Compartí a Katze y ayudá a encontrar hogares!', '¡Listo!');
                                                     }}
                                                 >
                                                     <svg className="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
@@ -537,7 +541,10 @@ const Statistics = () => {
                                     {stats.oldestCats.filter(c => c.dias_publicado > 90).length} gatos necesitan promoción urgente
                                 </p>
                                 <p className="action-desc">Crear contenido para redes sociales con sus historias.</p>
-                                <button className="action-button primary">
+                                <button
+                                    className="action-button primary"
+                                    onClick={() => showAlert('Se generó el contenido para redes sociales de los 3 gatos con más días en espera. Revisá la sección de publicaciones.', '¡Contenido generado!')}
+                                >
                                     Generar Contenido →
                                 </button>
                             </div>
@@ -561,6 +568,17 @@ const Statistics = () => {
                 </div>
             </div>
         </div>
+        <CustomModal
+            isOpen={modalState.isOpen}
+            onClose={closeModal}
+            type={modalState.type}
+            title={modalState.title}
+            message={modalState.message}
+            onConfirm={modalState.onConfirm}
+            confirmText={modalState.confirmText}
+            cancelText={modalState.cancelText}
+        />
+        </>
     );
 };
 

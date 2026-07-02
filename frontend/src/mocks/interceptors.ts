@@ -186,9 +186,9 @@ async function handleRequest(config: InternalAxiosRequestConfig): Promise<AxiosR
         return ok({ data: { applications: grouped }, applications: grouped }, config);
     }
 
-    const appStatusMatch = path.match(/^\/api\/applications\/(\d+)\/status$/);
+    const appStatusMatch = path.match(/^\/api\/(admin\/)?applications\/(\d+)\/status$/);
     if (appStatusMatch && method === 'put') {
-        const appId = Number(appStatusMatch[1]);
+        const appId = Number(appStatusMatch[2]);
         appsStore = appsStore.map(a => a.id === appId ? { ...a, status: String(body.status ?? a.status) } : a);
         return ok({ message: 'Estado actualizado' }, config);
     }
@@ -284,13 +284,21 @@ async function handleRequest(config: InternalAxiosRequestConfig): Promise<AxiosR
 
     const ownerContactMatch = path.match(/^\/api\/cats\/(\d+)\/owner-contact$/);
     if (ownerContactMatch && method === 'get') {
-        return ok({
-            contact: {
-                full_name: 'María González',
-                email: 'rescatista@katze.com',
-                phone: '11-2345-6789',
-            }
-        }, config);
+        const catId = Number(ownerContactMatch[1]);
+        const contacts: Record<number, { full_name: string; email: string; phone: string }> = {
+            1: { full_name: 'María González',   email: 'rescatista@katze.com',  phone: '11-2345-6789' },
+            2: { full_name: 'María González',   email: 'rescatista@katze.com',  phone: '11-2345-6789' },
+            3: { full_name: 'María González',   email: 'rescatista@katze.com',  phone: '11-2345-6789' },
+            4: { full_name: 'Carlos Fernández', email: 'rescatista2@katze.com', phone: '11-3456-7890' },
+            5: { full_name: 'María González',   email: 'rescatista@katze.com',  phone: '11-2345-6789' },
+            6: { full_name: 'Carlos Fernández', email: 'rescatista2@katze.com', phone: '11-3456-7890' },
+            7: { full_name: 'María González',   email: 'rescatista@katze.com',  phone: '11-2345-6789' },
+            8: { full_name: 'Lucía Ramírez',    email: 'rescatista3@katze.com', phone: '11-0123-4567' },
+            9: { full_name: 'Carlos Fernández', email: 'rescatista2@katze.com', phone: '11-3456-7890' },
+            10: { full_name: 'Lucía Ramírez',   email: 'rescatista3@katze.com', phone: '11-0123-4567' },
+        };
+        const contact = contacts[catId] ?? { full_name: 'María González', email: 'rescatista@katze.com', phone: '11-2345-6789' };
+        return ok({ data: { contact } }, config);
     }
 
     // ── NO MATCH → generic success so the app doesn't crash ─────────────────
