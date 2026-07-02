@@ -11,272 +11,274 @@ import {
     MOCK_ADMIN_CATS,
 } from './userData';
 
-const MOCK_DELAY_MS = 400;
-
-const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+const MOCK_DELAY_MS = 350;
+const delay = (ms: number) => new Promise<void>(resolve => setTimeout(resolve, ms));
 
 function ok(data: unknown, config: InternalAxiosRequestConfig): AxiosResponse {
     return { data, status: 200, statusText: 'OK', headers: {}, config };
 }
 
+function mockError(message: string, status: number, config: InternalAxiosRequestConfig): never {
+    const err = Object.assign(new Error(message), {
+        isAxiosError: true,
+        config,
+        response: { data: { message }, status, statusText: String(status), headers: {}, config },
+    });
+    throw err;
+}
+
 function extractPath(url: string): string {
-    try {
-        return new URL(url).pathname;
-    } catch {
-        const match = url.match(/https?:\/\/[^/]+(\/.*)/);
-        return match ? match[1] : url;
-    }
+    try { return new URL(url).pathname; }
+    catch { return url.replace(/^https?:\/\/[^/]+/, '').split('?')[0]; }
 }
 
 function extractQuery(url: string): URLSearchParams {
-    try {
-        return new URL(url).searchParams;
-    } catch {
-        const idx = url.indexOf('?');
-        return new URLSearchParams(idx >= 0 ? url.slice(idx + 1) : '');
+    try { return new URL(url).searchParams; }
+    catch { const i = url.indexOf('?'); return new URLSearchParams(i >= 0 ? url.slice(i + 1) : ''); }
+}
+
+function parseBody(config: InternalAxiosRequestConfig): Record<string, unknown> {
+    if (!config.data) return {};
+    if (typeof config.data === 'string') {
+        try { return JSON.parse(config.data); } catch { return {}; }
     }
+    if (config.data instanceof FormData) return {};
+    return config.data as Record<string, unknown>;
 }
 
-type MockAdapter = (config: InternalAxiosRequestConfig) => Promise<AxiosResponse>;
+// Mutable in-memory stores so CRUD operations work within the session
+let postsStore    = [...MOCK_EDUCATION_POSTS];
+let usersStore    = [...MOCK_USERS];
+let catsStore     = [...MOCK_ADMIN_CATS];
+let appsStore     = [...MOCK_APPLICATIONS];
+let trackingStore = [...MOCK_TRACKING_TASKS];
 
-let mockToken = 'mock-jwt-token-demo-12345';
-let mockUsersByEmail: Record<string, typeof MOCK_USERS[0]> = {};
-let mockPostsStore = [...MOCK_EDUCATION_POSTS];
-let mockUsersStore = [...MOCK_USERS];
-let mockCatsStore = [...MOCK_ADMIN_CATS];
-let mockApplicationsStore = [...MOCK_APPLICATIONS];
-let mockTrackingStore = [...MOCK_TRACKING_TASKS];
+const usersByEmail: Record<string, typeof MOCK_USERS[0]> = {};
+MOCK_USERS.forEach(u => { usersByEmail[u.email] = u; });
 
-// Initialize lookup after stores are ready
-MOCK_USERS.forEach(u => { mockUsersByEmail[u.email] = u; });
+// ─── MOCK ADAPTER ────────────────────────────────────────────────────────────
 
-function buildMockAdapter(originalAdapter: MockAdapter): MockAdapter {
-    return async (config: InternalAxiosRequestConfig): Promise<AxiosResponse> => {
-        const url = config.url ?? '';
-        const method = (config.method ?? 'get').toLowerCase();
-        const path = extractPath(url);
-        const query = extractQuery(url);
+async function handleRequest(config: InternalAxiosRequestConfig): Promise<AxiosResponse> {
+    await delay(MOCK_DELAY_MS);
 
-        await delay(MOCK_DELAY_MS);
+    const url    = config.url ?? '';
+    const method = (config.method ?? 'get').toLowerCase();
+    const path   = extractPath(url);
+    const query  = extractQuery(url);
+    const body   = parseBody(config);
 
-        // ─── AUTH ────────────────────────────────────────────────────────────
+    // ── AUTH ────────────────────────────────────────────────────────────────
 
-        if (path === '/api/auth/login' && method === 'post') {
-            const body = typeof config.data === 'string' ? JSON.parse(config.data) : (config.data ?? {});
-            const user = mockUsersByEmail[body.email];
-            if (!user || body.password !== 'demo1234') {
-                const err = Object.assign(new Error('Credenciales inválidas'), {
-                    response: { data: { message: 'Email o contraseña incorrectos' }, status: 401, statusText: 'Unauthorized', headers: {}, config },
-                    isAxiosError: true,
-                });
-                return Promise.reject(err);
-            }
-            return ok({ data: { token: mockToken, user: { id: user.id, email: user.email, role: user.role } } }, config);
+    if (path === '/api/auth/login' && method === 'post') {
+        const user = usersByEmail[String(body.email ?? '')];
+        if (!user || body.password !== 'demo1234') {
+            mockError('Email o contraseña incorrectos', 401, config);
         }
+        return ok({ data: { token: 'mock-jwt-demo', user: { id: user.id, email: user.email, role: user.role } } }, config);
+    }
 
-        if (path === '/api/auth/register' && method === 'post') {
-            return ok({ message: 'Usuario registrado exitosamente' }, config);
+    if (path === '/api/auth/register' && method === 'post') {
+        return ok({ message: 'Usuario registrado exitosamente' }, config);
+    }
+
+    // ── PROFILE ─────────────────────────────────────────────────────────────
+
+    if (path === '/api/users/profile' && method === 'get') {
+        return ok({ data: { user: MOCK_PROFILE } }, config);
+    }
+
+    if (path === '/api/users/profile' && method === 'put') {
+        Object.assign(MOCK_PROFILE, body);
+        return ok({ data: { user: MOCK_PROFILE } }, config);
+    }
+
+    // ── CATS (public) ───────────────────────────────────────────────────────
+
+    if (path === '/api/cats' && method === 'get') {
+        let cats = [...MOCK_CATS];
+        const s = query.get('sterilization_status');
+        const a = query.get('age');
+        const l = query.get('living_space');
+        if (s) cats = cats.filter(c => c.sterilization_status === s);
+        if (a) cats = cats.filter(c => String(c.age).toLowerCase().includes(a.toLowerCase()));
+        if (l) cats = cats.filter(c => c.living_space_requirement === l);
+        return ok({ data: { cats }, cats }, config);
+    }
+
+    if (path === '/api/cats' && method === 'post') {
+        return ok({ message: 'Gato publicado exitosamente. Pendiente de aprobación.' }, config);
+    }
+
+    const catDetailMatch = path.match(/^\/api\/cats\/(\d+)$/);
+    if (catDetailMatch && method === 'get') {
+        const cat = MOCK_CATS.find(c => c.id === Number(catDetailMatch[1]));
+        if (!cat) mockError('Gato no encontrado', 404, config);
+        return ok({ data: { cat } }, config);
+    }
+
+    // ── EDUCATION ───────────────────────────────────────────────────────────
+
+    if (path === '/api/education' && method === 'get') {
+        return ok({ data: { posts: postsStore }, posts: postsStore }, config);
+    }
+
+    if (path === '/api/education' && method === 'post') {
+        const newPost = {
+            id: Date.now(),
+            author_name: 'Admin Demo',
+            author_id: 1,
+            created_at: new Date().toISOString(),
+            ...body,
+        };
+        postsStore = [newPost as typeof postsStore[0], ...postsStore];
+        return ok({ data: { post: newPost } }, config);
+    }
+
+    const educationMatch = path.match(/^\/api\/education\/(\d+)$/);
+    if (educationMatch) {
+        const postId = Number(educationMatch[1]);
+        if (method === 'put') {
+            postsStore = postsStore.map(p => p.id === postId ? { ...p, ...body } as typeof p : p);
+            return ok({ message: 'Actualizado' }, config);
         }
-
-        // ─── USERS / PROFILE ─────────────────────────────────────────────────
-
-        if (path === '/api/users/profile' && method === 'get') {
-            return ok({ data: { user: MOCK_PROFILE } }, config);
+        if (method === 'delete') {
+            postsStore = postsStore.filter(p => p.id !== postId);
+            return ok({ message: 'Eliminado' }, config);
         }
+    }
 
-        if (path === '/api/users/profile' && method === 'put') {
-            const body = typeof config.data === 'string' ? JSON.parse(config.data) : (config.data ?? {});
-            Object.assign(MOCK_PROFILE, body);
-            return ok({ data: { user: MOCK_PROFILE } }, config);
-        }
+    // ── TRACKING ────────────────────────────────────────────────────────────
 
-        // ─── CATS (public) ───────────────────────────────────────────────────
+    if (path === '/api/tracking' && method === 'get') {
+        return ok({ data: { tasks: trackingStore }, tasks: trackingStore }, config);
+    }
 
-        if (path === '/api/cats' && method === 'get') {
-            let cats = [...MOCK_CATS];
-            const sterilization = query.get('sterilization_status');
-            const age = query.get('age');
-            const living = query.get('living_space');
-            if (sterilization) cats = cats.filter(c => c.sterilization_status === sterilization);
-            if (age) cats = cats.filter(c => String(c.age).includes(age));
-            if (living) cats = cats.filter(c => c.living_space_requirement === living);
-            return ok({ data: { cats }, cats }, config);
-        }
+    if (path === '/api/tracking/all' && method === 'get') {
+        return ok({ data: { tasks: trackingStore }, tasks: trackingStore }, config);
+    }
 
-        if (path === '/api/cats' && method === 'post') {
-            return ok({ message: 'Gato publicado exitosamente. Pendiente de aprobación.' }, config);
-        }
+    const trackingCompleteMatch = path.match(/^\/api\/tracking\/(\d+)\/complete$/);
+    if (trackingCompleteMatch && method === 'put') {
+        const taskId = Number(trackingCompleteMatch[1]);
+        trackingStore = trackingStore.map(t => t.id === taskId ? { ...t, status: 'completado' } : t);
+        return ok({ message: 'Tarea completada' }, config);
+    }
 
-        const catDetailMatch = path.match(/^\/api\/cats\/(\d+)$/);
-        if (catDetailMatch && method === 'get') {
-            const cat = MOCK_CATS.find(c => c.id === Number(catDetailMatch[1]));
-            if (!cat) {
-                const err = Object.assign(new Error('Not found'), {
-                    response: { data: { message: 'Gato no encontrado' }, status: 404, statusText: 'Not Found', headers: {}, config },
-                    isAxiosError: true,
-                });
-                return Promise.reject(err);
-            }
-            return ok({ data: { cat } }, config);
-        }
+    // ── APPLICATIONS ────────────────────────────────────────────────────────
 
-        // ─── EDUCATION ───────────────────────────────────────────────────────
+    if (path === '/api/applications/received' && method === 'get') {
+        return ok(appsStore, config);
+    }
 
-        if (path === '/api/education' && method === 'get') {
-            return ok({ data: { posts: mockPostsStore }, posts: mockPostsStore }, config);
-        }
+    if (path === '/api/admin/applications' && method === 'get') {
+        const catIds = [...new Set(appsStore.map(a => a.cat_id))];
+        const grouped = catIds.map(catId => {
+            const catApps = appsStore.filter(a => a.cat_id === catId);
+            const first   = catApps[0];
+            return {
+                cat_id: catId,
+                cat_name: first.cat_name,
+                cat_photos: first.cat_photos,
+                applications: catApps,
+                applicationCount: catApps.length,
+            };
+        });
+        return ok({ data: { applications: grouped }, applications: grouped }, config);
+    }
 
-        if (path === '/api/education' && method === 'post') {
-            const body = typeof config.data === 'string' ? JSON.parse(config.data) : (config.data ?? {});
-            const newPost = { ...body, id: Date.now(), author_name: 'Admin Demo', author_id: 1, created_at: new Date().toISOString() };
-            mockPostsStore = [newPost, ...mockPostsStore];
-            return ok({ data: { post: newPost } }, config);
-        }
+    const appStatusMatch = path.match(/^\/api\/applications\/(\d+)\/status$/);
+    if (appStatusMatch && method === 'put') {
+        const appId = Number(appStatusMatch[1]);
+        appsStore = appsStore.map(a => a.id === appId ? { ...a, status: String(body.status ?? a.status) } : a);
+        return ok({ message: 'Estado actualizado' }, config);
+    }
 
-        const educationMatch = path.match(/^\/api\/education\/(\d+)$/);
-        if (educationMatch) {
-            const postId = Number(educationMatch[1]);
-            if (method === 'put') {
-                const body = typeof config.data === 'string' ? JSON.parse(config.data) : (config.data ?? {});
-                mockPostsStore = mockPostsStore.map(p => p.id === postId ? { ...p, ...body } : p);
-                return ok({ message: 'Actualizado' }, config);
-            }
-            if (method === 'delete') {
-                mockPostsStore = mockPostsStore.filter(p => p.id !== postId);
-                return ok({ message: 'Eliminado' }, config);
-            }
-        }
+    // ── STATISTICS ──────────────────────────────────────────────────────────
 
-        // ─── TRACKING ────────────────────────────────────────────────────────
+    if (path === '/api/statistics' && method === 'get') {
+        return ok({ data: MOCK_STATISTICS }, config);
+    }
 
-        if (path === '/api/tracking' && method === 'get') {
-            return ok({ data: { tasks: mockTrackingStore }, tasks: mockTrackingStore }, config);
-        }
+    // ── ADMIN — CATS ────────────────────────────────────────────────────────
 
-        if (path === '/api/tracking/all' && method === 'get') {
-            return ok({ data: { tasks: mockTrackingStore }, tasks: mockTrackingStore }, config);
-        }
+    if (path === '/api/admin/cats' && method === 'get') {
+        return ok(catsStore, config);
+    }
 
-        const trackingCompleteMatch = path.match(/^\/api\/tracking\/(\d+)\/complete$/);
-        if (trackingCompleteMatch && method === 'put') {
-            const taskId = Number(trackingCompleteMatch[1]);
-            mockTrackingStore = mockTrackingStore.map(t =>
-                t.id === taskId ? { ...t, status: 'completado' } : t
-            );
-            return ok({ message: 'Tarea completada' }, config);
-        }
+    if (path === '/api/admin/dashboard/stats' && method === 'get') {
+        return ok(MOCK_ADMIN_STATS, config);
+    }
 
-        // ─── APPLICATIONS ────────────────────────────────────────────────────
+    const adminCatApprovalMatch = path.match(/^\/api\/admin\/cats\/(\d+)\/approval$/);
+    if (adminCatApprovalMatch && method === 'put') {
+        const catId = Number(adminCatApprovalMatch[1]);
+        catsStore = catsStore.map(c => c.id === catId ? { ...c, approval_status: String(body.approval_status ?? c.approval_status) as 'pendiente' | 'aprobado' | 'rechazado' } : c);
+        return ok({ message: 'Estado de aprobación actualizado' }, config);
+    }
 
-        if (path === '/api/applications/received' && method === 'get') {
-            return ok(mockApplicationsStore, config);
-        }
+    const adminCatEditMatch = path.match(/^\/api\/admin\/cats\/(\d+)\/edit$/);
+    if (adminCatEditMatch && method === 'put') {
+        const catId = Number(adminCatEditMatch[1]);
+        catsStore = catsStore.map(c => c.id === catId ? { ...c, ...body } as typeof c : c);
+        return ok({ message: 'Gato actualizado' }, config);
+    }
 
-        if (path === '/api/admin/applications' && method === 'get') {
-            const grouped = MOCK_CATS.slice(0, 3).map(cat => ({
-                cat_id: cat.id,
-                cat_name: cat.name,
-                cat_photos: cat.photos_url,
-                applications: mockApplicationsStore.filter(a => a.cat_id === cat.id),
-                applicationCount: mockApplicationsStore.filter(a => a.cat_id === cat.id).length,
-            })).filter(g => g.applicationCount > 0);
-            return ok({ data: { applications: grouped }, applications: grouped }, config);
-        }
+    const adminCatDeleteMatch = path.match(/^\/api\/admin\/cats\/(\d+)$/);
+    if (adminCatDeleteMatch && method === 'delete') {
+        const catId = Number(adminCatDeleteMatch[1]);
+        catsStore = catsStore.filter(c => c.id !== catId);
+        return ok({ message: 'Gato eliminado' }, config);
+    }
 
-        const appStatusMatch = path.match(/^\/api\/applications\/(\d+)\/status$/);
-        if (appStatusMatch && method === 'put') {
-            const appId = Number(appStatusMatch[1]);
-            const body = typeof config.data === 'string' ? JSON.parse(config.data) : (config.data ?? {});
-            mockApplicationsStore = mockApplicationsStore.map(a =>
-                a.id === appId ? { ...a, status: body.status ?? a.status } : a
-            );
-            return ok({ message: 'Estado actualizado' }, config);
-        }
+    // ── ADMIN — USERS ───────────────────────────────────────────────────────
 
-        // ─── STATISTICS ──────────────────────────────────────────────────────
+    if (path === '/api/admin/users' && method === 'get') {
+        return ok(usersStore, config);
+    }
 
-        if (path === '/api/statistics' && method === 'get') {
-            return ok({ data: MOCK_STATISTICS }, config);
-        }
+    if (path === '/api/admin/users' && method === 'post') {
+        const newUser = { id: Date.now(), created_at: new Date().toISOString(), ...body };
+        usersStore = [...usersStore, newUser as typeof usersStore[0]];
+        return ok({ message: 'Usuario creado' }, config);
+    }
 
-        // ─── ADMIN — CATS ────────────────────────────────────────────────────
+    const adminUserRoleMatch = path.match(/^\/api\/admin\/users\/(\d+)\/role$/);
+    if (adminUserRoleMatch && method === 'put') {
+        const userId = Number(adminUserRoleMatch[1]);
+        usersStore = usersStore.map(u => u.id === userId ? { ...u, role: (body.role ?? u.role) as typeof u.role } : u);
+        return ok({ message: 'Rol actualizado' }, config);
+    }
 
-        if (path === '/api/admin/cats' && method === 'get') {
-            return ok(mockCatsStore, config);
-        }
+    const adminUserDeleteMatch = path.match(/^\/api\/admin\/users\/(\d+)$/);
+    if (adminUserDeleteMatch && method === 'delete') {
+        const userId = Number(adminUserDeleteMatch[1]);
+        usersStore = usersStore.filter(u => u.id !== userId);
+        return ok({ message: 'Usuario eliminado' }, config);
+    }
 
-        if (path === '/api/admin/dashboard/stats' && method === 'get') {
-            return ok(MOCK_ADMIN_STATS, config);
-        }
+    // ── ADMIN — DATASETS ────────────────────────────────────────────────────
 
-        const adminCatApprovalMatch = path.match(/^\/api\/admin\/cats\/(\d+)\/approval$/);
-        if (adminCatApprovalMatch && method === 'put') {
-            const catId = Number(adminCatApprovalMatch[1]);
-            const body = typeof config.data === 'string' ? JSON.parse(config.data) : (config.data ?? {});
-            mockCatsStore = mockCatsStore.map(c =>
-                c.id === catId ? { ...c, approval_status: body.approval_status ?? c.approval_status } : c
-            );
-            return ok({ message: 'Estado de aprobación actualizado' }, config);
-        }
+    if (path === '/api/admin/datasets/regenerate' && method === 'post') {
+        return ok({ message: 'Datos regenerados correctamente' }, config);
+    }
 
-        const adminCatEditMatch = path.match(/^\/api\/admin\/cats\/(\d+)\/edit$/);
-        if (adminCatEditMatch && method === 'put') {
-            const catId = Number(adminCatEditMatch[1]);
-            const body = typeof config.data === 'string' ? JSON.parse(config.data) : (config.data ?? {});
-            mockCatsStore = mockCatsStore.map(c => c.id === catId ? { ...c, ...body } : c);
-            return ok({ message: 'Gato actualizado' }, config);
-        }
-
-        const adminCatDeleteMatch = path.match(/^\/api\/admin\/cats\/(\d+)$/);
-        if (adminCatDeleteMatch && method === 'delete') {
-            const catId = Number(adminCatDeleteMatch[1]);
-            mockCatsStore = mockCatsStore.filter(c => c.id !== catId);
-            return ok({ message: 'Gato eliminado' }, config);
-        }
-
-        // ─── ADMIN — USERS ───────────────────────────────────────────────────
-
-        if (path === '/api/admin/users' && method === 'get') {
-            return ok(mockUsersStore, config);
-        }
-
-        if (path === '/api/admin/users' && method === 'post') {
-            const body = typeof config.data === 'string' ? JSON.parse(config.data) : (config.data ?? {});
-            const newUser = { id: Date.now(), created_at: new Date().toISOString(), ...body };
-            mockUsersStore = [...mockUsersStore, newUser];
-            mockUsersByEmail[newUser.email] = newUser;
-            return ok({ message: 'Usuario creado' }, config);
-        }
-
-        const adminUserRoleMatch = path.match(/^\/api\/admin\/users\/(\d+)\/role$/);
-        if (adminUserRoleMatch && method === 'put') {
-            const userId = Number(adminUserRoleMatch[1]);
-            const body = typeof config.data === 'string' ? JSON.parse(config.data) : (config.data ?? {});
-            mockUsersStore = mockUsersStore.map(u => u.id === userId ? { ...u, role: body.role ?? u.role } : u);
-            return ok({ message: 'Rol actualizado' }, config);
-        }
-
-        const adminUserDeleteMatch = path.match(/^\/api\/admin\/users\/(\d+)$/);
-        if (adminUserDeleteMatch && method === 'delete') {
-            const userId = Number(adminUserDeleteMatch[1]);
-            mockUsersStore = mockUsersStore.filter(u => u.id !== userId);
-            return ok({ message: 'Usuario eliminado' }, config);
-        }
-
-        // ─── ADMIN — DATASETS ────────────────────────────────────────────────
-
-        if (path === '/api/admin/datasets/regenerate' && method === 'post') {
-            return ok({ message: 'Datos regenerados correctamente' }, config);
-        }
-
-        // ─── FALLTHROUGH — use real adapter ──────────────────────────────────
-        return originalAdapter(config);
-    };
+    // ── NO MATCH → generic success so the app doesn't crash ─────────────────
+    console.warn('[MOCK] No handler for:', method.toUpperCase(), path);
+    return ok({ message: 'OK', data: [] }, config);
 }
+
+// ─── SETUP ───────────────────────────────────────────────────────────────────
 
 export function setupMockInterceptors() {
-    const originalAdapter = axios.defaults.adapter as MockAdapter;
-    axios.defaults.adapter = buildMockAdapter(originalAdapter);
-    console.info('[MOCK] Mock data layer activo — todas las llamadas a /api/* usan datos de demo.');
-    console.info('[MOCK] Credenciales de prueba: email = admin@katze.com / rescatista@katze.com / adoptante@katze.com — contraseña = demo1234');
+    axios.interceptors.request.use((config) => {
+        const url = config.url ?? '';
+        if (!url.includes('/api/')) return config;
+
+        // Replace the adapter for this specific request with our mock handler
+        config.adapter = (c: InternalAxiosRequestConfig) => handleRequest(c);
+        return config;
+    });
+
+    console.info('[MOCK] Active — all /api/* calls use demo data.');
+    console.info('[MOCK] Credentials: admin@katze.com | rescatista@katze.com | adoptante@katze.com — password: demo1234');
 }
