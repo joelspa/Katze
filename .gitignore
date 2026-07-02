@@ -9,3 +9,6 @@ node_modules/
 # Credenciales de Firebase - NUNCA HACER COMMIT
 **/serviceAccountKey.json
 serviceAccountKey.json
+
+# Agent Tools Local
+.atl/
