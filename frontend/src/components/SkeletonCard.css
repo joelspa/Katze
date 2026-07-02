@@ -1,0 +1,116 @@
+@keyframes shimmer {
+    0%   { background-position: -600px 0; }
+    100% { background-position: 600px 0; }
+}
+
+.skeleton-card {
+    background-color: var(--bg-card);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 16px;
+    overflow: hidden;
+    height: 440px;
+    display: flex;
+    flex-direction: column;
+}
+
+.skeleton-image {
+    height: 240px;
+    width: 100%;
+    background: linear-gradient(
+        90deg,
+        var(--bg-tertiary) 25%,
+        var(--surface-elevated) 50%,
+        var(--bg-tertiary) 75%
+    );
+    background-size: 1200px 100%;
+    animation: shimmer 1.8s infinite ease-in-out;
+}
+
+.skeleton-body {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    gap: 12px;
+}
+
+.skeleton-line {
+    border-radius: 6px;
+    background: linear-gradient(
+        90deg,
+        var(--bg-tertiary) 25%,
+        var(--surface-elevated) 50%,
+        var(--bg-tertiary) 75%
+    );
+    background-size: 1200px 100%;
+    animation: shimmer 1.8s infinite ease-in-out;
+}
+
+.skeleton-title {
+    height: 22px;
+    width: 65%;
+}
+
+.skeleton-meta {
+    height: 15px;
+    width: 45%;
+}
+
+.skeleton-chips {
+    display: flex;
+    gap: 8px;
+    margin: 4px 0;
+}
+
+.skeleton-chip {
+    height: 26px;
+    width: 100px;
+    border-radius: 8px;
+    background: linear-gradient(
+        90deg,
+        var(--bg-tertiary) 25%,
+        var(--surface-elevated) 50%,
+        var(--bg-tertiary) 75%
+    );
+    background-size: 1200px 100%;
+    animation: shimmer 1.8s infinite ease-in-out;
+}
+
+.skeleton-chip-sm {
+    width: 80px;
+}
+
+.skeleton-btn {
+    margin-top: auto;
+    height: 44px;
+    width: 100%;
+    border-radius: 8px;
+    background: linear-gradient(
+        90deg,
+        var(--bg-tertiary) 25%,
+        var(--surface-elevated) 50%,
+        var(--bg-tertiary) 75%
+    );
+    background-size: 1200px 100%;
+    animation: shimmer 1.8s infinite ease-in-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .skeleton-image,
+    .skeleton-line,
+    .skeleton-chip,
+    .skeleton-btn {
+        animation: none;
+        background: var(--bg-tertiary);
+    }
+}
+
+@media (max-width: 768px) {
+    .skeleton-card  { height: 420px; }
+    .skeleton-image { height: 200px; }
+}
+
+@media (max-width: 480px) {
+    .skeleton-card  { height: 400px; }
+    .skeleton-image { height: 190px; }
+}

@@ -14,7 +14,7 @@
 .catalog-header h1 {
     font-size: clamp(2rem, 5vw, 3rem);
     font-weight: 800;
-    color: var(--color-black);
+    color: var(--text-high);
     margin-bottom: 16px;
 }
 
