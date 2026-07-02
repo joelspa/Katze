@@ -75,7 +75,7 @@ interface TrackingTask {
 type TabType = 'cats' | 'education' | 'users' | 'tracking' | 'applications' | 'datasets';
 
 const AdminDashboard = () => {
-    const { modalState, showAlert, showConfirm, showPrompt, closeModal } = useModal();
+    const { modalState, showAlert, showConfirm, closeModal } = useModal();
 
     // Scroll al inicio cuando se carga la página
     useEffect(() => {
@@ -111,6 +111,8 @@ const AdminDashboard = () => {
         role: 'rescatista',
         phone: ''
     });
+    const [editingRoleUserId, setEditingRoleUserId] = useState<number | null>(null);
+    const [editingRoleValue, setEditingRoleValue] = useState('');
 
     // Estados para seguimiento
     const [trackingTasks, setTrackingTasks] = useState<TrackingTask[]>([]);
@@ -190,33 +192,33 @@ const AdminDashboard = () => {
     const handleCreatePost = async () => {
         // Validar título
         if (!postForm.title.trim()) {
-            alert('El título es requerido');
+            await showAlert('El título es requerido', 'Error de validación');
             return;
         }
-        
+
         if (postForm.title.trim().length < 10) {
-            alert('El título debe tener al menos 10 caracteres');
+            await showAlert('El título debe tener al menos 10 caracteres', 'Error de validación');
             return;
         }
 
         if (postForm.title.trim().length > 200) {
-            alert('El título no puede exceder 200 caracteres');
+            await showAlert('El título no puede exceder 200 caracteres', 'Error de validación');
             return;
         }
 
         // Validar contenido
         if (!postForm.content.trim()) {
-            alert('El contenido es requerido');
+            await showAlert('El contenido es requerido', 'Error de validación');
             return;
         }
 
         if (postForm.content.trim().length < 50) {
-            alert('El contenido debe tener al menos 50 caracteres');
+            await showAlert('El contenido debe tener al menos 50 caracteres', 'Error de validación');
             return;
         }
 
         if (postForm.content.trim().length > 2000) {
-            alert('El contenido no puede exceder 2000 caracteres');
+            await showAlert('El contenido no puede exceder 2000 caracteres', 'Error de validación');
             return;
         }
 
@@ -244,14 +246,14 @@ const AdminDashboard = () => {
                 { headers: { 'Authorization': `Bearer ${token}` } }
             );
 
-            alert('Charla creada con éxito');
+            await showAlert('Charla creada con éxito', 'Operación Exitosa');
             setPostForm({ title: '', content: '', eventDate: '', image_url: '', category: 'todos' });
             setPostImageFile(null);
             setShowPostForm(false);
             fetchPosts();
         } catch (error: unknown) {
             if (isAxiosError(error)) {
-                alert(error.response?.data?.message || 'Error al crear la charla');
+                await showAlert(error.response?.data?.message || 'Error al crear la charla', 'Error');
             }
         }
     };
@@ -262,33 +264,33 @@ const AdminDashboard = () => {
 
         // Validar título
         if (!editingPost.title.trim()) {
-            alert('El título es requerido');
+            await showAlert('El título es requerido', 'Error de validación');
             return;
         }
-        
+
         if (editingPost.title.trim().length < 10) {
-            alert('El título debe tener al menos 10 caracteres');
+            await showAlert('El título debe tener al menos 10 caracteres', 'Error de validación');
             return;
         }
 
         if (editingPost.title.trim().length > 200) {
-            alert('El título no puede exceder 200 caracteres');
+            await showAlert('El título no puede exceder 200 caracteres', 'Error de validación');
             return;
         }
 
         // Validar contenido
         if (!editingPost.content.trim()) {
-            alert('El contenido es requerido');
+            await showAlert('El contenido es requerido', 'Error de validación');
             return;
         }
 
         if (editingPost.content.trim().length < 50) {
-            alert('El contenido debe tener al menos 50 caracteres');
+            await showAlert('El contenido debe tener al menos 50 caracteres', 'Error de validación');
             return;
         }
 
         if (editingPost.content.trim().length > 2000) {
-            alert('El contenido no puede exceder 2000 caracteres');
+            await showAlert('El contenido no puede exceder 2000 caracteres', 'Error de validación');
             return;
         }
 
@@ -316,7 +318,7 @@ const AdminDashboard = () => {
                 { headers: { 'Authorization': `Bearer ${token}` } }
             );
 
-            alert('Charla actualizada con éxito');
+            await showAlert('Charla actualizada con éxito', 'Operación Exitosa');
             setEditingPost(null);
             setEditingPostImageFile(null);
             setEditingPostEventDate('');
@@ -343,7 +345,7 @@ const AdminDashboard = () => {
             await showAlert('Charla eliminada con éxito', 'Operación Exitosa');
             fetchPosts();
         } catch (error: unknown) {
-            alert('Error al eliminar la charla');
+            await showAlert('Error al eliminar la charla', 'Error');
         }
     };
 
@@ -403,38 +405,22 @@ const AdminDashboard = () => {
         }
     };
 
-    // Cambia el rol de un usuario
-    const handleChangeUserRole = async (userId: number, currentRole: string) => {
-        const roles = ['adoptante', 'rescatista', 'admin'];
-        const newRole = await showPrompt(
-            `Rol actual: ${currentRole}\n\nIngresa el nuevo rol:`,
-            'Roles: adoptante, rescatista, admin',
-            currentRole,
-            'Cambiar Rol de Usuario'
-        );
-
-        if (!newRole || !roles.includes(newRole.trim().toLowerCase())) {
-            await showAlert('Rol no válido. Los roles disponibles son: adoptante, rescatista, admin', 'Error');
-            return;
-        }
-
-        if (newRole === currentRole) {
-            return; // Sin cambios
-        }
-
+    // Guarda el cambio de rol inline
+    const handleSaveRole = async (userId: number) => {
         try {
             const API_URL = `${API_BASE_URL}/api/admin/users/${userId}/role`;
             await axios.put(
                 API_URL,
-                { role: newRole },
+                { role: editingRoleValue },
                 { headers: { 'Authorization': `Bearer ${token}` } }
             );
-
-            await showAlert(`Rol actualizado exitosamente a: ${newRole}`, 'Cambio Completado');
-            fetchUsers();
+            setUsers(users.map(u =>
+                u.id === userId ? { ...u, role: editingRoleValue as User['role'] } : u
+            ));
+            setEditingRoleUserId(null);
         } catch (error: unknown) {
             if (isAxiosError(error)) {
-                alert(error.response?.data?.message || 'Error al actualizar rol');
+                await showAlert(error.response?.data?.message || 'Error al actualizar rol', 'Error');
             }
         }
     };
@@ -498,28 +484,28 @@ const AdminDashboard = () => {
     const handleCreateUser = async () => {
         // Validar campos requeridos
         if (!newUserForm.email || !newUserForm.password || !newUserForm.fullName || !newUserForm.role) {
-            alert('Por favor completa todos los campos requeridos');
+            await showAlert('Por favor completa todos los campos requeridos', 'Error de validación');
             return;
         }
 
         // Validar nombre completo
         const fullNameValidation = validateFullName(newUserForm.fullName);
         if (!fullNameValidation.isValid) {
-            alert(fullNameValidation.error);
+            await showAlert(fullNameValidation.error || 'Nombre inválido', 'Error de validación');
             return;
         }
 
         // Validar email
         const emailValidation = validateEmail(newUserForm.email);
         if (!emailValidation.isValid) {
-            alert(emailValidation.error);
+            await showAlert(emailValidation.error || 'Email inválido', 'Error de validación');
             return;
         }
 
         // Validar contraseña
         const passwordValidation = validatePassword(newUserForm.password);
         if (!passwordValidation.isValid) {
-            alert(passwordValidation.error);
+            await showAlert(passwordValidation.error || 'Contraseña inválida', 'Error de validación');
             return;
         }
 
@@ -527,7 +513,7 @@ const AdminDashboard = () => {
         if (newUserForm.phone && newUserForm.phone.trim()) {
             const phoneValidation = validatePhone(newUserForm.phone);
             if (!phoneValidation.isValid) {
-                alert(phoneValidation.error);
+                await showAlert(phoneValidation.error || 'Teléfono inválido', 'Error de validación');
                 return;
             }
         }
@@ -540,7 +526,7 @@ const AdminDashboard = () => {
                 { headers: { 'Authorization': `Bearer ${token}` } }
             );
 
-            alert('Usuario creado exitosamente');
+            await showAlert('Usuario creado exitosamente', 'Operación Exitosa');
             setNewUserForm({
                 email: '',
                 password: '',
@@ -552,7 +538,7 @@ const AdminDashboard = () => {
             fetchUsers();
         } catch (error: unknown) {
             if (isAxiosError(error)) {
-                alert(error.response?.data?.message || 'Error al crear usuario');
+                await showAlert(error.response?.data?.message || 'Error al crear usuario', 'Error');
             }
         }
     };
@@ -797,7 +783,7 @@ const AdminDashboard = () => {
                 rechazados: updatedCats.filter(c => c.approval_status === 'rechazado').length
             });
 
-            alert(`Publicación ${status === 'aprobado' ? 'aprobada' : 'rechazada'} con éxito`);
+            await showAlert(`Publicación ${status === 'aprobado' ? 'aprobada' : 'rechazada'} con éxito`, 'Operación Exitosa');
             
             // Recargar desde el servidor para asegurar consistencia
             await fetchCats();
@@ -840,12 +826,12 @@ const AdminDashboard = () => {
                 rechazados: updatedCats.filter(c => c.approval_status === 'rechazado').length
             });
 
-            alert('Publicación eliminada con éxito');
-            
+            await showAlert('Publicación eliminada con éxito', 'Operación Exitosa');
+
             // Recargar desde el servidor para asegurar consistencia
             await fetchCats();
         } catch (error: unknown) {
-            alert('Error al eliminar la publicación');
+            await showAlert('Error al eliminar la publicación', 'Error');
             console.error(error);
             // Recargar en caso de error
             await fetchCats();
@@ -873,11 +859,11 @@ const AdminDashboard = () => {
                 { headers: { 'Authorization': `Bearer ${token}` } }
             );
 
-            alert('Gato actualizado con éxito');
+            await showAlert('Gato actualizado con éxito', 'Operación Exitosa');
             setEditingCat(null);
             fetchCats();
         } catch (error: unknown) {
-            alert('Error al actualizar el gato');
+            await showAlert('Error al actualizar el gato', 'Error');
             console.error(error);
         }
     };
@@ -2242,19 +2228,36 @@ const AdminDashboard = () => {
                                             <td>{user.email}</td>
                                             <td>{user.phone || 'N/A'}</td>
                                             <td>
-                                                <span className={`role-badge ${user.role}`}>
-                                                    {user.role === 'adoptante' && 'Adoptante'}
-                                                    {user.role === 'rescatista' && 'Rescatista'}
-                                                    {user.role === 'admin' && 'Admin'}
-                                                </span>
+                                                {editingRoleUserId === user.id ? (
+                                                    <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                                                        <select
+                                                            value={editingRoleValue}
+                                                            onChange={(e) => setEditingRoleValue(e.target.value)}
+                                                            className="role-select-inline"
+                                                        >
+                                                            <option value="adoptante">Adoptante</option>
+                                                            <option value="rescatista">Rescatista</option>
+                                                            <option value="admin">Admin</option>
+                                                        </select>
+                                                        <button onClick={() => handleSaveRole(user.id)} className="btn-save-role" title="Guardar">✓</button>
+                                                        <button onClick={() => setEditingRoleUserId(null)} className="btn-cancel-role" title="Cancelar">✗</button>
+                                                    </div>
+                                                ) : (
+                                                    <span className={`role-badge ${user.role}`}>
+                                                        {user.role === 'adoptante' && 'Adoptante'}
+                                                        {user.role === 'rescatista' && 'Rescatista'}
+                                                        {user.role === 'admin' && 'Admin'}
+                                                    </span>
+                                                )}
                                             </td>
                                             <td>{new Date(user.created_at).toLocaleDateString('es-ES')}</td>
                                             <td>
                                                 <div style={{display: 'flex', gap: '8px', justifyContent: 'center'}}>
-                                                    <button 
+                                                    <button
                                                         className="btn-change-role"
-                                                        onClick={() => handleChangeUserRole(user.id, user.role)}
+                                                        onClick={() => { setEditingRoleUserId(user.id); setEditingRoleValue(user.role); }}
                                                         title="Cambiar Rol"
+                                                        disabled={editingRoleUserId !== null && editingRoleUserId !== user.id}
                                                     >
                                                         <svg viewBox="0 0 20 20" fill="currentColor" style={{width: '16px', height: '16px'}}>
                                                             <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />

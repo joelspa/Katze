@@ -262,6 +262,37 @@ async function handleRequest(config: InternalAxiosRequestConfig): Promise<AxiosR
         return ok({ message: 'Datos regenerados correctamente' }, config);
     }
 
+    // ── ADOPTION APPLICATION SUBMIT ─────────────────────────────────────────
+
+    const catApplyMatch = path.match(/^\/api\/cats\/(\d+)\/apply$/);
+    if (catApplyMatch && method === 'post') {
+        const catId = Number(catApplyMatch[1]);
+        const newApp = {
+            id: Date.now(),
+            cat_id: catId,
+            status: 'revision_pendiente',
+            ai_score: null,
+            ai_feedback: null,
+            ai_flags: [],
+            form_responses: (body.form_responses as Record<string, unknown>) || {},
+            created_at: new Date().toISOString(),
+        };
+        return ok({ message: 'Solicitud enviada exitosamente. Te contactaremos pronto.', data: { application: newApp } }, config);
+    }
+
+    // ── OWNER CONTACT ───────────────────────────────────────────────────────
+
+    const ownerContactMatch = path.match(/^\/api\/cats\/(\d+)\/owner-contact$/);
+    if (ownerContactMatch && method === 'get') {
+        return ok({
+            contact: {
+                full_name: 'María González',
+                email: 'rescatista@katze.com',
+                phone: '11-2345-6789',
+            }
+        }, config);
+    }
+
     // ── NO MATCH → generic success so the app doesn't crash ─────────────────
     console.warn('[MOCK] No handler for:', method.toUpperCase(), path);
     return ok({ message: 'OK', data: [] }, config);
